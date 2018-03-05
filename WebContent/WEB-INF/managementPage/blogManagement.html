@@ -1,0 +1,1612 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>综合管理界面</title>
+        <link rel="icon" href="/blog/Images/img.ico" type="image/x-ico" />
+    </head>
+    <script>
+    Date.prototype.toLocaleString = function(){
+		var array = new Array();
+		array.push(this.getFullYear());
+		array.push(this.getMonth() + 1);
+		array.push(this.getDate());
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			if(index < 10){
+				array[i] = "0" + array[i];
+			}
+		}
+		var array1 = new Array();
+		array1.push(this.getHours());
+		array1.push(this.getMinutes());
+		array1.push(this.getSeconds());
+		for(var i = 0; i < array1.length; i++){
+			var index = array1[i];
+			if(index < 10){
+				array1[i] = "0" + array1[i];
+			}
+		}
+		return array.join("-") + " " + array1.join(":");
+	}
+	 function sendHttpPost(){
+		var request = new XMLHttpRequest();
+		request.open("POST", "/blog/UploadImageController");
+		request.upload.onprogress = function(){
+			var loaded = parseFloat(event.loaded);
+			var total = parseFloat(event.total);
+			var rate = (loaded / total);
+		}
+		request.onreadystatechange = function(){
+			if(request.status == 200 && request.readyState == XMLHttpRequest.DONE){
+				document.execCommand("insertImage", false, request.responseText);
+				var imgs = document.getElementsByTagName("img");
+				var img = imgs[imgs.length - 1];
+				img.onload = function(){
+					if(img.width > 700){
+						img.width = 700;
+					}
+				}
+			}
+		}
+		
+		var formData = new FormData();
+		var input = document.getElementById(this.id);
+		if(!input) return;
+		var file = input.files[0];
+		if(!file) return;
+		formData.append(input.name, file);
+		request.send(formData);
+ 	}
+	function updateProfileIcon(){
+		var request = new XMLHttpRequest();
+		request.open("POST", "/blog/UploadProfileIconController");
+		request.upload.onprogress = function(){
+			var loaded = parseFloat(event.loaded);
+			var total = parseFloat(event.total);
+			var rate = (loaded / total);
+		}
+		request.onreadystatechange = function(){
+			if(request.status == 200 && request.readyState == XMLHttpRequest.DONE){
+				alert(request.responseText);
+			}
+		}
+		var formData = new FormData();
+		var input = document.getElementById(this.id);
+		if(!input) return;
+		var file = input.files[0];
+		if(!file) return;
+		formData.append(input.name, file);
+		request.send(formData);
+ 	}
+	function sendHttpFormRequest(url, data, callBack){
+		var array = new Array();
+		var request = new XMLHttpRequest();
+		if(data == null)return;
+		var names = Object.getOwnPropertyNames(data);
+		if(typeof FormData == "undefined")return;
+		var formdata = new FormData();
+		for(var  i = 0; i < names.length; i++){
+			data[names[i]] = encodeURIComponent(data[names[i]]);
+			array.push(names[i]  + "=" + data[names[i]]);
+		}
+		request.open("post", url);
+		request.onreadystatechange = function(){
+			if(request.status == 200 && request.readyState == XMLHttpRequest.DONE){
+				if(callBack){
+					callBack(this);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(array.join("&"));
+	}
+	function BlogArticle(article_title, article_content){
+		this.article_title = article_title;
+		this.article_content = article_content;
+	}
+	BlogArticle.prototype = {
+		constructor:BlogArticle
+	}
+	function inherit(obj){
+		if(obj == null)return;
+		if(Object.create){
+			return Object.create(obj);
+		}
+		var t = typeof obj;
+		if(t != "object" && t != "function") return;
+		function f(){};
+		f.prototype = obj;
+		return new f();
+	}
+	function initRichTextEditor(){
+		var submit_buttn = document.getElementById("submit_buttn");
+		submit_buttn.addEventListener("click", function(){//点击提交博客
+			var content = document.getElementById("text_editor");
+			var title = document.getElementById("blog_title");
+			var obj = new BlogArticle();
+			obj.article_title = title.value;
+			obj.article_content = content.innerHTML;
+			sendHttpFormRequest("/blog/InsertArticleController", obj, function(request){
+				alert(request.responseText);
+				if(request.responseText == "发表成功"){
+					title.value = "";
+					content.innerHTML = "";
+				}
+			});
+		}, false);
+		var buttns = document.getElementsByClassName("back_center_blog_editor_buttn");
+		for(var i = 0; i < buttns.length; i++){
+			var buttn = buttns[i];
+			buttn.addEventListener("click", function(){
+				var cmdName = this.getAttribute("data-option");
+				if(cmdName == "createlink"){
+					document.execCommand(cmdName, false, prompt("请输入要插入的链接"));
+				}else{
+					document.execCommand(cmdName);
+				}
+			}, false);
+		}
+		var selects = document.getElementsByClassName("back_center_blog_editor_sel");
+		for(var i = 0; i < selects.length; i++){
+			var sel = selects[i];
+			sel.addEventListener("change", function(){
+				var cmdName = this.getAttribute("data-option");
+				if(cmdName == "format_method"){
+					document.execCommand(this.value);
+				}else{
+					document.execCommand(cmdName, false, this.value);
+				}
+			}, false);
+		}
+		var input = document.getElementById("uploadImage");
+		input.addEventListener("change", sendHttpPost, false);
+		input = document.getElementById("modify_uploadImage");
+		input.addEventListener("change", sendHttpPost, false);
+	}
+	
+	function setCSSStyle(cssStyle, elt){
+		var names = Object.getOwnPropertyNames(cssStyle);
+		for(var i = 0; i < names.length; i++){
+			var name = names[i];
+			elt.style[name] = cssStyle[name];
+		}
+	}
+	function getScreenSize(){
+		if(window.innerWidth){
+			return {w:window.innerWidth, h:window.innerHeight};
+		}
+		if(document.compatMode == "CSS1CompatMode"){
+			return {w:document.documentElement.clientWidth, h:document.documentElement.clientHeight};
+		}else{
+			return {w:document.body.clientWidth, h:document.body.clientHeight};
+		}
+	}
+	function removerAllChildNodes(div){
+		while(div.hasChildNodes()){
+			div.removeChild(div.firstChild);
+		}
+	}
+	function initStatusFunc(){
+		var status_submit_buttn = document.getElementById("status_submit_buttn");
+		var status_edit = document.getElementById("status_edit");
+		var text_index = document.getElementById("text_index");
+		status_edit.addEventListener("input", function(){
+			var index = 140 - this.value.length;
+			if(index <= 0){
+				text_index.innerHTML = "已经输入<font color='#FF0000'>" + this.value.length + "字（最多输入140字）</font>";
+			}else{
+				if(index <=20){
+					text_index.innerHTML = "已经输入" + this.value.length + "字<font color='#FF0000'>（还能输入" + index + "字）</font>";
+				}else{
+					text_index.innerHTML = "已经输入" + this.value.length + "字";
+				}
+				
+			}
+		}, false);
+		status_submit_buttn.addEventListener("click", function(){
+			if(status_edit.value.length > 140){
+				alert("状态不能超过140字");
+			}else{
+				sendHttpFormRequest("/blog/InsertStatusController", {status_content:status_edit.value}, function(request){
+				alert(request.responseText);
+					if(request.responseText == "发表成功"){
+						status_edit.value = "";
+					}
+				});
+			}
+		}, false);
+	}
+	var profile = {};
+	function initProfileFunc(){
+		var profile_info_submit = document.getElementById("profile_info_submit");
+		profile_info_submit.addEventListener("click", function(){
+			var inputs = document.getElementsByClassName("holderInfo");
+			for(var i = 0; i < inputs.length; i++){
+				var input = inputs[i];
+				profile[input.name] = input.value;
+			}
+			if(profile.holder_pwd != "" && profile.holder_name_zh !="" && profile.holder_email != ""){
+				if(profile.holder_school_year == ""){
+					profile.holder_school_year = "0";
+				}
+				sendHttpFormRequest("/blog/UpdateProfileInfoController", profile, function(request){
+					alert(request.responseText);
+				});
+			}else{
+				alert("密码，中文名和电子邮件不能空缺");
+			}
+			
+		}, false);
+	}
+	
+	function initNoticeFunc(){
+		var notice_submit_buttn = document.getElementById("notice_submit_buttn");
+		var notice_edit = document.getElementById("notice_edit");
+		notice_submit_buttn.addEventListener("click", function(){
+			if(notice_edit.value.length > 140){
+				alert("通知不能超过140字");
+			}else{
+				sendHttpFormRequest("/blog/InsertNoticeController", {notice_content:notice_edit.value}, function(request){
+				alert(request.responseText);
+					if(request.responseText == "发表成功"){
+						notice_edit.value = "";
+					}
+				});
+			}
+		}, false);
+	}
+	window.onload = function(){
+		initNoticeFunc();
+		initLiuyanFunc();
+		initProfileFunc();
+		initStatusFunc();
+		initRichTextEditor();
+		var icon_profile = document.getElementById("icon_profile");
+		icon_profile.addEventListener("change", updateProfileIcon, false);
+		var modify_buttn = document.getElementById("modify_buttn");
+		modify_buttn.addEventListener("click", function(){
+			var content = document.getElementById("text_modify");
+			var title = document.getElementById("modify_blog_title");
+			var aid = this.getAttribute("data-aid");
+			sendHttpFormRequest("/blog/UpdateBlogArticleController", {article_title:title.value, article_content:content.innerHTML, article_id:aid}, function(request){
+				alert(request.responseText);
+				if(request.responseText == "修改成功"){
+					title.value = "";
+					content.innerHTML = "";
+					this.setAttribute("data-aid", "");
+				}
+			});
+			event.stopPropagation();
+		}, false);
+		var back_center_container = document.getElementById("back_center_container");
+		var temp1 = new Array();var temp = new Array();
+		var array = new Array();var size = getScreenSize();
+		var buttns = document.getElementsByClassName("management_buttn");
+		var back_left = document.getElementById("back_left");
+		back_left.style.height = (size.h - 87) + "px";
+		var sectionA = document.getElementById("sectionA");
+		var sectionB = document.getElementById("sectionB");
+		var sectionC = document.getElementById("sectionC");
+		var sectionD = document.getElementById("sectionD");
+		back_left.appendChild(sectionA);sectionA.style.display = "block";
+		back_center_container.appendChild(sectionC);sectionC.style.display = "block";
+		for(var i = 0; i < buttns.length; i++){
+			var buttn = buttns[i];
+			array.push(buttn);
+			buttn.addEventListener("click", function(){
+				if(this.id == "blog_management"){//点击了博客管理按钮
+					displaySection(this, "back_center_class", back_center_container);
+					for(var i = 0; i < temp1.length; i++){
+						var elt = temp1[i];
+						setCSSStyle({backgroundColor:"#f3f8fc", color:"#000"}, elt);
+					}
+					setCSSStyle({backgroundColor:"#18679f", color:"#fff"}, temp1[0]);
+					removerAllChildNodes(back_left);back_left.appendChild(sectionA);
+					sectionA.style.display = "block";sectionB.style.display = "none";
+				}else{//点击了系统管理按钮
+					displaySection(this, "back_center_class", back_center_container);
+					for(var i = 0; i < temp.length; i++){
+						var elt = temp[i];
+						setCSSStyle({backgroundColor:"#f3f8fc", color:"#000"}, elt);
+					}
+					setCSSStyle({backgroundColor:"#18679f", color:"#fff"}, temp[0]);
+					removerAllChildNodes(back_left);back_left.appendChild(sectionB);
+					sectionB.style.display = "block";sectionA.style.display = "none";
+				}
+				for(var i = 0; i < array.length; i++){
+					var elt = array[i];
+					setCSSStyle({backgroundColor:"#e4eff7", border:"1px #f8fafc solid", color:"#000"}, elt);
+				}
+				setCSSStyle({backgroundColor:"#18679f", border:"1px #10619A solid", color:"#fff"}, this);
+			}, false);
+		}
+		var timeStamp = document.getElementById("time_stamp");
+		window.setInterval(function(){
+			var time = new Date();
+			timeStamp.innerHTML = time.toString();
+		}, 500);
+		buttns = document.getElementsByClassName("back_blog_left_buttn");
+		setCSSStyle({backgroundColor:"#18679f", color:"#fff"}, buttns[0]);
+		for(var i = 0; i < buttns.length; i++){
+			var buttn = buttns[i];
+			temp.push(buttn);
+			buttn.addEventListener("click", function(){
+				displaySection(this, "back_center_class", back_center_container);
+				for(var i = 0; i < temp.length; i++){
+					var elt = temp[i];
+					setCSSStyle({backgroundColor:"#f3f8fc",color:"#000"}, elt);
+				}
+				setCSSStyle({backgroundColor:"#18679f", color:"#fff"}, this);
+			}, false);
+		}
+		buttns = document.getElementsByClassName("back_sys_left_buttn");
+		setCSSStyle({backgroundColor:"#18679f", color:"#fff"}, buttns[0]);
+		for(var i = 0; i < buttns.length; i++){
+			var buttn = buttns[i];
+			temp1.push(buttn);
+			buttn.addEventListener("click", function(){
+				displaySection(this, "back_center_class", back_center_container);
+				for(var i = 0; i < temp1.length; i++){
+					var elt = temp1[i];
+					setCSSStyle({backgroundColor:"#f3f8fc", color:"#000"}, elt);
+				}
+				setCSSStyle({backgroundColor:"#18679f", color:"#fff"}, this);
+			}, false);
+		}
+		var back_center = document.getElementById("back_center");
+		back_center.style.width = (size.w - 202) + "px";
+		back_center.style.height = (size.h - 89) + "px";
+		back_center.style.marginTop = (87 - size.h) + "px";
+	}
+	function displaySection(button, className, fatherDiv){
+		var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+		var back_center_blog_management = document.getElementById("back_center_blog_management");
+		back_center_blog_modify.style.display = "none";
+		back_center_blog_management.style.display = "block";
+		var tag = button.getAttribute("data-tag");
+		var sections = document.getElementsByClassName(className);
+		for(var i = 0; i < sections.length; i++){
+			var section = sections[i];
+			if(section.getAttribute("data-tag") == tag){
+				section.style.display="block";
+				if(tag == "2"){//博客管理界面
+					sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateBlogList(obj.list);
+						updateBlogPageIndex(obj);
+					});
+				}else if(tag == "4"){//状态管理界面
+					sendHttpFormRequest("/blog/SelectStatusController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateStatusList(obj.list);
+						updateStatusPageIndex(obj);
+					});
+				}else if(tag == "5"){//个人档
+					sendHttpFormRequest("/blog/GetProfileInfoController", {}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateProfileInfo(obj);
+					});
+				}else if(tag == "6"){//留言板
+					sendHttpFormRequest("/blog/SelectMessageController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						totalPageIndex = parseInt(obj.totalPage);
+						updateMessage(obj.list);
+					});
+				}else if(tag == "8"){//访客管理页面
+					sendHttpFormRequest("/blog/SelectVisitorController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateVisitorList(obj.list);
+						updateVisitorPageIndex(obj);
+					});
+				}else if(tag == "9"){//博客访问界面
+					sendHttpFormRequest("/blog/SelectVisitController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateVisitList(obj.list);
+						updateVisitPageIndex(obj);
+					});
+				}else if(tag == "11"){//文章访问页面
+					sendHttpFormRequest("/blog/SelectArticleVisitController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateArticleVisitList(obj.list);
+						updateArticleVisitPageIndex(obj);
+					});
+				}
+			}else{
+				section.style.display="none";
+			}
+		}
+	}
+	
+	function updateArticleVisitPageIndex(page){
+		var array = new Array();
+		var article_visit_pageIndex = document.getElementById("article_visit_pageIndex");
+		article_visit_pageIndex.innerHTML = "";
+		removerAllChildNodes(article_visit_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var totalRecord = parseInt(page.totalRecord);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_article_visit_pageIndex";
+		article_visit_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_article_visit_pageIndex";
+			article_visit_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_article_visit_pageIndex";
+				article_visit_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_article_visit_pageIndex";
+			article_visit_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_article_visit_pageIndex";
+		article_visit_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		article_visit_pageIndex.appendChild(div);
+		div = document.createElement("span");
+		div.innerHTML = "&nbsp;共" + totalRecord + "条记录";
+		article_visit_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_article_visit_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectArticleVisitController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateArticleVisitList(obj.list);
+					updateArticleVisitPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	
+	function updateArticleVisitList(array){
+		var article_visit_list = document.getElementById("article_visit_list");
+		article_visit_list.innerHTML = "";
+		removerAllChildNodes(article_visit_list);
+		for(var i = 0; i < array.length; i++){
+			var visit = array[i];
+			var visitor = document.createElement("div");
+			visitor.className = "article_visit";
+			
+			var article_visit_name = document.createElement("div");
+			article_visit_name.className = "article_visit_name";
+			var article_visit_title = document.createElement("div");
+			article_visit_title.className = "article_visit_title";
+			var article_visit_date = document.createElement("div");
+			article_visit_date.className = "article_visit_date";
+			
+			article_visit_name.innerHTML = visit.visitor_id;
+			article_visit_title.innerHTML = visit.article_title;
+			var date = new Date(visit.visit_date.time);
+			article_visit_date.innerHTML = date.toLocaleString();
+			
+			visitor.appendChild(article_visit_name);
+			visitor.appendChild(article_visit_title);
+			visitor.appendChild(article_visit_date);
+			
+			var article_visit_op = document.createElement("a");
+			article_visit_op.className = "article_visit_op";
+			article_visit_op.innerHTML = "删除";
+			article_visit_op.id = visit.visit_id;
+			visitor.appendChild(article_visit_op);
+			article_visit_list.appendChild(visitor);
+		}
+		initArticleOperationFunc();
+	}
+	function initArticleOperationFunc(){
+		var visitor_op = document.getElementsByClassName("article_visit_op");
+		for(var i = 0; i < visitor_op.length; i++){
+			var a = visitor_op[i];
+			a.addEventListener("click", function(){
+				var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+				var back_center_blog_management = document.getElementById("back_center_blog_management");
+				back_center_blog_modify.style.display = "none";
+				back_center_blog_management.style.display = "block";
+				sendHttpFormRequest("/blog/DeleteArticleVisitController", {visit_id:this.id}, function(request){
+					alert(request.responseText);
+					if(request.responseText == "记录删除成功"){
+						var buttn = document.getElementById("buttn_temp4");
+						buttn.click();
+					}
+				});
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateVisitPageIndex(page){
+		var array = new Array();
+		var visit_pageIndex = document.getElementById("visit_pageIndex");
+		visit_pageIndex.innerHTML = "";
+		removerAllChildNodes(visit_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var totalRecord = parseInt(page.totalRecord);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_visit_pageIndex";
+		visit_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_visit_pageIndex";
+			visit_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_visit_pageIndex";
+				visit_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_visit_pageIndex";
+			visit_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_visit_pageIndex";
+		visit_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		visit_pageIndex.appendChild(div);
+		div = document.createElement("span");
+		div.innerHTML = "&nbsp;共" + totalRecord + "条记录";
+		visit_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_visit_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectVisitController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateVisitList(obj.list);
+					updateVisitPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	
+	function updateVisitList(array){
+		var visit_list = document.getElementById("visit_list");
+		visit_list.innerHTML = "";
+		removerAllChildNodes(visit_list);
+		for(var i = 0; i < array.length; i++){
+			var visit = array[i];
+			var visitor = document.createElement("div");
+			visitor.className = "visit";
+			
+			var visit_name = document.createElement("div");
+			visit_name.className = "visit_name";
+			var visit_longitude = document.createElement("div");
+			visit_longitude.className = "visit_longitude";
+			var visit_latitude = document.createElement("div");
+			visit_latitude.className = "visit_latitude";
+			var visit_date = document.createElement("div");
+			visit_date.className = "visit_date";
+			
+			visit_name.innerHTML = visit.visitor_id;
+			visit_longitude.innerHTML = visit.visit_longitude;
+			visit_latitude.innerHTML = visit.visit_latitude;
+			var date = new Date(visit.visit_date.time);
+			visit_date.innerHTML = date.toLocaleString();
+			
+			visitor.appendChild(visit_name);
+			visitor.appendChild(visit_longitude);
+			visitor.appendChild(visit_latitude);
+			visitor.appendChild(visit_date);
+			
+			var visit_op = document.createElement("a");
+			visit_op.className = "visit_op";
+			visit_op.innerHTML = "删除";
+			visitor.appendChild(visit_op);
+			visit_list.appendChild(visitor);
+		}
+		initVisitOperationFunc();
+	}
+	function initVisitOperationFunc(){
+		var visitor_op = document.getElementsByClassName("visit_op");
+		for(var i = 0; i < visitor_op.length; i++){
+			var a = visitor_op[i];
+			a.addEventListener("click", function(){
+				var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+				var back_center_blog_management = document.getElementById("back_center_blog_management");
+				back_center_blog_modify.style.display = "none";
+				back_center_blog_management.style.display = "block";
+				alert("该功能还不可用");
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateVisitorPageIndex(page){
+		var array = new Array();
+		var visitor_pageIndex = document.getElementById("visitor_pageIndex");
+		visitor_pageIndex.innerHTML = "";
+		removerAllChildNodes(visitor_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_visitor_pageIndex";
+		visitor_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_visitor_pageIndex";
+			visitor_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_visitor_pageIndex";
+				visitor_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_visitor_pageIndex";
+			visitor_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_visitor_pageIndex";
+		visitor_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		visitor_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_visitor_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectVisitorController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateVisitorList(obj.list);
+					updateVisitorPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateVisitorList(array){
+		var visitor_list = document.getElementById("visitor_list");
+		visitor_list.innerHTML = "";
+		removerAllChildNodes(visitor_list);
+		for(var i = 0; i < array.length; i++){
+			var visit = array[i];
+			var visitor = document.createElement("div");
+			visitor.className = "visitor";
+			
+			var visitor_name = document.createElement("div");
+			visitor_name.className = "visitor_name";
+			
+			var visitor_gender = document.createElement("div");
+			visitor_gender.className = "visitor_gender";
+			
+			visitor_name.innerHTML = visit.visitor_nickname;
+			visitor_gender.innerHTML = visit.visitor_gender;
+			
+			visitor.appendChild(visitor_name);
+			visitor.appendChild(visitor_gender);
+			
+			var visitor_op = document.createElement("a");
+			visitor_op.className = "visitor_op";
+			visitor_op.id = visit.visitor_id;
+			visitor_op.innerHTML = "删除";
+			visitor.appendChild(visitor_op);
+			visitor_list.appendChild(visitor);
+		}
+		initOperationFunc();
+	}
+	function initOperationFunc(){
+		var visitor_op = document.getElementsByClassName("visitor_op");
+		for(var i = 0; i < visitor_op.length; i++){
+			var a = visitor_op[i];
+			a.addEventListener("click", function(){
+				var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+				var back_center_blog_management = document.getElementById("back_center_blog_management");
+				back_center_blog_modify.style.display = "none";
+				back_center_blog_management.style.display = "block";
+				sendHttpFormRequest("/blog/DeleteVisitorController", {visitor_id:this.id}, function(request){
+					alert(request.responseText);
+					if(request.responseText == "用户删除成功"){
+						var buttn = document.getElementById("buttn_temp3");
+						buttn.click();
+					}
+				});
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	var currentPageIndex = 1;
+	var totalPageIndex;
+	function getButtn(){
+		var liuyan_management = document.createElement("div");
+		liuyan_management.className = "liuyan_management";
+		var liuyan_loadmore = document.createElement("button");
+		liuyan_loadmore.id = "liuyan_loadmore";
+		liuyan_loadmore.innerHTML = "加载更多";
+		liuyan_management.appendChild(liuyan_loadmore);
+		liuyan_loadmore.addEventListener("click", function(){
+			if(++currentPageIndex <= totalPageIndex){
+				sendHttpFormRequest("/blog/SelectMessageController", {pageIndex:currentPageIndex}, function(request){
+					var obj = JSON.parse(request.responseText);
+					loadMoreMessage(obj.list);
+				});
+			}
+		}, false);
+		return liuyan_management;
+	}
+	function loadMoreMessage(array){
+		var liuyan_show = document.getElementById("liuyan_show");
+		//var buttn = document.getElementById("liuyan_loadmore");
+		for(var i = 0; i < array.length; i++){
+			var message = array[i];
+			var liuyan_management = document.createElement("div");
+			liuyan_management.className = "liuyan_management";
+			
+			var liuyan_management_person = document.createElement("div");
+			liuyan_management_person.className = "liuyan_management_person";
+			liuyan_management_person.innerHTML = message.visitor_id + "&nbsp;&nbsp;经度：" + message.message_longitude + "&nbsp;纬度：" + message.message_latitude;
+			liuyan_management.appendChild(liuyan_management_person);
+			
+			var liuyan_management_date = document.createElement("div");
+			liuyan_management_date.className = "liuyan_management_date";
+			liuyan_management_date.innerHTML = (new Date(message.message_date.time)).toLocaleString();
+			liuyan_management.appendChild(liuyan_management_date);
+			
+			var liuyan_management_content = document.createElement("div");
+			liuyan_management_content.className = "liuyan_management_content";
+			liuyan_management_content.innerHTML = message.message_content
+			liuyan_management.appendChild(liuyan_management_content);
+			
+			var liuyan_management_op = document.createElement("div");
+			liuyan_management_op.className = "liuyan_management_op";
+			liuyan_management_op.innerHTML = "<a id=" + message.message_id + " class='message_op_del'>删除</a>";
+			liuyan_management.appendChild(liuyan_management_op);
+			
+			liuyan_show.insertBefore(liuyan_management, globleButtn);
+		}
+		initMessageDelFunc();
+	}
+	var globleButtn;
+	function updateMessage(array){
+		currentPageIndex = 1;
+		var liuyan_show = document.getElementById("liuyan_show");
+		liuyan_show.innerHTML = "";
+		removerAllChildNodes(liuyan_show);
+		var buttn = getButtn();
+		globleButtn = buttn;
+		liuyan_show.appendChild(buttn);
+		for(var i = 0; i < array.length; i++){
+			var message = array[i];
+			var liuyan_management = document.createElement("div");
+			liuyan_management.className = "liuyan_management";
+			
+			var liuyan_management_person = document.createElement("div");
+			liuyan_management_person.className = "liuyan_management_person";
+			liuyan_management_person.innerHTML = message.visitor_id + "&nbsp;&nbsp;经度：" + message.message_longitude + "&nbsp;纬度：" + message.message_latitude;
+			liuyan_management.appendChild(liuyan_management_person);
+			
+			var liuyan_management_date = document.createElement("div");
+			liuyan_management_date.className = "liuyan_management_date";
+			liuyan_management_date.innerHTML = (new Date(message.message_date.time)).toLocaleString();
+			liuyan_management.appendChild(liuyan_management_date);
+			
+			var liuyan_management_content = document.createElement("div");
+			liuyan_management_content.className = "liuyan_management_content";
+			liuyan_management_content.innerHTML = message.message_content
+			liuyan_management.appendChild(liuyan_management_content);
+			
+			var liuyan_management_op = document.createElement("div");
+			liuyan_management_op.className = "liuyan_management_op";
+			liuyan_management_op.innerHTML = "<a id=" + message.message_id + " class='message_op_del'>删除</a>";
+			liuyan_management.appendChild(liuyan_management_op);
+			
+			liuyan_show.insertBefore(liuyan_management, buttn);
+		}
+		initMessageDelFunc();
+	}
+	function initMessageDelFunc(){
+		var message_op_del = document.getElementsByClassName("message_op_del");
+		for(var i = 0; i < message_op_del.length; i++){
+			var a = message_op_del[i];
+			a.addEventListener("click", function(){
+				sendHttpFormRequest("/blog/DeleteMessageController", {message_id:this.id}, function(request){
+					alert(request.responseText);
+					if(request.responseText == "删除成功"){
+						document.getElementById("buttn_temp2").click();
+					}
+				});
+			}, false);
+		}
+	}
+	function initLiuyanFunc(){
+		var liuyan_show = document.getElementById("liuyan_show");
+		var buttn = getButtn();
+		liuyan_show.appendChild(buttn);
+	}
+	function updateProfileInfo(obj){
+		var names = Object.getOwnPropertyNames(obj);
+		var inputs = document.getElementsByClassName("holderInfo");
+		for(var i = 0; i < names.length; i++){
+			if(names[i] == "holder_pwd")continue;
+			for(var j = 0; j < inputs.length; j++){
+				var input = inputs[j];
+				if(input.name == names[i]){
+					input.value = obj[names[i]];
+				}
+			}
+		}
+	}
+	function updateStatusList(array){
+		var status_manage = document.getElementById("status_manage");
+		status_manage.innerHTML = "";
+		removerAllChildNodes(status_manage);
+		for(var i = 0; i < array.length; i++){
+			var status = array[i];
+			var status_management = document.createElement("div");
+			status_management.className = "status_management";
+			var status_management_date = document.createElement("div");
+			status_management_date.className = "status_management_date";
+			var status_management_content = document.createElement("div");
+			status_management_content.className = "status_management_content";
+			var status_management_op = document.createElement("div");
+			status_management_op.className = "status_management_op";
+			status_management.appendChild(status_management_date);
+			status_management.appendChild(status_management_content);
+			status_management.appendChild(status_management_op);
+			
+			var date = new Date(status.publish_date.time);
+			status_management_date.innerHTML = date.toLocaleString();
+			status_management_content.innerHTML = status.status_content;
+			status_management_op.innerHTML = "<a class='status_op_del' id='" + status.status_id + "'>删除</a>";
+			status_manage.appendChild(status_management);
+		}
+		initStatusEditFunc();
+	}
+	function initStatusEditFunc(){
+		var status_op_del = document.getElementsByClassName("status_op_del");
+		for(var i = 0; i < status_op_del.length; i++){
+			var a = status_op_del[i];
+			a.addEventListener("click", function(){
+				sendHttpFormRequest("/blog/DeleteStatusController", {status_id:this.id}, function(request){
+					alert(request.responseText);
+					if(request.responseText == "删除成功"){
+						document.getElementById("buttn_temp1").click();
+					}
+				});
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateStatusPageIndex(page){
+		var array = new Array();
+		var status_pageIndex = document.getElementById("status_pageIndex");
+		status_pageIndex.innerHTML = "";
+		removerAllChildNodes(status_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "status_list_pageIndex";
+		status_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "status_list_pageIndex";
+			status_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "status_list_pageIndex";
+				status_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "status_list_pageIndex";
+			status_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "status_list_pageIndex";
+		status_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		status_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("status_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectStatusController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateStatusList(obj.list);
+					updateStatusPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateBlogPageIndex(page){
+		var array = new Array();
+		var back_center_page_index = document.getElementById("back_center_page_index");
+		back_center_page_index.innerHTML = "";
+		removerAllChildNodes(back_center_page_index);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_list_pageIndex";
+		back_center_page_index.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_list_pageIndex";
+			back_center_page_index.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_list_pageIndex";
+				back_center_page_index.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_list_pageIndex";
+			back_center_page_index.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_list_pageIndex";
+		back_center_page_index.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		back_center_page_index.appendChild(div);
+		var as = document.getElementsByClassName("blog_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateBlogList(obj.list);
+					updateBlogPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function initEditFunc(){
+		var div_op_edit = document.getElementsByClassName("div_op_edit");
+		var div_op_del = document.getElementsByClassName("div_op_del");
+		for(var i = 0; i < div_op_edit.length; i++){
+			var a = div_op_edit[i];
+			a.addEventListener("click", function(){
+				var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+				var back_center_blog_management = document.getElementById("back_center_blog_management");
+				back_center_blog_modify.style.display = "block";
+				back_center_blog_management.style.display = "none";
+				sendHttpFormRequest("/blog/SelectBlogArticleController", {article_id:this.id}, function(request){
+					var obj = JSON.parse(request.responseText);
+					var modify_blog_title = document.getElementById("modify_blog_title");
+					modify_blog_title.value = obj.article_title;
+					var text_modify = document.getElementById("text_modify");
+					text_modify.innerHTML = obj.article_content;
+					var text_modify = document.getElementById("modify_buttn");
+					text_modify.setAttribute("data-aid", obj.article_id);
+				});
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+		for(var i = 0; i < div_op_del.length; i++){
+			var a = div_op_del[i];
+			a.addEventListener("click", function(){
+				sendHttpFormRequest("/blog/DeleteArticleByIDController", {article_id:this.id}, function(request){
+					alert(request.responseText);
+					if(request.responseText == "删除成功"){
+						document.getElementById("buttn_temp").click();
+					}
+				});
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateBlogList(array){
+		var back_center_blog_list = document.getElementById("back_center_blog_list");
+		back_center_blog_list.innerHTML = "";
+		removerAllChildNodes(back_center_blog_list);
+		for(var i = 0; i < array.length; i++){
+			var article = array[i];
+			var blog_list_div = document.createElement("div");
+			blog_list_div.className = "blog_list_div";
+			var blog_list_div_title = document.createElement("div");
+			blog_list_div_title.className = "blog_list_div_title";
+			var blog_list_div_op = document.createElement("div");
+			blog_list_div_op.className = "blog_list_div_op";
+			blog_list_div.appendChild(blog_list_div_title);
+
+			blog_list_div.appendChild(blog_list_div_op);
+			blog_list_div_title.innerHTML = article.article_title;
+			var date = new Date(article.create_time.time);
+			blog_list_div_op.innerHTML = date.toLocaleString() + "<a class='div_op_edit' id='"+article.article_id+"'>编辑</a><a id='"+article.article_id+"' class='div_op_del'>删除</a>";
+			back_center_blog_list.appendChild(blog_list_div);
+		}
+		initEditFunc();
+	}
+	</script>
+    <style>
+	body{margin:0;padding:0;position:relative;top:0px;left:0px;}
+	#back_head{position:relative;top:0px;left:0px;height:85px;width:100%;border-bottom:2px #10619A solid;background-color:#71a8d3;box-shadow:1px 1px 1px 1px #CCCCCC;}
+	.management_buttn{height:32px;width:120px;outline:0;margin-top:53px;font-family:"Microsoft YaHei";font-size:15px;}
+	.management_buttn:hover{cursor:pointer;}
+	#blog_management{border-top-left-radius:3px;margin-left:20px;background-color:#18679f;border:1px #10619A solid;color:#fff;}
+	#system_management{background-color:#e4eff7;border:1px #f8fafc solid;color:#000;border-top-right-radius:3px;margin-left:-9px;}
+	#sectionA{display:none;}
+	#sectionB{display:none;}
+	.back_center_class{display:none;}
+	#logout_system{font-family:"Microsoft YaHei";position:absolute;right:15px;top:15px;height:20px;color:#FFF;font-size:14px;}
+	#logout_system a{font-family:"Microsoft YaHei";color:#fff;text-decoration:none;}
+	#time_stamp{position:absolute;right:15px;bottom:10px;height:20px;color:#FFF;font-size:14px;font-family:"Microsoft YaHei";}
+	#back_head_name{position:absolute;left:20px;top:10px;width:150px;height:30px;color:#FFF;font-family:Arial, Helvetica, sans-serif;font-size:30px;font-weight:900;}
+	#back_left{ box-shadow:1px 1px 5px 2px #CCCCCC;width:200px;background-color:#f3f8fc;border-right:1px #c3ced5 solid;position:relative;top:0px;left:0px;}
+	.back_blog_left_buttn_container{width:100%;height:30px;}
+	.back_blog_left_buttn_container button{width:100%;height:30px;border:0;outline:0;font-family:"Microsoft YaHei";background-color:#f3f8fc;}
+	.back_blog_left_buttn_container button:hover{cursor:pointer}
+	#back_left_blog_container{position:absolute;top:20px;width:100%;}
+	#back_left_sys_container{position:absolute;top:20px;width:100%;}
+	.back_sys_left_buttn_container{width:100%;height:30px;}
+	.back_sys_left_buttn_container button{width:100%;height:30px;border:0;outline:0;font-family:"Microsoft YaHei";background-color:#f3f8fc;}
+	.back_sys_left_buttn_container button:hover{cursor:pointer}
+	#back_center{border:1px #fff solid;margin-left:200px;}
+	#back_center_container{margin:auto;width:1100px;margin-top:30px}
+	#back_center_blog_editor{margin:auto;width:1000px;height:520px;}
+	#back_center_blog_editor_buttns{width:600px;height:30px;margin-top:10px;}
+	#back_center_blog_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
+	#back_center_blog_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
+	#submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
+	#storage_buttn{background-color:#ebebeb;border:1px #787878 solid;}
+	#back_center_blog_editor_title{font-family:"Microsoft YaHei";width:1000px;height:30px;margin-top:25px;border-bottom:1px #CCCCCC solid;font-size:16px;}
+	#blog_title{font-family:"Microsoft YaHei";width:900px;height:28px;border:0;outline:0;font-size:16px;}
+	#back_center_blog_editor_passage{width:1000px;height:405px;margin-top:20px;}
+	#container{width:1000px;height:405px;border:1px #d1d1d1 solid;border-radius:5px;box-shadow:2px 2px 5px 2px #CCCCCC;margin:auto}
+	#text_editor{width:860px;height:305px; margin:auto;margin-top:10px; border:1px #CCCCCC solid;padding:20px 60px 20px 60px;outline:0;overflow:auto;}
+	.back_center_blog_editor_sel{font-family:"Microsoft YaHei";border:1px #CCCCCC solid;background-color:#FFF;margin-top:15px;margin-left:10px;}
+	.back_center_blog_editor_buttn{outline:0;font-family:"Microsoft YaHei";width:60px;height:25px;border:1px #CCCCCC solid;background-color:#FFF;margin-top:15px;margin-left:10px;}
+	.back_center_blog_editor_buttn:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
+	#uploadImage{font-family:"Microsoft YaHei";width:180px;margin-left:10px}
+	#back_center_blog_management{border:1px #d1d1d1 solid; box-shadow:1px 1px 1px 1px #CCCCCC;border-radius:4px;font-family:"Microsoft YaHei";margin:auto;width:900px;height:520px;}
+	#back_center_blog_list{border:1px #FFFFFF solid;height:450px;width:800px;margin:auto;margin-top:15px;}
+	#back_center_page_index{height:25px;width:800px;margin:auto;margin-top:15px;text-align:center;}
+	#back_center_page_index a{color:#000;text-decoration:none}
+	#back_center_page_index a:hover{cursor:pointer;}
+	.blog_list_div{position:relative;top:0px;left:0px;margin-top:13px;width:800px;height:35px;border-bottom:1px #999999 dashed;}
+	.blog_list_div_title{position:absolute;left:0px;top:5px;height:25px}
+	.blog_list_div_title a{font-family:"Microsoft YaHei";color:#000;text-decoration:none}
+	.blog_list_div_title a:hover{text-decoration:underline;}
+	.blog_list_div_op{color:#999;font-size:14px;position:absolute;right:5px;top:6.5px;height:22px}
+	.blog_list_div_op a{color:#03F;font-family:"Microsoft YaHei";font-size:14px;margin-left:10px;text-decoration:none}
+	.blog_list_div_op a:hover{text-decoration:underline;cursor:pointer}
+	#back_center_blog_modify{display:none;margin:auto;width:1000px;height:520px;}
+	#back_center_blog_modify_buttns{width:600px;height:30px;margin-top:10px;}
+	#back_center_blog_modify_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
+	#back_center_blog_modify_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
+	#modify_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
+	#back_center_blog_modify_title{font-family:"Microsoft YaHei";width:1000px;height:30px;margin-top:25px;border-bottom:1px #CCCCCC solid;font-size:16px;}
+	#modify_blog_title{font-family:"Microsoft YaHei";width:900px;height:28px;border:0;outline:0;font-size:16px;}
+	#text_modify{width:860px;height:305px; margin:auto;margin-top:10px; border:1px #CCCCCC solid;padding:20px 60px 20px 60px;outline:0;overflow:auto;}
+	#modify_uploadImage{font-family:"Microsoft YaHei";width:180px;margin-left:10px}
+	#status_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;margin:auto;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px;}
+	#back_center_status_editor_buttns{width:600px;height:30px;margin-top:10px;}
+	#back_center_status_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
+	#back_center_status_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
+	#status_submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
+	#status_edit{border-radius:2px;outline:0;padding:20px 20px 20px 20px;font-family:"Microsoft YaHei";font-size:16px;}
+	#text_index{overflow:auto;font-size:14px;margin-bottom:5px;float:right;padding-right:5px;font-family:"Microsoft YaHei";margin-top:10px;}
+	.status_management{width:900px;border:1px #d1d1d1 solid;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;border-radius:3px;font-family:"Microsoft YaHei";margin-bottom:20px;}
+	.status_management_date{margin-top:10px;margin-left:20px;color:#999;}
+	.status_management_content{width:860px;margin:auto;margin-top:10px;margin-left:20px;}
+	.status_management_op{margin-top:10px;margin-left:20px;margin-bottom:10px;}
+	.status_management_op a{font-family:"Microsoft YaHei";font-size:14px;text-decoration:none;color:#03F}
+	.status_management_op a:hover{cursor:pointer;}
+	#status_pageIndex{margin:auto;margin-top:5px;text-align:center;color:#333;font-family:"Microsoft YaHei";}
+	#status_pageIndex a{color:#333;font-family:"Microsoft YaHei";text-decoration:none;}
+	#status_pageIndex a:hover{cursor:pointer;}
+	.profile_setting{width:400px;border:1px #FFFFFF solid;margin-bottom:10px;}
+	.profile_setting_title{width:400px;font-family:"Microsoft YaHei";font-weight:700;}
+	.profile_setting_input{margin-top:10px;}
+	.profile_setting_input input{font-family:"Microsoft YaHei";background-color:#fafafa;font-size:16px;outline:0px;border:1px #CCCCCC solid; border-radius:3px;width:280px; height:28px;padding-left:10px;padding-right:10px;}
+	.profile_setting_input button{height:35px;width:90px;outline:0;border-radius:4px;font-family:"Microsoft YaHei";background-color:#40a628;color:#FFF;border:1px #146700 solid;font-size:16px;}
+	.profile_setting_input button:hover{cursor:pointer;}
+	.liuyan_management{width:900px;border:1px #d1d1d1 solid;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;border-radius:3px;font-family:"Microsoft YaHei";margin-bottom:20px;}
+	.liuyan_management_person{margin-top:10px;margin-left:20px;color:#999;}
+	.liuyan_management_date{margin-top:10px;margin-left:20px;color:#999;}
+	.liuyan_management_content{width:860px;margin:auto;margin-top:10px;margin-left:20px;}
+	.liuyan_management_op{margin-top:10px;margin-left:20px;margin-bottom:10px;}
+
+	.liuyan_management_op a{font-family:"Microsoft YaHei";font-size:14px;text-decoration:none;color:#03f;}
+	.liuyan_management_op a:hover{cursor:pointer;}
+	.liuyan_management button{width:900px;height:33px;border:0;outline:0;background-color:#FFF;font-family:"Microsoft YaHei";font-size:18px;color:#999;}
+	.liuyan_management button:hover{cursor:pointer;}
+	#notice_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;margin:auto;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px}
+	#back_center_notice_editor_buttns{width:600px;height:30px;margin-top:10px;}
+	#notice_submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
+	#notice_edit{border-radius:2px;outline:0;padding:20px 20px 20px 20px;font-family:"Microsoft YaHei";font-size:16px;}
+	#back_center_notice_editor_buttns{width:600px;height:30px;margin-top:10px;}
+	#back_center_notice_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
+	#back_center_notice_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
+	#visitor_list{width:100%;height:440px}
+	#visit_list{width:100%;height:440px}
+	.visitor{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
+	.visitor_name{margin-left:10px;float:left;width:30%;}
+	.visitor_gender{float:left;width:33%;text-align:center}
+	.visitor_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
+	.visitor_op:hover{text-decoration:underline;cursor:pointer;}
+	#visitor_pageIndex{font-family:"Microsoft YaHei";width:100%;text-align:center}
+	#visitor_pageIndex a:hover{cursor:pointer;}
+	#visit_pageIndex{font-family:"Microsoft YaHei";width:100%;text-align:center}
+	#visit_pageIndex a:hover{cursor:pointer;}
+	.visit{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
+	.visit_name{margin-left:10px;float:left;width:17%}
+	.visit_longitude{float:left;width:23%;text-align:center}
+	.visit_latitude{float:left;width:23%;text-align:center;}
+	.visit_date{float:left;width:30%;text-align:center;}
+	.visit_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
+	.visit_op:hover{text-decoration:underline;cursor:pointer;}
+    #article_visit_list{width:100%;height:440px}
+    #article_visit_pageIndex{font-family:"Microsoft YaHei";width:100%;text-align:center}
+	#article_visit_pageIndex a:hover{cursor:pointer;}
+	.article_visit{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
+	.article_visit_name{margin-left:10px;float:left;width:17%}
+	.article_visit_title{float:left;width:51%;text-align:center}
+	.article_visit_date{float:left;width:20%;text-align:center}
+	.article_visit_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
+	.article_visit_op:hover{text-decoration:underline;cursor:pointer;}
+	</style>
+    <body>
+    	<div id="back_head">
+        	<div id="back_head_name">IL MARE</div>
+            <div id="logout_system"><a href="/blog/CancelHolderController">退出系统</a></div>
+            <div id="time_stamp"></div>
+        	<button data-tag="1" id="blog_management" class="management_buttn">博客管理</button>
+            <button data-tag="8" id="system_management" class="management_buttn">系统管理</button>
+        </div>
+        <div id="back_left">
+        	 
+        </div>
+        <div id="sectionA">
+            	<div id="back_left_blog_container">
+                    <div class="back_blog_left_buttn_container"><button data-tag="1" class="back_blog_left_buttn">写博客</button></div>
+                    <div class="back_blog_left_buttn_container"><button id="buttn_temp" data-tag="2" class="back_blog_left_buttn">博客管理</button></div>
+                    <div class="back_blog_left_buttn_container"><button data-tag="3" class="back_blog_left_buttn">写状态</button></div>
+                    <div class="back_blog_left_buttn_container"><button id="buttn_temp1" data-tag="4" class="back_blog_left_buttn">状态管理</button></div>
+                    <div class="back_blog_left_buttn_container"><button data-tag="5" class="back_blog_left_buttn">个人档</button></div>
+                    <div class="back_blog_left_buttn_container"><button id="buttn_temp2" data-tag="6" class="back_blog_left_buttn">留言板</button></div>
+                    <div class="back_blog_left_buttn_container"><button data-tag="7" class="back_blog_left_buttn">通知公告</button></div>
+                </div>
+        </div>
+        <div id="sectionB">
+            	<div id="back_left_sys_container">
+                    <div class="back_sys_left_buttn_container"><button id="buttn_temp3" data-tag="8" class="back_sys_left_buttn">注册用户管理</button></div>
+                    <div class="back_sys_left_buttn_container"><button data-tag="9" class="back_sys_left_buttn">访客管理</button></div>
+                    <div class="back_sys_left_buttn_container"><button id="buttn_temp4" data-tag="11" class="back_sys_left_buttn">文章访客管理</button></div>
+                </div>
+        </div>
+       
+        <div id="back_center">
+        	<div id="back_center_container">
+            	<!--正文内容开始-->
+            	 	<div class="back_center_class" data-tag="8" id="sectionD">
+            	 		<div style="font-family:Microsoft YaHei;width:100%;height:25px;margin-bottom:10px;border-bottom:1px #000 solid">
+                    		<div class="visitor_name">用户ID</div>
+                    		<div class="visitor_gender">性别</div>
+	                       	<div style="float:right;margin-right:10px">操作</div>
+                    	</div>
+                       	<div id="visitor_list">
+                       		
+                       	</div>
+                       	<div id="visitor_pageIndex">
+                       		
+                       	</div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="2">
+                        <div id="back_center_blog_management">
+                        	<div id="back_center_blog_list">
+                            	
+                            </div>
+                            <div id="back_center_page_index">
+                            	
+                            </div>
+                        </div>
+                        <div id="back_center_blog_modify">
+                            <div id="back_center_blog_modify_buttns">
+                                <button data-aid="" id="modify_buttn">更改</button>
+                            </div>
+                            <div id="back_center_blog_modify_title">
+                                题目&nbsp;&nbsp;:&nbsp;&nbsp;<input placeholder="请输入文章标题" id="modify_blog_title" type="text" name="blog_title"/>
+                            </div>
+                            <div id="back_center_blog_editor_passage">
+                                <div id="container">
+                                    <button class="back_center_blog_editor_buttn" data-option="bold" id="bold_buttn">加粗</button>
+                                    <button class="back_center_blog_editor_buttn" data-option="Italic" id="Italic_format">斜体</button>
+                                    <button class="back_center_blog_editor_buttn" data-option="underline" id="underline_buttn">下划线</button>
+                                    <button class="back_center_blog_editor_buttn" data-option="createlink" id="insertLink_buttn">链接</button>
+                                    <select class="back_center_blog_editor_sel" data-option="forecolor" title="字体颜色" id="insertColor_buttn">
+                                         <option value="#000">黑色</option>
+                                         <option value="#999">浅灰色</option>
+                                         <option value="#F00">正红色</option>
+                                         <option value="#FF0">正黄色</option>
+                                         <option value="#F0F">紫色</option>
+                                         <option value="#0FF">湖蓝色</option>
+                                         <option value="#0F3">绿色</option>
+                                         <option value="#09F">淡蓝色</option>
+                                         <option value="#960">棕色</option>
+                                         <option value="#900">暗红色</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="backcolor" title="文字背景颜色" id="backColor_buttn">
+                                         <option value="#fff">无</option>
+                                         <option value="#000">黑色</option>
+                                         <option value="#999">浅灰色</option>
+                                         <option value="#F00">正红色</option>
+                                         <option value="#FF0">正黄色</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="format_method" title="对齐方式" id="format_method">
+                                         <option value="JustifyLeft">向左对齐</option>
+                                         <option value="JustifyCenter">居中对齐</option>
+                                         <option value="JustifyRight">向右对齐</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="FontName" title="字体" id="selFont_buttn">
+                                        <option value="SimSun">宋体</option>
+                                        <option value="SimHei">黑体</option>
+                                        <option value="Microsoft YaHei">微软雅黑</option>
+                                        <option value="Microsoft JhengHei">微软正黑体</option>
+                                        <option value="NSimSun">新宋体</option>
+                                        <option value="PMingLiU">新细明体</option>
+                                        <option value="MingLiU">细明体</option>
+                                        <option value="DFKai-SB">标楷体</option>
+                                        <option value="FangSong">仿宋</option>
+                                        <option value="KaiTi">楷体</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="FontSize" title="字体大小" id="FontSize">
+                                        <option value="3">16px</option>
+                                        <option value="1">10px</option>
+                                        <option value="2">13px</option>
+                                        <option value="4">18px</option>
+                                        <option value="5">24px</option>
+                                        <option value="6">32px</option>
+                                        <option value="7">48px</option>
+                                    </select>
+                                    <input id="modify_uploadImage" type="file" name="fileupload"/>
+                                    <div id="text_modify" contenteditable="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="3">
+                        <div id="status_editor">
+                        	 <div id="back_center_status_editor_buttns">
+                                <button id="status_submit_buttn">发表</button>
+                             </div>
+                             <div style="font-family:Microsoft YaHei;margin-top:10px;font-size:18px">
+                             写下此刻的心情吧：
+                             </div>
+                             <div id="text_index">已经输入0字</div>
+                             <div style="width:900px;margin-top:10px;">
+                             	<textarea id="status_edit" cols="105" rows="4"></textarea>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="4">
+                        <div id="status_manage" style="width:900px;margin:auto">
+                        	
+                        </div>
+                        <div id="status_pageIndex">
+                        		
+                        </div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="5">
+                        <div style="margin-left:50px;width:450px;">
+                        	 <div class="profile_setting">
+                            	<div class="profile_setting_title">上传头像</div>
+                                <div class="profile_setting_input">
+                                	<input id="icon_profile" style="padding:0;width:300px;border:0;background-color:#FFF" type="file" name="icon_profile"/>
+                                </div>
+                            </div>
+                        	<div class="profile_setting">
+                            	<div class="profile_setting_title">中文名</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_name_zh"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">英文名</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_name_en"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">所在省份</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_province_zh"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">所在城市</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_city_zh"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">所在学校</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_school_zh"/></div>
+                            </div>
+                            
+                           
+                        </div>
+                        <div style="margin-top:-451px;width:450px;height:50px;margin-left:500px;">
+                        	<div class="profile_setting">
+                            	<div class="profile_setting_title">学校英文名</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_school_en"/></div>
+                            </div>
+                        	<div class="profile_setting">
+                            	<div class="profile_setting_title">入学年份</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_school_year"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">所在城市英文</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_city_en"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">所在省份英文</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_province_en"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">电子邮箱</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="text" name="holder_email"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title">密码</div>
+                                <div class="profile_setting_input"><input class="holderInfo" type="password" name="holder_pwd"/></div>
+                            </div>
+                            <div class="profile_setting">
+                            	<div class="profile_setting_title"></div>
+                                <div class="profile_setting_input"><button id="profile_info_submit">确认提交</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="6">
+                         <div id="liuyan_show" style="width:920px;margin:auto;height:500px;overflow:auto;">
+                        	
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="7">
+                        <div id="notice_editor">
+                        	 <div id="back_center_notice_editor_buttns">
+                                <button id="notice_submit_buttn">发布通知</button>
+                             </div>
+                             <div style="font-family:Microsoft YaHei;margin-top:10px;font-size:18px">
+                             通知：
+                             </div>
+                             <div style="width:900px;margin-top:10px;">
+                             	<textarea id="notice_edit" cols="105" rows="4"></textarea>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="9">
+                    	<div style="font-family:Microsoft YaHei;width:100%;height:25px;margin-bottom:10px;border-bottom:1px #000 solid">
+                    		<div class="visit_name">用户ID/IP Address</div>
+	                       	<div class="visit_longitude">访问所在经度</div>
+	                       	<div class="visit_latitude">访问所在纬度</div>
+	                       	<div class="visit_date">访问时间</div>
+	                       	<div style="float:right;margin-right:10px">操作</div>
+                    	</div>
+                       	<div id="visit_list">
+                       		
+                       	</div>
+                       	<div id="visit_pageIndex">
+                       		
+                       	</div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="10">
+                        登录用户管理界面
+                    </div>
+                    <div class="back_center_class" data-tag="11">
+                      	<div style="font-family:Microsoft YaHei;width:100%;height:25px;margin-bottom:10px;border-bottom:1px #000 solid">
+                    		<div class="article_visit_name">用户ID/IP Address</div>
+	                       	<div class="article_visit_title">文章题目</div>
+	                       	<div class="article_visit_date">访问时间</div>
+	                       	<div style="float:right;margin-right:10px">操作</div>
+                    	</div>
+                       	<div id="article_visit_list">
+                       		
+                       	</div>
+                       	<div id="article_visit_pageIndex">
+                       		
+                       	</div>
+                    </div>
+                    <div class="back_center_class" data-tag="1" id="sectionC">
+                        <div id="back_center_blog_editor">
+                            <div id="back_center_blog_editor_buttns">
+                                <button id="submit_buttn">发表</button>
+                                <button id="storage_buttn">存草稿</button>
+                            </div>
+                            <div id="back_center_blog_editor_title">
+                                题目&nbsp;&nbsp;:&nbsp;&nbsp;<input placeholder="请输入文章标题" id="blog_title" type="text" name="blog_title"/>
+                            </div>
+                            <div id="back_center_blog_editor_passage">
+                                <div id="container">
+                                    <button class="back_center_blog_editor_buttn" data-option="bold" id="bold_buttn">加粗</button>
+                                    <button class="back_center_blog_editor_buttn" data-option="Italic" id="Italic_format">斜体</button>
+                                    <button class="back_center_blog_editor_buttn" data-option="underline" id="underline_buttn">下划线</button>
+                                    <button class="back_center_blog_editor_buttn" data-option="createlink" id="insertLink_buttn">链接</button>
+                                    <select class="back_center_blog_editor_sel" data-option="forecolor" title="字体颜色" id="insertColor_buttn">
+                                         <option value="#000">黑色</option>
+                                         <option value="#999">浅灰色</option>
+                                         <option value="#F00">正红色</option>
+                                         <option value="#FF0">正黄色</option>
+                                         <option value="#F0F">紫色</option>
+                                         <option value="#0FF">湖蓝色</option>
+                                         <option value="#0F3">绿色</option>
+                                         <option value="#09F">淡蓝色</option>
+                                         <option value="#960">棕色</option>
+                                         <option value="#900">暗红色</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="backcolor" title="文字背景颜色" id="backColor_buttn">
+                                         <option value="#fff">无</option>
+                                         <option value="#000">黑色</option>
+                                         <option value="#999">浅灰色</option>
+                                         <option value="#F00">正红色</option>
+                                         <option value="#FF0">正黄色</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="format_method" title="对齐方式" id="format_method">
+                                         <option value="JustifyLeft">向左对齐</option>
+                                         <option value="JustifyCenter">居中对齐</option>
+                                         <option value="JustifyRight">向右对齐</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="FontName" title="字体" id="selFont_buttn">
+                                        <option value="SimSun">宋体</option>
+                                        <option value="SimHei">黑体</option>
+                                        <option value="Microsoft YaHei">微软雅黑</option>
+                                        <option value="Microsoft JhengHei">微软正黑体</option>
+                                        <option value="NSimSun">新宋体</option>
+                                        <option value="PMingLiU">新细明体</option>
+                                        <option value="MingLiU">细明体</option>
+                                        <option value="DFKai-SB">标楷体</option>
+                                        <option value="FangSong">仿宋</option>
+                                        <option value="KaiTi">楷体</option>
+                                    </select>
+                                    <select class="back_center_blog_editor_sel" data-option="FontSize" title="字体大小" id="FontSize">
+                                        <option value="3">16px</option>
+                                        <option value="1">10px</option>
+                                        <option value="2">13px</option>
+                                        <option value="4">18px</option>
+                                        <option value="5">24px</option>
+                                        <option value="6">32px</option>
+                                        <option value="7">48px</option>
+                                    </select>
+                                    <input id="uploadImage" type="file" name="fileupload"/>
+                                    <div id="text_editor" contenteditable="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+                <!--正文内容完-->
+            </div>
+        </div>
+
+    </body>
+</html>

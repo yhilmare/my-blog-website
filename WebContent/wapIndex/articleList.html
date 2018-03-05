@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>文章列表</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	</head>
+	<script>
+	Date.prototype.toLocaleString = function(){
+		var array = new Array();
+		array.push(this.getFullYear());
+		array.push(this.getMonth() + 1);
+		array.push(this.getDate());
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			if(index < 10){
+				array[i] = "0" + array[i];
+			}
+		}
+		var array1 = new Array();
+		array1.push(this.getHours());
+		array1.push(this.getMinutes());
+		array1.push(this.getSeconds());
+		for(var i = 0; i < array1.length; i++){
+			var index = array1[i];
+			if(index < 10){
+				array1[i] = "0" + array1[i];
+			}
+		}
+		return array.join("-") + " " + array1.join(":");
+	}
+	function sendHttpPOST(url, data, callBack){
+		var array = new Array();
+		var names = Object.getOwnPropertyNames(data);
+		for(var i = 0; i < names.length; i++){
+			if(!data.hasOwnProperty(names[i]))continue;
+			data[names[i]] = encodeURIComponent(data[names[i]]);
+			array.push(names[i] + "=" + data[names[i]]);
+		}
+		var request = new XMLHttpRequest();
+		request.open("POST", url);
+		request.onreadystatechange = function(event){
+			var res = event.target;
+			if(res.readyState == XMLHttpRequest.DONE && res.status == 200){
+				if(callBack){
+					callBack(request);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(array.join("&"));
+	}
+	function updateBlogList(array){
+		var blog_list_titlelist = document.getElementById("blog_list_titlelist");
+		blog_list_titlelist.innerHTML = "";
+		removerAllChildNodes(blog_list_titlelist);
+		for(var i = 0; i < array.length; i++){
+			var article = array[i];
+			var blod_contener = document.createElement("div");
+			blod_contener.className = "blod_contener";
+			
+			var blog_list_href = document.createElement("a");
+			blog_list_href.className = "blog_list_href";
+			blog_list_href.id = article.article_id;
+			blog_list_href.innerHTML = article.article_title;
+			
+			var blog_list_date = document.createElement("div");
+			blog_list_date.className = "blog_list_date";
+			blog_list_date.innerHTML = new Date(article.create_time.time).toLocaleString();
+			
+			blod_contener.appendChild(blog_list_date);
+			blod_contener.appendChild(blog_list_href);
+			blog_list_titlelist.appendChild(blod_contener);
+		}
+		initEditFunc();
+	}
+	function removerAllChildNodes(div){
+		while(div.hasChildNodes()){
+			div.removeChild(div.firstChild);
+		}
+	}
+	function updateBlogPageIndex(page){
+		var array = new Array();
+		var blog_pageIndex = document.getElementById("blog_pageIndex");
+		blog_pageIndex.innerHTML = "";
+		removerAllChildNodes(blog_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_list_pageIndex";
+		blog_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_list_pageIndex";
+			blog_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_list_pageIndex";
+				blog_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_list_pageIndex";
+			blog_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_list_pageIndex";
+		blog_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		blog_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpPOST("/blog/SelectArticleBriefInfoController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateBlogList(obj.list);
+					updateBlogPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function func(obj){
+		var names = Object.getOwnPropertyNames(obj);
+		var array = new Array();
+		for(var i = 0;i < names.length; i++){
+			var name = names[i];
+			array.push(name + "=" + obj[name]);
+		}
+		return array.join("&");
+	}
+	function initEditFunc(){
+		var blog_list_href = document.getElementsByClassName("blog_list_href");
+		for(var i = 0; i < blog_list_href.length; i++){
+			var a = blog_list_href[i];
+			a.addEventListener("click", function(){
+				this.target = "_blank";
+				this.href = "/blog/GenArticleController" + "?" + func({article_id:this.id, visitor_id:"notlogin"});	
+			}, false);
+		}
+	}
+	
+	window.onload = function(){
+		sendHttpPOST("/blog/SelectArticleBriefInfoController", {pageIndex:"1"}, function(request){
+			var obj = JSON.parse(request.responseText);
+			updateBlogList(obj.list);
+			updateBlogPageIndex(obj);
+		});
+		document.getElementById("liuyanbutton").addEventListener("click", function(){
+			window.open("/blog/message.html");
+		}, false);
+		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
+	}
+	</script>
+	<style>
+	body{padding:0;margin:auto;width:99%}
+	#top{opacity:0.8;height:120px;z-index:20;box-shadow:2px 2px 20px 2px #CCCCCC;width:60px;background-color:#FAFAF9;position:fixed;bottom:20px;right:0px;}
+	#topbutton{font-family:"Microsoft YaHei";font-weight:900;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;}
+	#liuyanbutton{font-family:"Microsoft YaHei";font-weight:900;background-color:#fafaf9;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;border-bottom:0}
+	#bottom_toolBar{font-family:Arial, Helvetica, sans-serif;background-color:#CCC;height:160px;width:100%;background-color:#f6f6f6;border-top:1px #FFFFFF solid;margin-top:10px;}
+	#pageInfo{margin:auto;margin-top:30.5px;font-size:17px;color:#666;text-align:center;}
+	#head_div{border:1px #fff solid;border-bottom:1px #ccc solid;width:100%;height:80px;}
+	#head_div_name{width:50%;margin-left:15px;margin-top:7px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:36px;font-weight:900;}
+	#head_div_domain{width:50%;margin-left:15px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:900;}
+	#middle_div{width:100%}
+	#blog_list{width:100%;margin:auto;border:1px #fff solid;}
+	#blog_list_titlelist{width:100%;font-family:"Microsoft YaHei";}
+	#blog_pageIndex{color:#545454;font-family:"Microsoft YaHei";width:100%;height:30px;text-align:center;margin-top:10px;}
+	.blog_list_date{color:#ccc;font-size:16px;margin-bottom:10px;}
+	.blod_contener{padding:10px 0 5px 10px;border-bottom:1px #ccc dashed;}
+	.blod_contener a{color:#0099ff;text-decoration:none;font-size:18px;}
+	#blog_pageIndex {font-size:18px;}
+	</style>
+	<body>
+		<div id="top">
+    	 	<button id="liuyanbutton">留言</button>
+    	 	<button id="topbutton">顶部</button>
+        </div>
+        <div id="head_div">
+        	<div id="head_div_name">IL MARE</div>
+        	<div id="head_div_domain">ilmareblog.com</div>
+        </div>
+        <div id="blog_list">
+            <div id="blog_list_titlelist">
+               	
+            </div>
+            <div id="blog_pageIndex">
+                
+            </div>
+        </div>
+        <div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/><br/>May all your wishes come true - IL MARE</div>
+        </div>
+	</body>
+</html>

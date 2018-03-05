@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>ILMARE的博客-注册新用户</title>
+        <link rel="icon" href="../Images/img.ico" type="image/x-ico" /> 
+    </head>
+    <script>
+	function sendHttpRequest(url, data, callBack){
+		var request = new XMLHttpRequest();
+		request.open("post", url);
+		request.onreadystatechange = function(){
+			if(request.readyState == XMLHttpRequest.DONE && request.status == 200){
+				if(callBack){
+					callBack(request);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(data);
+	}
+	function getScreenSize(){
+		if(window.innerWidth){
+			return {w:window.innerWidth, h:window.innerHeight};
+		}
+		if(document.compatMode == "CSS1CompatMode"){
+			return {w:document.body.clientWidth, h:document.body.clientHeight};
+		}else{
+			return {w:document.documentElement.clientWidth, h:document.documentElement.clientHeight};
+		}
+	}
+	
+	window.onload = function(){
+		var size = getScreenSize();
+		var token = document.getElementById("token");
+		token.addEventListener("input", function(){
+			var token_tip = document.getElementById("token_tip");
+			token_tip.innerHTML = "";
+		}, false);
+		token.addEventListener("blur", function(){
+			var value = this.value;
+			var token_tip = document.getElementById("token_tip");
+			if(value == null || value.length == 0){
+				token_tip.innerHTML = "验证码不能为空";
+			}
+		}, false);
+		var visitor_nickname = document.getElementById("visitor_nickname");
+		visitor_nickname.addEventListener("input", function(){
+			var nick_name_tip = document.getElementById("nick_name_tip");
+			nick_name_tip.innerHTML = "";
+		}, false);
+		visitor_nickname.addEventListener("blur", function(){
+			var value = this.value;
+			var nick_name_tip = document.getElementById("nick_name_tip");
+			if(value == null || value.length == 0){
+				nick_name_tip.innerHTML = "昵称不能为空";
+			}else{
+				sendHttpRequest("/blog/IsVisitorExistController", "visitor_nickname=" + value, function(request){
+					if(request.responseText == "error"){
+						nick_name_tip.innerHTML = "此昵称已被注册过";
+					}
+				})
+			}
+		}, false);
+		var visitor_pwd = document.getElementById("visitor_pwd");
+		visitor_pwd.addEventListener("blur", function(){
+			var value = this.value;
+			var pwd_tip = document.getElementById("pwd_tip");
+			if(value == null || value.length == 0){
+				pwd_tip.innerHTML = "密码不能为空";
+			}
+		}, false);
+		visitor_pwd.addEventListener("input", function(){
+			var pwd_tip = document.getElementById("pwd_tip");
+			pwd_tip.innerHTML = "";
+		}, false);
+		var registe_form = document.getElementById("registe_form");
+		registe_form.addEventListener("submit", function(){
+			if(visitor_pwd.value == "" || visitor_nickname.value == "" || token.value == ""){
+				alert("用户昵称,密码或验证码不能为空");
+				event.preventDefault();
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}
+			var pwd_tip = document.getElementById("pwd_tip");
+			var nick_name_tip = document.getElementById("nick_name_tip");
+			var token_tip = document.getElementById("token_tip");
+			if(pwd_tip.innerHTML != "" || nick_name_tip.innerHTML != "" || token_tip.innerHTML != ""){
+				alert("表单数据异常，请检查后提交");
+				event.preventDefault();
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}
+		}, false);
+		var tokenimg = document.getElementById("tokenimg");
+		tokenimg.addEventListener("click", function(){
+			event.stopPropagation();
+			var date = new Date();
+			this.src = this.src + "?" + date.getTime();
+		}, false);
+	}
+	</script>
+    <style>
+	body{margin:0;padding:0;overflow:auto;background-image:url(../Images/background-registe.jpg);}
+	#container{height:550px;width:100%;position:relative;top:0px;left:0px;position:relative;top:0px;left:0px}
+	#registe_field{opacity:0.93;border:1px #d1d1d1 solid;border-radius:8px;width:320px;height:400px;background-color:#f8f8f8;box-shadow:1px 1px 10px 1px #333;position:absolute;top:50px;right:50px;}
+	#bottom_toolBar{position:relative;top:0px;left:0px;font-family:Arial, Helvetica, sans-serif;box-shadow:0px -1px 20px 2px #CCCCCC;background-color:#CCC;height:160px;width:100%;background-color:#f6f6f6;border-top:1px #FFFFFF solid;}
+	#pageInfo{margin:auto;margin-top:30.5px;font-size:17px;color:#666;text-align:center;}
+	#name_field{position:absolute;top:50px;left:80px;font-family:Arial, Helvetica, sans-serif;font-size:60px;font-weight:900;color:#f8f8f8;}
+	#lang_field{position:absolute;top:200px;left:80px;color:#f8f8f8;font-family:"Microsoft YaHei";font-size:40px;font-weight:50;}
+	#detail_field{position:absolute;top:260px;left:80px;color:#f8f8f8;font-family:"Microsoft YaHei";font-size:20px;font-weight:50;}
+	.styleA{margin-top:10px;font-family:"Microsoft YaHei";width:278px;border:1px #ccc solid;height:29px;outline:0;border-radius:4px;padding-left:10px;box-shadow:1px 1px 5px 1px #CCCCCC;}
+	.styleB{margin-top:15px;margin-right:10px}
+	#submit_buttn{width:100px;margin-top:15px;height:35px;font-family:Microsoft YaHei;font-size:16px;border-radius:5px;outline:0;background-color:#40a628;color:#FFF;border:1px #146700 solid;}
+	#submit_buttn:hover{cursor:pointer;box-shadow:1px 1px 5px 1px #CCCCCC;}
+	#token{margin-top:15px;font-family:"Microsoft YaHei";width:120px;border:1px #ccc solid;height:29px;outline:0;border-radius:4px;padding-left:10px;box-shadow:1px 1px 5px 1px #CCCCCC;}
+	#tokenimg{width:130px;height:30px;}
+	#tokenimg:hover{cursor:pointer}
+	</style>
+    <body>
+    	<div id="container">
+        	<div id="name_field">IL MARE</div>
+            <div id="lang_field">记录时光的痕迹，分享生活的感动</div>
+            <div id="detail_field">欢迎你注册我的博客，希望我们能成为朋友，多多给我留言，多多联系和交流</div>
+        	<div id="registe_field">
+           		<div style="color:#666;margin-top:20px;width:290px;margin-left:15px;font-family:Microsoft YaHei;font-size:25px;font-weight:600;">
+            		欢迎注册
+                </div><hr style="border:1px #CCCCCC solid;"/>
+            	<div style="margin-top:10px;width:290px;margin-left:15px;font-family:Microsoft YaHei;">
+                	<form id="registe_form" action="/blog/RegisterVisitorController" method="post">
+                        <input id="visitor_nickname" class="styleA" placeholder="请输入您的昵称" type="text" name="visitor_nickname"/>
+                        <div id="nick_name_tip" style="color:#F00;margin-top:10px;font-family:Microsoft YaHei">
+                            
+                        </div>
+                        <input id="visitor_pwd" class="styleA" placeholder="请输入您的密码" type="password" name="visitor_pwd"/>
+                        <div id="pwd_tip" style="color:#F00;margin-top:10px;font-family:Microsoft YaHei">
+                            
+                        </div>
+                        <input class="styleB" type="radio" name="visitor_gender" value="男" checked="checked"/>男
+                        <input class="styleB" style="margin-left:30px" type="radio" value="女" name="visitor_gender"/>女
+                        <input class="styleB" style="margin-left:30px" type="radio" value="其他" name="visitor_gender"/>其他
+                        <input id="token" placeholder="验证码" name="token"/>
+                        <div style="width:130px;height:30px;margin-left:152px;margin-top:-30px;">
+                        	<img id="tokenimg" src="/blog/GenRandomIconController" alt="看不清换一张"/>
+                        </div>
+                        <div id="token_tip" style="color:#F00;margin-top:10px;font-family:Microsoft YaHei">
+                            
+                        </div>
+                        <input id="submit_buttn" type="submit" value="注册账号"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+         <div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/><br/>May all your wishes come true - IL MARE</div>
+        </div>
+    </body>
+</html>

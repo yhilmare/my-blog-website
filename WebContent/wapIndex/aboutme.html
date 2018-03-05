@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>About Me</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	</head>
+	<script type="text/javascript">
+	function sendHttpPOST(url, data, callBack){
+		var array = new Array();
+		var names = Object.getOwnPropertyNames(data);
+		for(var i = 0; i < names.length; i++){
+			if(!data.hasOwnProperty(names[i]))continue;
+			data[names[i]] = encodeURIComponent(data[names[i]]);
+			array.push(names[i] + "=" + data[names[i]]);
+		}
+		var request = new XMLHttpRequest();
+		request.open("POST", url);
+		request.onreadystatechange = function(event){
+			var res = event.target;
+			if(res.readyState == XMLHttpRequest.DONE && res.status == 200){
+				if(callBack){
+					callBack(request);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(array.join("&"));
+	}
+	function initDataFunc(){
+		sendHttpPOST("/blog/SelectHolderForIndexController", {}, function(request){
+			holder = JSON.parse(request.responseText);
+			initHeadBaeWithHolder();
+		});
+	}
+	var holder = {};
+	function initHeadBaeWithHolder(){
+		var head_div_name = document.getElementById("head_div_name");
+		head_div_name.innerHTML = holder.holder_name_en;
+		var name_zh = document.getElementById("name_zh");
+		name_zh.innerHTML = holder.holder_name_zh;
+		var name_en = document.getElementById("name_en");
+		name_en.innerHTML = holder.holder_name_en;
+		var name_eamil = document.getElementById("name_eamil");
+		name_eamil.innerHTML = holder.holder_email;
+		var school_zh = document.getElementById("school_zh");
+		school_zh.innerHTML = holder.holder_school_zh;
+		var location_zh = document.getElementById("location_zh");
+		location_zh.innerHTML =  holder.holder_city_zh + "&nbsp;" + holder.holder_province_zh;
+		var head_icon_profile = document.getElementById("head_icon_profile");
+		head_icon_profile.src = (holder.holder_img == ""?"/blog/Images/head_icon.jpg":("/blog/" + holder.holder_img));
+	}
+	window.onload = function(){
+		initDataFunc();
+		var head_icon = document.getElementById("head_icon");
+		var width = window.getComputedStyle(head_icon, null).width;
+		head_icon.style.height = width;
+		var middle_info = document.getElementById("middle_info");
+		middle_info.style.height = width;
+		var head_icon = document.getElementById("head_icon");
+		var width = window.getComputedStyle(head_icon, null).width;
+		head_icon.style.height = width;
+		var temp = parseFloat(width.substring(0,width.indexOf("p")));
+		var head_icon_profile = document.getElementById("head_icon_profile");
+		head_icon_profile.style.height = width;
+		head_icon_profile.style.width = width;
+		head_icon_profile.style.borderRadius = "5px";
+		document.getElementById("liuyanbutton").addEventListener("click", function(){
+			window.open("/blog/message.html");
+		}, false);
+		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
+	}
+	</script>
+	<style>
+	body{padding:0;margin:auto;width:99%;}
+	#top{opacity:0.8;height:120px;z-index:20;box-shadow:2px 2px 20px 2px #CCCCCC;width:60px;background-color:#FAFAF9;position:fixed;bottom:20px;right:0px;}
+	#topbutton{font-family:"Microsoft YaHei";font-weight:900;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;}
+	#liuyanbutton{font-family:"Microsoft YaHei";font-weight:900;background-color:#fafaf9;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;border-bottom:0}
+	#bottom_toolBar{border-top:1px #ccc solid;font-family:Arial, Helvetica, sans-serif;background-color:#CCC;height:160px;width:100%;background-color:#f6f6f6;border-top:1px #FFFFFF solid;margin-top:40px;}
+	#pageInfo{margin:auto;margin-top:30.5px;font-size:17px;color:#666;text-align:center;}
+	#head_div{border:1px #fff solid;width:100%;border-bottom:1px #ccc solid;height:80px;}
+	#head_div_name{width:50%;margin-left:15px;margin-top:7px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:36px;font-weight:900;}
+	#head_div_domain{width:50%;margin-left:15px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:900;}
+	#middle_div{width:100%;font-family:"Microsoft YaHei";}
+	#head_icon{width:35%;margin-top:10px;margin-left:15px;}
+	#middle_info{padding:3px 0 5px 20px;width:50%;margin-left:40%;width:50%;margin-top:-35%;font-family:serif;}
+	#middle_info div{margin-bottom:2px;font-family:serif;}
+	#middle_content{font-family:serif;color:#333;width:90%;margin:auto;font-size:17px;}
+	</style>
+	<body>
+		<div id="top">
+    	 	<button id="liuyanbutton">留言</button>
+    	 	<button id="topbutton">顶部</button>
+        </div>
+        <div id="head_div">
+        	<div id="head_div_name"></div>
+        	<div id="head_div_domain">ilmareblog.com</div>
+        </div>
+        <div id="middle_div">
+        	<div id="head_icon">
+				<img id="head_icon_profile"/>
+			</div>
+			<div id="middle_info">
+				<div id="name_zh" style="font-size:20px;color:#666;font-weight:900;"></div>
+				<div id="name_en" style="font-family:Arial, Helvetica, sans-serif;font-size:20px;color:#666;font-weight:900;"></div>
+				<div id="name_eamil" style="font-family:Arial, Helvetica, sans-serif;color:#0099ff;"></div>
+				<div id="school_zh" style="color:#666"></div>
+				<div id="location_zh" style="color:#666"></div>
+			</div>
+			<div id="middle_content">
+				<p>大家好：</p>
+                <p>我的名字叫IL MARE，大家也可以叫我虾米。</p>
+                <p>作为博客新人，我想通过这个平台结识到更多的朋友，同时有所交流，提升自己的技术水平。我就读于我国西南部的一所传统工科211高校，坐标成都。个人擅长的技术领域主要集中在J2EE技术体系上，前后端都有涉猎。在移动端上ios刚刚入门，还属于小白一只，希望能够快速地提升自己的技术水平。</p><p>希望可以认识更多的人，嘿嘿，所有看到这条信息的有缘人，</p><p>System.out.println("Hello, World");</p>
+                <p>NSLog(@"Hello,World");</p><p>console.log("Hello, World");</p>
+			</div>
+        </div>
+        <div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/><br/>May all your wishes come true - IL MARE</div>
+        </div>	
+	</body>
+</html>

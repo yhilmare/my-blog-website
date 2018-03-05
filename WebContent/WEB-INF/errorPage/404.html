@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>404</title>
+	<link rel="icon" href="/blog/Images/img.ico" type="image/x-ico" /> 
+    </head>
+    <script>
+	function getScreenSize(){
+		if(window.innerWidth){
+			return {w:window.innerWidth, h:window.innerHeight};
+		}
+		if(document.compatMode == "CSS1CompatMode"){
+			return {w:document.documentElement.clientWidth,h:document.documentElement.clientHeight};
+		}else{
+			return {w:document.body.clientWidth,h:document.body.clientHeight};
+		}
+	}
+	window.onload = function(){
+		var div = document.getElementById("error_total");
+		var width = getScreenSize().w;
+		var height = getScreenSize().h;
+		var x = (width - 1120)/2;
+		var y = (height - 520)/2;
+		div.style.left = x + "px";
+		div.style.top = y + "px";
+	}
+	</script>
+    <style>
+	#error_code{font-size:320px;font-family:Arial, Helvetica, sans-serif;color:#fa7f40;width:600px;height:350px;}
+	#error_content{font-size:90px;font-family:Arial, Helvetica, sans-serif;color:#fa7f40;width:600px;height:120px;}
+	#error_image{width:520px;height:520px;position:absolute;top:0px;left:600px;}
+	#error_total{width:1120px;height:520px;position:relative;top:20px;}
+	</style>
+    <body>
+    	<div id="error_total">
+    		<div id="error_code">404</div>
+            <div id="error_content">file not found</div>
+            <div id="error_image"><img width="520" height="520" src="/blog/Images/404.jpg"/></div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,906 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>ILMARE的博客</title>
+        <link rel="icon" href="/blog/Images/img.ico" type="image/x-ico" /> 
+        <link rel="stylesheet" type="text/css" href="/blog/css/index.css"/>
+    </head>
+    <script src="/blog/js/jquery.js"></script>
+    <script>
+    Date.prototype.toLocaleString = function(){
+		var array = new Array();
+		array.push(this.getFullYear());
+		array.push(this.getMonth() + 1);
+		array.push(this.getDate());
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			if(index < 10){
+				array[i] = "0" + array[i];
+			}
+		}
+		var array1 = new Array();
+		array1.push(this.getHours());
+		array1.push(this.getMinutes());
+		array1.push(this.getSeconds());
+		for(var i = 0; i < array1.length; i++){
+			var index = array1[i];
+			if(index < 10){
+				array1[i] = "0" + array1[i];
+			}
+		}
+		return array.join("-") + " " + array1.join(":");
+	}
+	var closeICONURL = "/blog/Images/close_icon.png"
+	function setCSSStyle(css, div){
+		if(css == null || div == null) return;
+		var names = Object.getOwnPropertyNames(css);
+		for(var i = 0; i < names.length; i++){
+			if(!css.hasOwnProperty(names[i]))continue;
+			div.style[names[i]] = css[names[i]];
+		}
+	}
+	function removeFromSuperView(){
+		var count = arguments.length;
+		for(var i = 0; i < count; i++){
+			if(i == count - 2){
+				var con = document.getElementById(arguments[i]);
+				con.style.display = arguments[i+1];
+				con.style.left = "0px";con.style.top = "0px";
+				break;
+			}
+			var div = document.getElementById(arguments[i]);
+			document.body.removeChild(div);
+		}
+	}
+	function presentLoginView(){
+		var inputs = document.getElementsByClassName("inputs");
+		for(var i = 0; i < inputs.length; i++){
+			inputs[i].addEventListener("focus", function(){
+				var div = this.parentNode;
+				setCSSStyle({borderColor:"#57a7e8"}, div);
+			}, false);
+			inputs[i].addEventListener("blur", function(){
+				var div = this.parentNode;
+				setCSSStyle({borderColor:"#CCCCCC"}, div);
+			}, false);
+		}
+		var div = document.createElement("div");
+		div.id = "test1"; 
+		var size = getScreenSize();
+		setCSSStyle({position:"fixed", left:"0px", top:"0px", width:size.w + "px", height:size.h + "px", backgroundColor:"#aca494", opacity:"0.5", zIndex:"5"}, div);
+		document.body.appendChild(div);
+			
+		var con = document.getElementById("login_content");
+		var div1 = document.createElement("div");
+		var buttn = document.createElement("button");
+		buttn.onclick = function(){
+			removeFromSuperView("test", "test1", "login_content", "none");
+		}
+		setCSSStyle({marginTop:"5px",marginRight:"10px", float:"right", color:"#666", backgroundColor:"#fff", outline:0, border:0, fontSize:"18px", width:"25px", height:"25px", backgroundImage:"url(" + closeICONURL + ")"}, buttn);
+		div1.appendChild(buttn);
+		div1.id = "test";
+		var width = 600;
+		var height = 400;
+		var left = (parseFloat(size.w) - width) / 2; 
+		var top = (parseFloat(size.h) - height) / 2;
+		setCSSStyle({borderRadius:"5px",borderTop:"3px #57a7e8 solid", position:"fixed", left:left + "px", top:top + "px", backgroundColor:"#FFF", zIndex:"6"}, div1);
+		document.body.appendChild(div1);
+		$("#test").animate({width:width + "px",height:height + "px"}, {duration:300, easing:"linear", queue:false});
+		var nwidth = window.getComputedStyle(con, null).width;
+		var nheight = window.getComputedStyle(con, null).height;
+		nwidth = nwidth.substring(0, nwidth.indexOf("p"));
+		nheight = nheight.substring(0, nheight.indexOf("p"));
+		var x = (size.w - nwidth) / 2;
+		var y = (size.h - nheight) / 2;
+		setCSSStyle({display:"block", zIndex:8},con);
+		$("#login_content").animate({top:y + "px", left:x + "px"}, {duration:300, queue:false});
+	}
+	function User(username, password){
+		this.username = username;
+		this.password = password;
+	}
+	User.prototype = {
+		constructor:User,
+		getUser: function(className){
+			var inputs = document.getElementsByClassName(className);
+			for(var i = 0; i < inputs.length; i++){
+				var input = inputs[i];
+				if(this.hasOwnProperty(input.name)){
+					this[input.name] = input.value;
+				}
+			}
+		},
+		checkFroms:function(){
+			var names = Object.getOwnPropertyNames(this);
+			for(var i = 0; i < names.length; i++){
+				if(this[names[i]] == ""){
+					return (names[i] == "username"?"用户名":"密码") + "信息不完整";
+				}
+				if(names[i] == "username"){
+					if(this[names[i]] == null || this[names[i]].length == 0){
+						return "用户名不正确，必须是电子邮箱形式";
+					}
+				}
+			}
+			return "correct";
+		}
+	}
+	function sendHttpPOST(url, data, callBack){
+		var array = new Array();
+		var names = Object.getOwnPropertyNames(data);
+		for(var i = 0; i < names.length; i++){
+			if(!data.hasOwnProperty(names[i]))continue;
+			data[names[i]] = encodeURIComponent(data[names[i]]);
+			array.push(names[i] + "=" + data[names[i]]);
+		}
+		var request = new XMLHttpRequest();
+		request.open("POST", url);
+		request.onreadystatechange = function(event){
+			var res = event.target;
+			if(res.readyState == XMLHttpRequest.DONE && res.status == 200){
+				if(callBack){
+					callBack(request);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(array.join("&"));
+	}
+	function getScreenSize(){
+		if(window.innerWidth){
+			return {w:window.innerWidth, h:window.innerHeight};
+		}
+		if(document.compatMode == "CSS1CompatMode"){
+			return {w:document.documentElement.clientWidth, h:document.documentElement.clientHeight};
+		}else{
+			return {w:document.body.clientWidth, h:document.body.clientHeight};
+		}
+	}
+	function removerAllChildNodes(div){
+		while(div.hasChildNodes()){
+			div.removeChild(div.firstChild);
+		}
+	}
+	function getBottomToolBar(){
+		var div = document.createElement("div");
+		setCSSStyle({height:"100px", width:"300px", backgroundColor:"#000"}, div);
+		return div;
+	}
+	function makeDivDisappear(){
+		for(var i = 0; i < arguments.length; i++){
+			var div = arguments[i];div.style.display = "none";
+		}
+	}
+	function initNavigatorBar(){
+		var index_body = document.getElementById("index_body");
+		var sectionA = document.getElementById("sectionA");var sectionB = document.getElementById("sectionB");
+		var sectionC = document.getElementById("sectionC");var sectionD = document.getElementById("sectionD");
+		var sectionE = document.getElementById("sectionE");index_body.appendChild(sectionA);
+		sectionA.style.display = "block";var array = new Array();
+		var buttns = document.getElementsByClassName("navigator_buttn");
+		buttns[0].parentNode.style.borderBottom = "3px #57a7e8 solid";
+		for(var i = 0; i < buttns.length; i++){
+			var buttn = buttns[i];array.push(buttn);
+			buttn.addEventListener("click", function(){
+				var tag = this.getAttribute("data-tag");
+				if(tag == "1"){
+					index_body.appendChild(sectionA);
+					sectionA.style.display = "block";makeDivDisappear(sectionB, sectionC, sectionD, sectionE);
+				}else if(tag == "2"){//博客管理界面
+					index_body.appendChild(sectionB);
+					sectionB.style.display = "block";makeDivDisappear(sectionA, sectionC, sectionD, sectionE);
+					sendHttpPOST("/blog/SelectArticleBriefInfoController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateBlogList(obj.list);
+						updateBlogPageIndex(obj);
+					});
+				}else if(tag == "3"){//状态
+					index_body.appendChild(sectionC);
+					sectionC.style.display = "block";makeDivDisappear(sectionA, sectionB, sectionD, sectionE);
+					sendHttpPOST("/blog/SelectStatusForIndexController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateStatusList(obj.list);
+						updateStatusPageIndex(obj);
+					});
+				}else{
+					index_body.appendChild(sectionE);
+					sectionE.style.display = "block";makeDivDisappear(sectionA, sectionC, sectionD, sectionB);
+				}
+				var div = this.parentNode;
+				for(var j = 0; j < array.length; j++){
+					var button = array[j];var par = button.parentNode;par.style.borderBottom = "";
+				}
+				div.style.borderBottom = "3px #57a7e8 solid";
+			}, false);
+		}
+	}
+	//==================================================================================
+	function updateStatusList(array){
+		var status_body_content_area_list = document.getElementById("status_body_content_area_list");
+		status_body_content_area_list.innerHTML = "";
+		removerAllChildNodes(status_body_content_area_list);
+		for(var i = 0; i < array.length; i++){
+			var status = array[i];
+			var status_body_content_Info = document.createElement("div");
+			status_body_content_Info.className = "status_body_content_Info";
+			
+			var status_body_content_Info_name = document.createElement("div");
+			status_body_content_Info_name.className = "status_body_content_Info_name";
+			
+			var status_body_content_Info_date = document.createElement("div");
+			status_body_content_Info_date.className = "status_body_content_Info_date";
+			
+			var status_body_content_Info_content = document.createElement("div");
+			status_body_content_Info_content.className = "status_body_content_Info_content";
+			status_body_content_Info.appendChild(status_body_content_Info_name);
+			status_body_content_Info.appendChild(status_body_content_Info_date);
+			status_body_content_Info.appendChild(status_body_content_Info_content);
+			
+			var date = new Date(status.publish_date.time);
+			status_body_content_Info_name.innerHTML = holder.holder_name_zh;
+			status_body_content_Info_date.innerHTML = date.toLocaleString();
+			status_body_content_Info_content.innerHTML = status.status_content;
+			status_body_content_area_list.appendChild(status_body_content_Info);
+		}
+	}
+	function updateStatusPageIndex(page){
+		var array = new Array();
+		var status_pageIndex = document.getElementById("status_pageIndex");
+		status_pageIndex.innerHTML = "";
+		removerAllChildNodes(status_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "status_list_pageIndex";
+		status_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "status_list_pageIndex";
+			status_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "status_list_pageIndex";
+				status_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "status_list_pageIndex";
+			status_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "status_list_pageIndex";
+		status_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		status_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("status_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpPOST("/blog/SelectStatusForIndexController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateStatusList(obj.list);
+					updateStatusPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	//====================================================================================
+	function updateBlogList(array){
+		var blog_list_titlelist = document.getElementById("blog_list_titlelist");
+		blog_list_titlelist.innerHTML = "";
+		removerAllChildNodes(blog_list_titlelist);
+		for(var i = 0; i < array.length; i++){
+			var article = array[i];
+			var blod_contener = document.createElement("div");
+			blod_contener.className = "blod_contener";
+			
+			var blog_list_href = document.createElement("a");
+			blog_list_href.className = "blog_list_href";
+			blog_list_href.id = article.article_id;
+			blog_list_href.innerHTML = article.article_title;
+			
+			var blog_list_date = document.createElement("div");
+			blog_list_date.className = "blog_list_date";
+			blog_list_date.style.float = "right";
+			blog_list_date.innerHTML = new Date(article.create_time.time).toLocaleString();
+			blod_contener.appendChild(blog_list_href);
+			blod_contener.appendChild(blog_list_date);
+			
+			blog_list_titlelist.appendChild(blod_contener);
+		}
+		initEditFunc();
+	}
+	function initEditFunc(){
+		var blog_list_href = document.getElementsByClassName("blog_list_href");
+		for(var i = 0; i < blog_list_href.length; i++){
+			var a = blog_list_href[i];
+			a.addEventListener("click", function(){
+				sendHttpPOST("/blog/SelectBlogArticleForIndexController", {article_id:this.id, visitor_id:visitor.visitor_nickname == "undefined"?"notlogin":visitor.visitor_nickname}, function(request){
+					article = JSON.parse(request.responseText);
+					initArticleField(article);
+					index_body.appendChild(sectionD);
+					sectionD.style.display = "block";
+					makeDivDisappear(sectionA, sectionC, sectionE, sectionB);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	function updateBlogPageIndex(page){
+		var array = new Array();
+		var blog_pageIndex = document.getElementById("blog_pageIndex");
+		blog_pageIndex.innerHTML = "";
+		removerAllChildNodes(blog_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_list_pageIndex";
+		blog_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_list_pageIndex";
+			blog_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_list_pageIndex";
+				blog_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_list_pageIndex";
+			blog_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_list_pageIndex";
+		blog_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		blog_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpPOST("/blog/SelectArticleBriefInfoController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateBlogList(obj.list);
+					updateBlogPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	
+	//==================================================================================================================
+	function initLoginAndRegister(){
+		$("#topbutton").bind("mouseenter mouseleave", function(){
+			var button = event.target;button.value=button.value==""?"顶部":"";
+		});
+		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
+		var buttn = document.getElementById("login_buttn");
+		buttn.addEventListener("click", function(){
+			var user = new User();user.getUser("inputs");var result = user.checkFroms();
+			if(result != "correct"){alert(result);
+			}else{
+				var buttn = this;
+				buttn.disabled = true;
+				buttn.innerHTML = "登陆中";
+				var interval = setInterval(function(){
+					if(buttn.innerHTML == "登陆中"){buttn.innerHTML = "登陆中.";
+					}else if(buttn.innerHTML == "登陆中."){buttn.innerHTML = "登陆中..";
+					}else if(buttn.innerHTML == "登陆中.."){buttn.innerHTML = "登陆中...";
+					}else{buttn.innerHTML = "登陆中";}
+				}, 400);
+				sendHttpPOST("/blog/VisitorLoginController", user, function(request){
+					clearInterval(interval);
+					buttn.disabled = false;buttn.innerHTML = "登录";
+					var inputs = document.getElementsByClassName("inputs");
+					for(var i = 0; i < inputs.length; i++){
+						inputs[i].value = "";
+					}
+					if(request.responseText == "用户不存在"){
+						alert(request.responseText);
+					}else if(request.responseText == "密码错误"){
+						alert(request.responseText);
+					}else{
+						visitor = JSON.parse(request.response);
+						removeFromSuperView("test", "test1", "login_content", "none");
+						updateLoginAndRegiste();
+					}
+				});
+			}
+		}, false);
+		buttn = document.getElementById("register_buttn");
+		buttn.addEventListener("click", function(){
+			window.open("/blog/LoginAndRegiste/registe.html");
+		}, false);
+	}
+	function initVisitorUser(){
+		sendHttpPOST("/blog/IsVistorLoginController", {}, function(request){
+			if(request.responseText != "false"){
+				visitor = JSON.parse(request.responseText);
+				updateLoginAndRegiste();
+			}
+		});
+	}
+	function updateLoginAndRegiste(){
+		var login_and_register = document.getElementById("login_and_register");
+		var partA = document.getElementById("partA");
+		var partB = document.getElementById("partB");
+		partA.style.display = "none";
+		partB.style.display = "block";
+		var span = document.getElementById("spaninfo");
+		span.innerHTML = "您好，" + visitor.visitor_nickname;
+	}
+	function eventFunction(events){//搜索栏按钮点击事件处理程序
+		
+	}
+	function initHeadNavigator(){
+		var button = document.getElementById("search_button");
+		button.addEventListener("click",eventFunction,false);
+		var index_head_login_buttn = document.getElementById("index_head_login_buttn");
+		index_head_login_buttn.addEventListener("click", function(){
+			presentLoginView();
+		}, false);
+		var input = document.getElementById("search_keywords");
+		input.addEventListener("focus", function(){
+			var div = document.getElementById("index_head_inputArea");
+			div.style.border = "1px #57a7e8 solid";
+		},false);
+		input.addEventListener("blur", function(){
+			var div = document.getElementById("index_head_inputArea");
+			div.style.border = "1px #CCCCCC solid";
+		},false);
+		
+		var index_name_icon = document.getElementById("index_name_icon");
+		index_name_icon.addEventListener("mouseenter", function(){
+			$("#index_name_icon").animate({left:"+=50px", opacity:0.8}, {duration:300, queue:false});
+		}, false);
+		index_name_icon.addEventListener("mouseleave", function(){
+			$("#index_name_icon").animate({left:"25px", opacity:1}, {duration:300, queue:false});
+		}, false);
+	}
+	function checkUserAgent(){//判断是移动设备还是PC登陆，做转换
+		var userAgent = navigator.userAgent.toLowerCase();
+		if(userAgent.match(/.+windows.+/)){
+		}else if(userAgent.match(/.+macintosh.+/)){
+		}else{
+			window.location = "/blog/wapIndex/index.html";
+		}
+	}
+	checkUserAgent();
+	window.onload = function(){
+		initLoginAndRegister();
+		initNavigatorBar();
+		initHeadNavigator();
+		document.getElementById("liuyanbutton").addEventListener("click", function(){
+			var date = new Date();
+			window.location = "/blog/GenMessageUIController?token=" + date.getTime();
+		}, false);
+		document.getElementById("index_head_deregiste_buttn").addEventListener("click", function(){
+			sendHttpPOST("/blog/CancelVisitorController", {pageIndex:currentPageIndex}, function(request){
+				if(request.responseText == "注销成功"){
+					var login_and_register = document.getElementById("login_and_register");
+					var partA = document.getElementById("partA");
+					var partB = document.getElementById("partB");
+					partA.style.display = "block";
+					partB.style.display = "none";
+					var names = Object.getOwnPropertyNames(visitor);
+					for(var i = 0; i < names.length; i++){
+						visitor[names[i]] = "undefined";
+					}
+				}else{
+					alert(request.responseText);
+				}
+			});
+		}, false);
+		document.getElementById("load_more_buttn").addEventListener("click", function(){//加载更多按钮点击处理函数
+			if(++currentPageIndex <= totalPageIndex){
+				sendHttpPOST("/blog/SelectIndexController", {pageIndex:currentPageIndex}, function(request){
+				index = JSON.parse(request.responseText);
+				totalPageIndex = parseInt(index.totalPage);
+				initIndexList(index.list);
+			});
+			}
+		}, false);
+		$("#index_name_icon").animate({left:"+=50px", opacity:0.8}, {duration:300});
+		$("#index_name_icon").animate({left:"-=50px", opacity:0.8}, {duration:300});
+		initDataFunc();
+		var index_head_register_buttn = document.getElementById("index_head_register_buttn");
+		index_head_register_buttn.addEventListener("click", function(){
+			window.open("/blog/LoginAndRegiste/registe.html");
+		}, false);
+		initIndexData();
+		initBasicInfo();
+		initNotice();
+		getGEOLocation();
+		initVisitorUser();
+	}
+	function initNotice(){
+		var index_body_notice_content = document.getElementById("index_body_notice_content");
+		sendHttpPOST("/blog/SelectNoticeController", {}, function(request){
+			var info = JSON.parse(request.responseText);
+			index_body_notice_content.innerHTML = new Date(info.publish_date.time).toLocaleString() + "<br/>" + info.notice_content;
+		});
+	}
+	function initBasicInfo(){
+		sendHttpPOST("/blog/GetTotalRecordController", {}, function(request){
+			var info = JSON.parse(request.responseText);
+			var index_body_basicInfo_one = document.getElementById("index_body_basicInfo_one");
+			var index_body_basicInfo_three = document.getElementById("index_body_basicInfo_three");
+			index_body_basicInfo_one.innerHTML = info.totalArticle + "<br/>博客";
+			index_body_basicInfo_three.innerHTML = info.totalStatus + "<br/>状态";
+		});
+	}
+	function getGEOLocation(){
+		if(!navigator.geolocation) throw "gellocation not supported";
+		var options = {enableHighAccuracy:false,maximumAge:300000,timeout:10000};
+		navigator.geolocation.getCurrentPosition(function(position){
+			console.log("success");
+			pos.visit_latitude = position.coords.latitude;
+			pos.visit_longitude = position.coords.longitude;
+			if(visitor.visitor_nickname == "undefined"){
+				pos.visitor_id = "notlogin";
+			}else{
+				pos.visitor_id = visitor.visitor_nickname;
+			}
+			sendHttpPOST("/blog/InsertVisitLogController", pos, function(request){
+				console.log("completed");
+			});
+		},function(error){
+			pos.visit_latitude = 0;
+			pos.visit_longitude = 0;
+			if(visitor.visitor_nickname == "undefined"){
+				pos.visitor_id = "notlogin";
+			}else{
+				pos.visitor_id = visitor.visitor_nickname;
+			}
+			sendHttpPOST("/blog/InsertVisitLogController", pos, function(request){
+				console.log("completed");
+			});
+		}, options);
+	}
+	var holder = {};
+	var pos = {};
+	var visitor = {
+		visitor_id:"undefined",
+		visitor_pwd:"undefined",
+		visitor_nickname:"undefined",
+		visitor_gender:"undefined"
+	}
+	
+	function initDataFunc(){
+		sendHttpPOST("/blog/SelectHolderForIndexController", {}, function(request){
+			holder = JSON.parse(request.responseText);
+			initHeadBaeWithHolder();
+		});
+	}
+	function initHeadBaeWithHolder(){
+		var profile_icon_two = document.getElementById("profile_icon_two");
+		profile_icon_two.src = (holder.holder_img == ""?"/blog/Images/head_icon.jpg":("/blog/" + holder.holder_img));
+		var profile_name = document.getElementById("profile_name");
+		profile_name.innerHTML = holder.holder_name_en;
+		var profile_school = document.getElementById("profile_school");
+		profile_school.innerHTML = holder.holder_school_en;
+		var profile_location = document.getElementById("profile_location");
+		profile_location.innerHTML = holder.holder_city_en + "&nbsp;" + holder.holder_province_en;
+		var profile_email = document.getElementById("profile_email");
+		profile_email.innerHTML = holder.holder_email;
+		var index_body_head_icon = document.getElementById("index_body_head_icon");
+		index_body_head_icon.src = (holder.holder_img == ""?"/blog/Images/head_icon.jpg":("/blog/" + holder.holder_img));
+		var index_body_head_div_name = document.getElementById("index_body_head_div_name");
+		index_body_head_div_name.innerHTML = holder.holder_name_zh;
+		var index_body_head_div_info = document.getElementById("index_body_head_div_info");
+		index_body_head_div_info.innerHTML = "就读于" + holder.holder_school_zh + "，" + holder.holder_school_year + "年入学 | 现居" + holder.holder_city_zh + " | github:<a href='https://github.com/yhswjtuilmare' target='_blank'>https://github.com/yhswjtuilmare</a>";
+	}
+	var totalPageIndex;
+	var currentPageIndex = 1;
+	function initIndexData(){
+		sendHttpPOST("/blog/SelectIndexController", {pageIndex:currentPageIndex}, function(request){
+			index = JSON.parse(request.responseText);
+			totalPageIndex = parseInt(index.totalPage);
+			initIndexList(index.list);
+		});
+	}
+	function initIndexList(array){
+		var index_body_content_area = document.getElementById("index_body_content_area");
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			var index_body_content_Info = document.createElement("div");
+			index_body_content_Info.className = "index_body_content_Info";
+			
+			var index_body_content_Info_name = document.createElement("div");
+			index_body_content_Info_name.className = "index_body_content_Info_name";
+			index_body_content_Info_name.innerHTML = holder.holder_name_zh == null?"主人":holder.holder_name_zh;
+			
+			var index_body_content_Info_date = document.createElement("div");
+			index_body_content_Info_date.className = "index_body_content_Info_date";
+			index_body_content_Info_date.innerHTML = new Date(index.index_date.time).toLocaleString();
+			
+			if(index.index_type == "1"){
+				var index_body_content_Info_title = document.createElement("div");
+				index_body_content_Info_title.className = "index_body_content_Info_title";
+				index_body_content_Info_title.innerHTML = "<a class='index_body_content_Info_a' id='" + index.index_id + "'>" + index.index_title + "</a>";
+			}
+			
+			var index_body_content_Info_content = document.createElement("div");
+			index_body_content_Info_content.className = "index_body_content_Info_content";
+			index_body_content_Info_content.innerHTML = index.index_glance;
+			
+			index_body_content_Info.appendChild(index_body_content_Info_name);
+			index_body_content_Info.appendChild(index_body_content_Info_date);
+			if(index.index_type == "1"){
+				index_body_content_Info.appendChild(index_body_content_Info_title);
+			}
+			index_body_content_Info.appendChild(index_body_content_Info_content);
+			index_body_content_area.appendChild(index_body_content_Info);
+		}
+		addEventListenerIndexList();
+	}
+	function initArticleField(article){
+		var passage_content = document.getElementById("passage_content");
+		var article_title = document.getElementById("article_title");
+		var passage_date = document.getElementById("passage_date");
+		var passage_detail = document.getElementById("passage_detail");
+		article_title.innerHTML = article.article_title;
+		passage_date.innerHTML = new Date(article.create_time.time).toLocaleString();
+		passage_detail.innerHTML = article.article_content;
+		passage_content.appendChild(article_title);
+		passage_content.appendChild(passage_date);
+		passage_content.appendChild(passage_detail);
+	}
+	function addEventListenerIndexList(){
+		var sectionA = document.getElementById("sectionA");var sectionB = document.getElementById("sectionB");
+		var sectionC = document.getElementById("sectionC");var sectionD = document.getElementById("sectionD");
+		var sectionE = document.getElementById("sectionE");
+		var index_body_content_Info_a = document.getElementsByClassName("index_body_content_Info_a");
+		var index_body = document.getElementById("index_body");
+		for(var i = 0; i < index_body_content_Info_a.length; i++){
+			var a = index_body_content_Info_a[i];
+			a.addEventListener("click", function(){
+				sendHttpPOST("/blog/SelectBlogArticleForIndexController", {article_id:this.id, visitor_id:visitor.visitor_nickname == "undefined"?"notlogin":visitor.visitor_nickname}, function(request){
+					article = JSON.parse(request.responseText);
+					initArticleField(article);
+					index_body.appendChild(sectionD);
+					sectionD.style.display = "block";
+					makeDivDisappear(sectionA, sectionC, sectionE, sectionB);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+    </script>
+    <body>
+    	 <div id="top">
+    	 	<button id="liuyanbutton">留言</button>
+        	<input id="topbutton" type="button"/>
+        </div>
+    	<!--登录提示框-->
+    	<div id="login_content">
+        	<div id="login_title">账号登录</div>
+            <div id="login_input_area">
+            	<div class="login_usr_pwd_area" id="user">
+                	<img class="input_icon" src="/blog/Images/user_icon.png"/>
+                	<input class="inputs" type="text" placeholder="请输入用户名" name="username" id="username"/>
+                </div>
+                <div class="login_usr_pwd_area" id="pwd">
+                	<img class="input_icon" src="/blog/Images/pwd_icon.png"/>
+                	<input class="inputs" type="password" placeholder="请输入密码" name="password"/>
+                </div>
+                <div id="forget">
+                	<button id="forget_button">忘记密码？</button>
+                </div>
+                <div id="button_div">
+                	<button id="login_buttn">登录</button>
+                    <button id="register_buttn">注册</button>
+                </div>
+            </div>
+        </div>
+        <!--登录提示框完-->
+<!--=========================================================================================================================-->
+    	<!--头部导航条-->
+    	<div id="index_head">
+        	<div id="index_name_icon">
+            	<img style="border-radius:20px;border:2px #f3f6f8 solid" width="40" height="40" src="/blog/Images/name_icon.png"/>
+            </div>
+        	<div id="index_head_inputArea">
+            	<div id="index_head_search_icon">
+                	<button id="search_button"></button>
+                </div>
+                <div id="index_head_search_input">
+                	<input placeholder="请输入想要搜索的内容" type="text" name="search_keywords" id="search_keywords"/>
+                </div>
+            </div>
+            <div id="login_and_register">
+            	<div id="partA">
+                    <button id="index_head_login_buttn">登录</button>
+                    <button id="index_head_register_buttn">注册</button>
+                </div>
+                <div id="partB">
+                	<button id="index_head_deregiste_buttn">注销</button>&nbsp;
+                	<span id="spaninfo"></span>
+                </div>
+            </div>
+        </div>
+        <!--头部导航条结束--> <!--=========================================================================================================================-->
+        <!--导航栏开始-->
+        <div id="tool_bar">
+        	<div id="tool_bar_button_content">
+            	<div id="navigator_buttn_div1" class="navigator_buttn_div">
+                	<button data-tag="1" class="navigator_buttn" id="navigator_buttn1">主页</button>
+                </div>
+               <div id="navigator_buttn_div2" class="navigator_buttn_div">
+                	<button data-tag="2" class="navigator_buttn" id="navigator_buttn2">博文</button>
+                </div>
+                <div id="navigator_buttn_div4" class="navigator_buttn_div">
+                	<button data-tag="3" class="navigator_buttn" id="navigator_buttn4">状态</button>
+                </div>
+                <div id="navigator_buttn_div4" class="navigator_buttn_div">
+                	<button data-tag="4" class="navigator_buttn" id="navigator_buttn4">关于我</button>
+                </div>
+            </div>
+        </div>
+        <!--导航栏结束-->
+ <!--=========================================================================================================================-->
+        <!--标题栏开始-->
+        <div id="index_body">
+        	
+        </div>
+        <div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/><br/>May all your wishes come true - IL MARE</div>
+        </div>
+        <div id="sectionD">
+        	<div id="passage_container">
+            	<div id="passage_content"><!--文章内容入口-->
+                    <h1 id="article_title"> </h1>
+                    <div id="passage_date"></div>
+                    <div id="passage_detail"></div>
+                </div>
+            </div>
+        </div>
+        <div id="sectionE">
+        	<div id="profile_container">
+            	<div id="profile_content">
+                	<img id="profile_icon_two" style="box-shadow:1px 1px 10px 1px #CCCCCC;border-radius:5px;" width="230" height="230" src="/blog/Images/head_icon.jpg"/>
+                    <div id="profile_name"></div>
+                    <div id="profile_signature">Just a green hand</div>
+                    <div id="profile_school"></div>
+                    <div id="profile_location"></div>
+                    <div id="profile_email"></div>
+                    <div id="about_me">About me</div>
+                    <div id="about_me_detail">
+                    	<p>大家好：</p>
+                        <p>我的名字叫IL MARE，大家也可以叫我虾米。</p>
+                        <p>作为博客新人，我想通过这个平台结识到更多的朋友，同时有所交流，提升自己的技术水平。我就读于我国西南部的一所传统工科211高校，坐标成都。个人擅长的技术领域主要集中在J2EE技术体系上，前后端都有涉猎。在移动端上ios刚刚入门，还属于小白一只，希望能够快速地提升自己的技术水平。</p><p>希望可以认识更多的人，嘿嘿，所有看到这条信息的有缘人，</p><p>System.out.println("Hello, World");</p>
+                        <p>NSLog(@"Hello,World");</p><p>console.log("Hello, World");</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<div id="sectionB">
+        	<div id="blog_list">
+            	<div id="blog_list_title">文章列表<hr /></div>
+                <div id="blog_list_titlelist">
+                	
+                </div>
+                <div id="blog_pageIndex">
+                	
+                </div>
+            </div>
+        </div>
+        <div id="sectionC">
+        	<div id="status_body_content_area">
+            		<div id="status_body_content_area_list">
+                        
+                    </div>
+                    <div id="status_pageIndex">
+                        
+                	</div>
+                </div>
+                
+        </div>
+        <div id="sectionA">
+        		<div id="index_container">
+                    <div id="index_body_head_div">
+                        <div id="index_body_head_div_back">
+                            <img width="860" height="310" src="/blog/Images/background_image.jpg"/>
+                        </div>
+                        <div id="index_body_head_div_icon">
+                            <img id="index_body_head_icon" width="187" height="187" />
+                        </div>
+                        <div id="index_body_head_div_name"></div>
+                        <div id="index_body_head_div_info"></div>
+                    </div>
+                    <!--标题栏结束-->
+                    
+                   	<div style="margin-top:30px;width:860px;" id="content_container">
+                    	<!--基本信息栏开始-->
+                        <div style="width:290px" id="index_content_container_left">
+                            <div id="index_body_basicInfo">
+                                <div id="index_body_basicInfo_one"></div>
+                                <div id="index_body_basicInfo_three"></div>
+                            </div>
+                            <!--基本信息栏结束-->
+                            <div id="index_body_notice">
+                                <div id="index_body_notice_title">
+                                    <div style="position:absolute;top:7px;left:6px;">&nbsp;通知公告</div>
+                                </div>
+                                <div id="index_body_notice_content"></div>
+                            </div>
+                        </div>
+             <!--=========================================================================================================================-->
+                        <div style="margin-top:-424px;margin-left:360px;width:500px" id="index_content_container_right">
+                            <div id="index_body_content_area">
+                                
+                            </div>
+                  
+                            <!--加载更多按钮-->
+                            <div id="page_index_area">
+                                <button id="load_more_buttn" style="font-family:'Microsoft YaHei';font-size:16px;color:#999;height:35px;width:500px;background-color:#FFF; border:0;outline:0">加载更多
+                                </button>
+                            </div>
+                            <!--加载更多按钮-->
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+         </div>
+    </body>
+</html>

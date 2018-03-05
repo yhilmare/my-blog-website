@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>给我留言</title>
+		<link rel="icon" href="/blog/Images/img.ico" type="image/x-ico" /> 
+	</head>
+	<script type="text/javascript">
+	function initStatusFunc(){
+		var status_submit_buttn = document.getElementById("status_submit_buttn");
+		var status_edit = document.getElementById("status_edit");
+		var text_index = document.getElementById("text_index");
+		status_edit.addEventListener("input", function(){
+			var index = 240 - this.value.length;
+			if(index <= 0){
+				text_index.innerHTML = "已经输入<font color='#FF0000'>" + this.value.length + "字（最多输入240字）</font>";
+			}else{
+				if(index <=20){
+					text_index.innerHTML = "已经输入" + this.value.length + "字<font color='#FF0000'>（还能输入" + index + "字）</font>";
+				}else{
+					text_index.innerHTML = "已经输入" + this.value.length + "字";
+				}
+				
+			}
+		}, false);
+		status_submit_buttn.addEventListener("click", function(){
+			if(status_edit.value.length > 240){
+				alert("留言不能超过140字");
+			}else if(status_edit.value.length <= 0){
+				alert("留言不能为空");
+			}else{
+				var form = document.getElementById("forms");
+				var message_longitude = document.getElementById("message_longitude");
+				var message_latitude = document.getElementById("message_latitude");
+				message_longitude.value = position.message_longitude;
+				message_latitude.value = position.message_latitude;
+				form.submit();
+			}
+		}, false);
+	}
+	var position = {
+		message_longitude:"0",
+		message_latitude:"0"
+	};
+	function getPosition(){
+		if(!navigator.geolocation) throw "gellocation not supported";
+		var options = {enableHighAccuracy:false,maximumAge:300000,timeout:10000};
+		navigator.geolocation.getCurrentPosition(function(pos){
+			position.message_longitude = pos.coords.longitude;
+			position.message_latitude = pos.coords.latitude;
+		},function(error){
+			position.message_longitude = "0";
+			position.message_latitude = "0";
+		},options);
+	}
+	window.onload = function(){
+		initStatusFunc();
+		getPosition();
+	}
+	</script>
+	<style>
+	body{margin:0;padding:0;overflow:auto;background-image:url(./Images/background-registe.jpg)}
+	#status_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;margin:auto;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px;margin-top:100px;background-color:#FFF;opacity:0.95;border-radius:5px}
+	#back_center_status_editor_buttns{width:600px;height:30px;margin-top:10px;}
+	#back_center_status_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
+	#back_center_status_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
+	#status_submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
+	#status_edit{border-radius:2px;outline:0;padding:20px 20px 20px 20px;font-family:"Microsoft YaHei";font-size:16px;}
+	#text_index{overflow:auto;font-size:14px;margin-bottom:5px;float:right;padding-right:5px;font-family:"Microsoft YaHei";margin-top:10px;}
+	#bottom_toolBar{position:fixed;bottom:0px;left:0px;font-family:Arial, Helvetica, sans-serif;box-shadow:0px -1px 20px 2px #CCCCCC;background-color:#CCC;height:110px;width:100%;background-color:#f6f6f6;border-top:1px #FFFFFF solid;}
+	#pageInfo{margin:auto;margin-top:30.5px;font-size:17px;color:#666;text-align:center;}
+	</style>
+	<body>
+		<div id="status_editor">
+            <div id="back_center_status_editor_buttns">
+                 <button id="status_submit_buttn">发表</button>
+            </div>
+           	<div style="font-family:Microsoft YaHei;margin-top:10px;font-size:18px">
+                           写下给博主的留言吧：
+            </div>
+           	<div id="text_index">已经输入0字</div>
+            <div style="width:900px;margin-top:10px;">
+            	 <form id="forms" action="/blog/InsertMessageController" method="post">
+                 	<textarea id="status_edit" cols="105" rows="5" name="message_content"></textarea>
+                 	<input type="hidden" name="message_longitude" id="message_longitude"/>
+                 	<input type="hidden" name="message_latitude" id="message_latitude"/>
+                 </form>
+            </div>
+        </div>
+        <div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/></div>
+        </div>
+	</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>ILMARE的博客</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	</head>
+	<script src="/blog/js/jquery.js"></script>
+	<script type="text/javascript">
+	Date.prototype.toLocaleString = function(){
+		var array = new Array();
+		array.push(this.getFullYear());
+		array.push(this.getMonth() + 1);
+		array.push(this.getDate());
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			if(index < 10){
+				array[i] = "0" + array[i];
+			}
+		}
+		var array1 = new Array();
+		array1.push(this.getHours());
+		array1.push(this.getMinutes());
+		array1.push(this.getSeconds());
+		for(var i = 0; i < array1.length; i++){
+			var index = array1[i];
+			if(index < 10){
+				array1[i] = "0" + array1[i];
+			}
+		}
+		return array.join("-") + " " + array1.join(":");
+	}
+	function sendHttpPOST(url, data, callBack){
+		var array = new Array();
+		var names = Object.getOwnPropertyNames(data);
+		for(var i = 0; i < names.length; i++){
+			if(!data.hasOwnProperty(names[i]))continue;
+			data[names[i]] = encodeURIComponent(data[names[i]]);
+			array.push(names[i] + "=" + data[names[i]]);
+		}
+		var request = new XMLHttpRequest();
+		request.open("POST", url);
+		request.onreadystatechange = function(event){
+			var res = event.target;
+			if(res.readyState == XMLHttpRequest.DONE && res.status == 200){
+				if(callBack){
+					callBack(request);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(array.join("&"));
+	}
+	function initDataFunc(){
+		sendHttpPOST("/blog/SelectHolderForIndexController", {}, function(request){
+			holder = JSON.parse(request.responseText);
+			initHeadBaeWithHolder();
+		});
+	}
+	var totalPageIndex;
+	var currentPageIndex = 1;
+	function initIndexData(){
+		sendHttpPOST("/blog/SelectIndexController", {pageIndex:currentPageIndex}, function(request){
+			index = JSON.parse(request.responseText);
+			totalPageIndex = parseInt(index.totalPage);
+			initIndexList(index.list);
+		});
+	}
+	function initIndexList(array){
+		var index_body_content_area = document.getElementById("index_body_content_area");
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			var index_body_content_Info = document.createElement("div");
+			index_body_content_Info.className = "index_body_content_Info";
+			
+			var index_body_content_Info_name = document.createElement("div");
+			index_body_content_Info_name.className = "index_body_content_Info_name";
+			index_body_content_Info_name.innerHTML = holder.holder_name_zh == null?"主人":holder.holder_name_zh;
+			
+			var index_body_content_Info_date = document.createElement("div");
+			index_body_content_Info_date.className = "index_body_content_Info_date";
+			index_body_content_Info_date.innerHTML = new Date(index.index_date.time).toLocaleString();
+			
+			if(index.index_type == "1"){
+				var index_body_content_Info_title = document.createElement("div");
+				index_body_content_Info_title.className = "index_body_content_Info_title";
+				index_body_content_Info_title.innerHTML = "<a class='index_body_content_Info_a' id='" + index.index_id + "'>" + index.index_title + "</a>";
+			}
+			
+			var index_body_content_Info_content = document.createElement("div");
+			index_body_content_Info_content.className = "index_body_content_Info_content";
+			index_body_content_Info_content.innerHTML = index.index_glance;
+			
+			index_body_content_Info.appendChild(index_body_content_Info_name);
+			index_body_content_Info.appendChild(index_body_content_Info_date);
+			if(index.index_type == "1"){
+				index_body_content_Info.appendChild(index_body_content_Info_title);
+			}
+			index_body_content_Info.appendChild(index_body_content_Info_content);
+			index_body_content_area.appendChild(index_body_content_Info);
+		}
+		addEventListenerIndexList();
+	}
+	function func(obj){
+		var names = Object.getOwnPropertyNames(obj);
+		var array = new Array();
+		for(var i = 0;i < names.length; i++){
+			var name = names[i];
+			array.push(name + "=" + obj[name]);
+		}
+		return array.join("&");
+	}
+	function addEventListenerIndexList(){
+		var index_body_content_Info_a = document.getElementsByClassName("index_body_content_Info_a");
+		for(var i = 0; i < index_body_content_Info_a.length; i++){
+			var a = index_body_content_Info_a[i];
+			a.addEventListener("click", function(){
+				this.target = "_blank";
+				this.href = "/blog/GenArticleController" + "?" + func({article_id:this.id, visitor_id:"notlogin"});	
+			}, false);
+		}
+	}
+	var pos = {};
+	function getGEOLocation(){
+		if(!navigator.geolocation) throw "gellocation not supported";
+		var options = {enableHighAccuracy:false,maximumAge:300000,timeout:10000};
+		navigator.geolocation.getCurrentPosition(function(position){
+			console.log("success");
+			pos.visit_latitude = position.coords.latitude;
+			pos.visit_longitude = position.coords.longitude;
+			pos.visitor_id = "notlogin";
+			sendHttpPOST("/blog/InsertVisitLogController", pos, function(request){
+				console.log("completed");
+			});
+		},function(error){
+			pos.visit_latitude = 0;
+			pos.visit_longitude = 0;
+			pos.visitor_id = "notlogin";
+			sendHttpPOST("/blog/InsertVisitLogController", pos, function(request){
+				console.log("completed");
+			});
+		}, options);
+	}
+	var holder = {};
+	function initHeadBaeWithHolder(){
+		var head_name = document.getElementById("head_name");
+		head_name.innerHTML = holder.holder_name_en;
+		var head_name_zh = document.getElementById("head_name_zh");
+		head_name_zh.innerHTML = holder.holder_name_zh;
+		var head_icon_profile = document.getElementById("head_icon_profile");
+		console.log(holder.holder_img);
+		head_icon_profile.src = (holder.holder_img == ""?"/blog/Images/head_icon.jpg":("/blog/" + holder.holder_img));
+	}
+	window.onload = function(){
+		initDataFunc();
+		initIndexData();
+		var head_icon = document.getElementById("head_icon");
+		var width = window.getComputedStyle(head_icon, null).width;
+		head_icon.style.height = width;
+		var temp = parseFloat(width.substring(0,width.indexOf("p")));
+		var head_icon_profile = document.getElementById("head_icon_profile");
+		head_icon_profile.style.height = width;
+		head_icon_profile.style.width = width;
+		head_icon_profile.style.borderRadius = ((temp + 20)/2) + "px";
+		$("#head_icon_profile").animate({width:"-=50px",height:"-=50px"}, {duration:300, easing:"linear", queue:true});
+		$("#head_icon_profile").animate({width:"+=50px",height:"+=50px"}, {duration:150, easing:"linear", queue:true});
+		document.getElementById("liuyanbutton").addEventListener("click", function(){
+			window.open("/blog/message.html");
+		}, false);
+		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
+		head_icon_profile.addEventListener("click", function(){
+			$("#head_icon_profile").animate({width:"-=50px",height:"-=50px"}, {duration:100, easing:"linear", queue:true});
+			$("#head_icon_profile").animate({width:"+=50px",height:"+=50px"}, {duration:100, easing:"linear", queue:true});
+		}, false);
+		document.getElementById("load_more_buttn").addEventListener("click", function(){//加载更多按钮点击处理函数
+			if(++currentPageIndex <= totalPageIndex){
+				sendHttpPOST("/blog/SelectIndexController", {pageIndex:currentPageIndex}, function(request){
+					index = JSON.parse(request.responseText);
+					totalPageIndex = parseInt(index.totalPage);
+					initIndexList(index.list);
+				});
+			}
+		}, false);
+		document.getElementById("about_buttn").addEventListener("click", function(){
+			var a = document.createElement("a");
+			a.href = "/blog/wapIndex/aboutme.html";
+			a.target = "_blank";
+			a.click();
+		}, false);
+		document.getElementById("blog_buttn").addEventListener("click", function(){
+			var a = document.createElement("a");
+			a.href = "/blog/wapIndex/articleList.html";
+			a.target = "_blank";
+			a.click();
+		}, false);
+		document.getElementById("status_buttn").addEventListener("click", function(){
+			var a = document.createElement("a");
+			a.href = "/blog/wapIndex/status.html";
+			a.target = "_blank";
+			a.click();
+		}, false);
+		getGEOLocation();
+	}
+	</script>
+	<style>
+	body{margin:auto;padding:0;background-color:#fff;width:99%;}
+	#head_name{margin-top:5%;margin-left:5%;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:36px;font-weight:900;}
+	#head_div{box-shadow:0px -1px 20px 2px #CCCCCC;border:1px #e9edf0 solid;width:100%;padding-bottom:60px;background-color:#e9edf0}
+	#bottom_toolBar{font-family:Arial, Helvetica, sans-serif;box-shadow:0px -1px 20px 2px #CCCCCC;background-color:#CCC;height:160px;width:100%;background-color:#f6f6f6;border-top:1px #FFFFFF solid;margin-top:40px;}
+	#pageInfo{margin:auto;margin-top:30.5px;font-size:17px;color:#666;text-align:center;}
+	#head_icon{width:40%;margin:auto;margin-top:10%;}
+	#head_icon_profile{box-shadow:2px 2px 20px 2px #CCCCCC;border:5px #fff solid;}
+	#head_name_zh{text-align:center;width:30%;font-family:"Microsoft YaHei";font-size:28px;font-weight:900;margin:auto;margin-top:8%;color:#666;}
+	#top{opacity:0.8;height:120px;z-index:20;box-shadow:2px 2px 20px 2px #CCCCCC;width:60px;background-color:#FAFAF9;position:fixed;bottom:20px;right:0px;}
+	#topbutton{font-family:"Microsoft YaHei";font-weight:900;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;}
+	#liuyanbutton{font-family:"Microsoft YaHei";font-weight:900;background-color:#fafaf9;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;border-bottom:0}
+	#domain_name{text-align:center;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:900;margin:auto;margin-top:3%;color:#666;}
+	#head_buttn{width:80%;margin:auto;margin-top:3%;}
+	#head_buttn button{width:100%;height:50px;outline:0;border:3px #666 solid;border-radius:3px;margin-top:15px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:18px;font-weight:900;}
+	#content_div{box-shadow:0px -1px 20px 2px #CCCCCC;border:1px #fff solid;width:100%;background-color:#fff;margin-top:60px;}
+	.index_body_content_Info{width:100%;border-bottom:1px #d1d1d1 dashed;}
+	.index_body_content_Info_name{font-weight:900;margin:auto;width:90%;height:35px;margin-top:10px;font-family:"Microsoft YaHei";font-size:22px;}
+	.index_body_content_Info_date{margin:auto;width:90%;height:17px;font-family:"Microsoft YaHei";color:#999;font-size:16px;}
+	.index_body_content_Info_content{margin:auto;margin-bottom:20px;margin-top:15px;width:90%;font-size:17px;color:#666;font-family:"Microsoft YaHei";}
+	.index_body_content_Info_title{margin:auto;font-family:"Microsoft YaHei";width:90%;margin-top:15px;font-size:20px;}
+	#page_index_area{width:100%;height:40px}
+	#page_index_area button{font-family:'Microsoft YaHei';font-size:18px;color:#999;height:40px;width:100%;background-color:#FFF; border:0;outline:0}
+	a{color:#0099ff;}
+	</style>
+	<body>
+		<div id="top">
+    	 	<button id="liuyanbutton">留言</button>
+    	 	<button id="topbutton">顶部</button>
+        </div>
+		<div id="head_div">
+			<div id="head_name"></div>
+			<div id="head_icon">
+				<img id="head_icon_profile"/>
+			</div>
+			<div id="head_name_zh"></div>
+			<div id="domain_name">ilmareblog.com</div>
+			<div id="head_buttn">
+				<button id="blog_buttn">Blog</button>
+				<button id="status_buttn">Status</button>
+				<button id="about_buttn">About</button>
+			</div>
+		</div>
+		<div id="content_div">
+			<div id="index_body_content_area" style="width:100%">
+				
+            </div>      
+            <!--加载更多按钮-->
+            <div id="page_index_area">
+                <button id="load_more_buttn">加载更多</button>
+            </div>
+            <!--加载更多按钮-->
+		</div>
+		<div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/><br/>May all your wishes come true - IL MARE</div>
+        </div>	
+	</body>
+</html>

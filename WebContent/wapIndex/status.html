@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>个人状态</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	</head>
+	<script type="text/javascript">
+	Date.prototype.toLocaleString = function(){
+		var array = new Array();
+		array.push(this.getFullYear());
+		array.push(this.getMonth() + 1);
+		array.push(this.getDate());
+		for(var i = 0; i < array.length; i++){
+			var index = array[i];
+			if(index < 10){
+				array[i] = "0" + array[i];
+			}
+		}
+		var array1 = new Array();
+		array1.push(this.getHours());
+		array1.push(this.getMinutes());
+		array1.push(this.getSeconds());
+		for(var i = 0; i < array1.length; i++){
+			var index = array1[i];
+			if(index < 10){
+				array1[i] = "0" + array1[i];
+			}
+		}
+		return array.join("-") + " " + array1.join(":");
+	}
+	function sendHttpPOST(url, data, callBack){
+		var array = new Array();
+		var names = Object.getOwnPropertyNames(data);
+		for(var i = 0; i < names.length; i++){
+			if(!data.hasOwnProperty(names[i]))continue;
+			data[names[i]] = encodeURIComponent(data[names[i]]);
+			array.push(names[i] + "=" + data[names[i]]);
+		}
+		var request = new XMLHttpRequest();
+		request.open("POST", url);
+		request.onreadystatechange = function(event){
+			var res = event.target;
+			if(res.readyState == XMLHttpRequest.DONE && res.status == 200){
+				if(callBack){
+					callBack(request);
+				}
+			}
+		}
+		request.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+		request.send(array.join("&"));
+	}
+	function updateStatusList(array){
+		var status_body_content_area_list = document.getElementById("status_body_content_area_list");
+		status_body_content_area_list.innerHTML = "";
+		removerAllChildNodes(status_body_content_area_list);
+		for(var i = 0; i < array.length; i++){
+			var status = array[i];
+			var status_body_content_Info = document.createElement("div");
+			status_body_content_Info.className = "status_body_content_Info";
+			
+			var status_body_content_Info_date = document.createElement("div");
+			status_body_content_Info_date.className = "status_body_content_Info_date";
+			
+			var status_body_content_Info_content = document.createElement("div");
+			status_body_content_Info_content.className = "status_body_content_Info_content";
+			
+			status_body_content_Info.appendChild(status_body_content_Info_date);
+			status_body_content_Info.appendChild(status_body_content_Info_content);
+			
+			var date = new Date(status.publish_date.time);
+			
+			status_body_content_Info_date.innerHTML = date.toLocaleString();
+			status_body_content_Info_content.innerHTML = status.status_content;
+			status_body_content_area_list.appendChild(status_body_content_Info);
+		}
+	}
+	function updateStatusPageIndex(page){
+		var array = new Array();
+		var status_pageIndex = document.getElementById("status_pageIndex");
+		status_pageIndex.innerHTML = "";
+		removerAllChildNodes(status_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "status_list_pageIndex";
+		status_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "status_list_pageIndex";
+			status_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "status_list_pageIndex";
+				status_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "status_list_pageIndex";
+			status_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "status_list_pageIndex";
+		status_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		status_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("status_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpPOST("/blog/SelectStatusForIndexController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateStatusList(obj.list);
+					updateStatusPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	window.onload = function(){
+		sendHttpPOST("/blog/SelectStatusForIndexController", {pageIndex:"1"}, function(request){
+			var obj = JSON.parse(request.responseText);
+			updateStatusList(obj.list);
+			updateStatusPageIndex(obj);
+		});
+		document.getElementById("liuyanbutton").addEventListener("click", function(){
+			window.open("/blog/message.html");
+		}, false);
+		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
+	}
+	function removerAllChildNodes(div){
+		while(div.hasChildNodes()){
+			div.removeChild(div.firstChild);
+		}
+	}
+	</script>
+	<style>
+	body{padding:0;margin:auto;width:99%;}
+	#top{opacity:0.8;height:120px;z-index:20;box-shadow:2px 2px 20px 2px #CCCCCC;width:60px;background-color:#FAFAF9;position:fixed;bottom:20px;right:0px;}
+	#topbutton{font-family:"Microsoft YaHei";font-weight:900;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;}
+	#liuyanbutton{font-family:"Microsoft YaHei";font-weight:900;background-color:#fafaf9;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;border-bottom:0}
+	#bottom_toolBar{font-family:Arial, Helvetica, sans-serif;background-color:#CCC;height:160px;width:100%;background-color:#f6f6f6;border-top:1px #FFFFFF solid;margin-top:10px;}
+	#pageInfo{margin:auto;margin-top:30.5px;font-size:17px;color:#666;text-align:center;}
+	#head_div{border:1px #fff solid;border-bottom:1px #ccc solid;width:100%;height:80px;}
+	#head_div_name{width:50%;margin-left:15px;margin-top:7px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:36px;font-weight:900;}
+	#head_div_domain{width:50%;margin-left:15px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:900;}
+	#status_body_content_area{width:100%;}
+	.status_body_content_Info{position:relative;top:0px;left:0px;width:100%;border:1px #fff solid;border-bottom:1px #ccc dashed;}
+	.status_body_content_Info_date{margin:auto;width:90%;height:17px;margin-top:10px;font-family:"Microsoft YaHei";color:#999;font-size:16px;}
+	.status_body_content_Info_content{margin:auto;margin-bottom:20px;margin-top:15px;width:90%;font-size:17px;color:#666;font-family:"Microsoft YaHei";}
+	#status_pageIndex{color:#545454;margin:auto;font-family:"Microsoft YaHei";width:100%;height:30px;text-align:center;margin-top:10px;font-size:18px;}
+	</style>
+	<body>
+		<div id="top">
+    	 	<button id="liuyanbutton">留言</button>
+    	 	<button id="topbutton">顶部</button>
+        </div>
+        <div id="head_div">
+        	<div id="head_div_name">IL MARE</div>
+        	<div id="head_div_domain">ilmareblog.com</div>
+        </div>
+        <div id="status_body_content_area">
+           	<div id="status_body_content_area_list">
+                
+            </div>
+           	<div id="status_pageIndex">
+                        
+            </div>
+        </div>
+        <div id="bottom_toolBar">
+        	<div id="pageInfo"><font color="#FF0000">For my dear Crystal</font><br/><br/>Designed and implemented by IL MARE<br/><br/>May all your wishes come true - IL MARE</div>
+        </div>
+	</body>
+</html>
