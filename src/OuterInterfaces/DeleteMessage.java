@@ -6,9 +6,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogMessage2DBService;
 import domain.TipMessage;
-import net.sf.json.JSONObject;
 
 
 public class DeleteMessage extends HttpServlet {
@@ -17,19 +18,18 @@ public class DeleteMessage extends HttpServlet {
 		String loginID = request.getParameter("loginID");
 		String messageID = request.getParameter("messageID");
 		TipMessage msg = new TipMessage();
+		ObjectMapper mapper = new ObjectMapper();
 		if (messageID == null){
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("留言ID值未传送");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		String temp = (String) this.getServletContext().getAttribute("loginID");
 		if (temp == null){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("登录已过期或未登录");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		if (!temp.equals(loginID)){
@@ -45,8 +45,7 @@ public class DeleteMessage extends HttpServlet {
 				msg.setMessageDetail("删除留言成功");
 			}
 		}
-		JSONObject obj = JSONObject.fromObject(msg);
-		response.getWriter().write(obj.toString());
+		response.getWriter().write(mapper.writeValueAsString(msg));
 	}
 
 	

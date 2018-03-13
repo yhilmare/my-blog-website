@@ -6,9 +6,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogStatus2DBService;
 import domain.TipMessage;
-import net.sf.json.JSONObject;
 
 
 public class DeleteStatus extends HttpServlet {
@@ -17,19 +18,18 @@ public class DeleteStatus extends HttpServlet {
 		String statusID = request.getParameter("statusID");
 		String loginID = request.getParameter("loginID");
 		TipMessage msg = new TipMessage();
+		ObjectMapper mapper = new ObjectMapper();
 		if (statusID == null){
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("说说ID值未传送");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		String temp = (String) this.getServletContext().getAttribute("loginID");
 		if (temp == null){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("登录已过期或未登录");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		if (!temp.equals(loginID)){
@@ -45,8 +45,7 @@ public class DeleteStatus extends HttpServlet {
 				msg.setMessageDetail("删除说说成功");
 			}
 		}
-		JSONObject obj = JSONObject.fromObject(msg);
-		response.getWriter().write(obj.toString());
+		response.getWriter().write(mapper.writeValueAsString(msg));
 	}
 
 	

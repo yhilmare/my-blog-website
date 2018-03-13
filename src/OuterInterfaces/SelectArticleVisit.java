@@ -6,10 +6,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogVisitArticle2DBService;
 import domain.TipMessage;
 import domain.blog_page;
-import net.sf.json.JSONObject;
 
 
 public class SelectArticleVisit extends HttpServlet {
@@ -18,26 +19,24 @@ public class SelectArticleVisit extends HttpServlet {
 		String loginID = request.getParameter("loginID");
 		String pageIndex = request.getParameter("pageIndex");
 		TipMessage msg = new TipMessage();
+		ObjectMapper mapper = new ObjectMapper();
 		if (pageIndex == null){
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("页码值未传送");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		String temp = (String) this.getServletContext().getAttribute("loginID");
 		if (temp == null){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("登录已过期或未登录");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		if(!temp.equals(loginID)){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("登录已过期或未登录");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 		}else{
 			BlogVisitArticle2DBService service = new BlogVisitArticle2DBService();
 			blog_page page;
@@ -50,11 +49,9 @@ public class SelectArticleVisit extends HttpServlet {
 			if(page == null){
 				msg.setMessageCode("-300");
 				msg.setMessageDetail("访问记录获取失败");
-				JSONObject obj = JSONObject.fromObject(msg);
-				response.getWriter().write(obj.toString());
+				response.getWriter().write(mapper.writeValueAsString(msg));
 			}else{
-				JSONObject obj = JSONObject.fromObject(page);
-				response.getWriter().write(obj.toString());
+				response.getWriter().write(mapper.writeValueAsString(page));
 			}
 		}
 	}

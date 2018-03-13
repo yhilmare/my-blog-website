@@ -6,12 +6,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogStatus2DBService;
 import Utils.UniqueCode;
 import domain.TipMessage;
 import domain.blog_holder;
 import domain.blog_status;
-import net.sf.json.JSONObject;
 
 
 public class InsertStatus extends HttpServlet {
@@ -20,11 +21,11 @@ public class InsertStatus extends HttpServlet {
 		String loginID = request.getParameter("loginID");
 		String statusContent = request.getParameter("statusContent");
 		TipMessage msg = new TipMessage();
+		ObjectMapper mapper = new ObjectMapper();
 		if (statusContent == null){
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("说说内容不能为空");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		String temp = (String) this.getServletContext().getAttribute("loginID");
@@ -32,8 +33,7 @@ public class InsertStatus extends HttpServlet {
 		if (temp == null || holder == null){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("服务器内部错误");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		if (!temp.equals(loginID)){
@@ -53,8 +53,7 @@ public class InsertStatus extends HttpServlet {
 				msg.setMessageDetail("说说发布失败");
 			}
 		}
-		JSONObject obj = JSONObject.fromObject(msg);
-		response.getWriter().write(obj.toString());
+		response.getWriter().write(mapper.writeValueAsString(msg));
 	}
 
 	

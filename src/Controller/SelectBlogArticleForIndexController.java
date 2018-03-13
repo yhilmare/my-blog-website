@@ -6,12 +6,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogArticle2DBService;
 import Service.BlogVisitArticle2DBService;
 import Utils.UniqueCode;
 import domain.blog_article;
 import domain.blog_visit_article;
-import net.sf.json.JSONObject;
 
 
 public class SelectBlogArticleForIndexController extends HttpServlet {
@@ -37,8 +38,8 @@ public class SelectBlogArticleForIndexController extends HttpServlet {
 		if(article == null){
 			response.getWriter().write("≤È—Ø ß∞‹");
 		}else{
-			JSONObject obj = JSONObject.fromObject(article);
-			response.getWriter().write(obj.toString());
+			ObjectMapper mapper = new ObjectMapper();
+			response.getWriter().write(mapper.writeValueAsString(article));
 		}
 	}
 

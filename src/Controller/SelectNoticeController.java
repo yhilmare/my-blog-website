@@ -6,10 +6,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogNotice2DBService;
 import domain.blog_notice;
 import domain.blog_page;
-import net.sf.json.JSONObject;
 
 
 public class SelectNoticeController extends HttpServlet {
@@ -23,8 +24,8 @@ public class SelectNoticeController extends HttpServlet {
 		}else{
 			notice = (blog_notice) page.getList().get(0);
 		}
-		JSONObject obj = JSONObject.fromObject(notice);
-		response.getWriter().write(obj.toString());
+		ObjectMapper mapper = new ObjectMapper();
+		response.getWriter().write(mapper.writeValueAsString(notice));
 	}
 
 	

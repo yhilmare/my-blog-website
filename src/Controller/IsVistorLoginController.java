@@ -7,8 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import domain.blog_visitor;
-import net.sf.json.JSONObject;
 
 public class IsVistorLoginController extends HttpServlet {
 	
@@ -23,8 +24,8 @@ public class IsVistorLoginController extends HttpServlet {
 			response.getWriter().write("false");
 			return;
 		}
-		JSONObject obj = JSONObject.fromObject(visitor);
-		response.getWriter().write(obj.toString());
+		ObjectMapper mapper = new ObjectMapper();
+		response.getWriter().write(mapper.writeValueAsString(visitor));
 	}
 
 	

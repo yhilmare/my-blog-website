@@ -11,7 +11,6 @@ import Service.BlogVisitArticle2DBService;
 import Utils.UniqueCode;
 import domain.blog_article;
 import domain.blog_visit_article;
-import net.sf.json.JSONObject;
 
 
 public class GenArticleController extends HttpServlet {

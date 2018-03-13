@@ -6,11 +6,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogHolder2DBService;
 import Utils.UniqueCode;
 import domain.TipMessage;
 import domain.blog_holder;
-import net.sf.json.JSONObject;
 
 public class UserLogin extends HttpServlet {
 	
@@ -18,11 +19,11 @@ public class UserLogin extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		TipMessage msg = new TipMessage();
+		ObjectMapper mapper = new ObjectMapper();
 		if (username == null || password == null){
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("用户名或密码缺失");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		BlogHolder2DBService service = new BlogHolder2DBService();
@@ -30,8 +31,7 @@ public class UserLogin extends HttpServlet {
 		if (holder == null){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("用户不存在");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		if (holder.getHolder_pwd().equals(password)){
@@ -39,13 +39,11 @@ public class UserLogin extends HttpServlet {
 			this.getServletContext().setAttribute("loginID", loginID);
 			msg.setMessageCode("200");
 			msg.setMessageDetail(loginID);
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 		}else{
 			msg.setMessageCode("-300");
 			msg.setMessageDetail("用户存在但密码错误");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 		}
 	}
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

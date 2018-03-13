@@ -10,8 +10,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import domain.TipMessage;
-import net.sf.json.JSONObject;
 
 public class LoginFilter implements Filter {
 
@@ -23,8 +24,8 @@ public class LoginFilter implements Filter {
 			TipMessage msg = new TipMessage();
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("µÇÂ¼ÑéÖ¤ÂëÎ´´«ËÍ");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			ObjectMapper mapper = new ObjectMapper();
+			response.getWriter().write(mapper.writeValueAsString(msg));
 		}else{
 			chain.doFilter(request, response);
 		}	

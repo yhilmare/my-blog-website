@@ -68,7 +68,7 @@
 			
 			var blog_list_date = document.createElement("div");
 			blog_list_date.className = "blog_list_date";
-			blog_list_date.innerHTML = new Date(article.create_time.time).toLocaleString();
+			blog_list_date.innerHTML = article.create_time;
 			
 			blod_contener.appendChild(blog_list_date);
 			blod_contener.appendChild(blog_list_href);

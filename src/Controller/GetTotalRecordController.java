@@ -6,10 +6,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogArticle2DBService;
 import Service.BlogStatus2DBService;
 import domain.blog_info;
-import net.sf.json.JSONObject;
 
 
 public class GetTotalRecordController extends HttpServlet {
@@ -20,8 +21,8 @@ public class GetTotalRecordController extends HttpServlet {
 		blog_info info = new blog_info();
 		info.setTotalArticle(service.getTotalRecord());
 		info.setTotalStatus(service1.getTotalRecord());
-		JSONObject obj = JSONObject.fromObject(info);
-		response.getWriter().write(obj.toString());
+		ObjectMapper mapper= new ObjectMapper();
+		response.getWriter().write(mapper.writeValueAsString(info));
 	}
 
 	

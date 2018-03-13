@@ -7,8 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import domain.blog_holder;
-import net.sf.json.JSONObject;
 
 
 public class GetProfileInfoController extends HttpServlet {
@@ -24,8 +25,8 @@ public class GetProfileInfoController extends HttpServlet {
 			response.getWriter().write("¶Ô²»ÆðÄúÎ´µÇÂ¼");
 			return;
 		}
-		JSONObject obj = JSONObject.fromObject(holder);
-		response.getWriter().write(obj.toString());
+		ObjectMapper mapper = new ObjectMapper();
+		response.getWriter().write(mapper.writeValueAsString(holder));
 	}
 
 	

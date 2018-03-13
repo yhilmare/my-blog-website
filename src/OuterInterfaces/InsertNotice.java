@@ -6,12 +6,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogNotice2DBService;
 import Utils.UniqueCode;
 import domain.TipMessage;
 import domain.blog_holder;
 import domain.blog_notice;
-import net.sf.json.JSONObject;
 
 
 public class InsertNotice extends HttpServlet {
@@ -20,11 +21,11 @@ public class InsertNotice extends HttpServlet {
 		String loginID = request.getParameter("loginID");
 		String noticeContent = request.getParameter("noticeContent");
 		TipMessage msg = new TipMessage();
+		ObjectMapper mapper = new ObjectMapper();
 		if (noticeContent == null){
 			msg.setMessageCode("-100");
 			msg.setMessageDetail("公告内容不能为空");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		String temp = (String) this.getServletContext().getAttribute("loginID");
@@ -32,8 +33,7 @@ public class InsertNotice extends HttpServlet {
 		if (temp == null || holder == null){
 			msg.setMessageCode("-200");
 			msg.setMessageDetail("服务器内部错误");
-			JSONObject obj = JSONObject.fromObject(msg);
-			response.getWriter().write(obj.toString());
+			response.getWriter().write(mapper.writeValueAsString(msg));
 			return;
 		}
 		if (!temp.equals(loginID)){
@@ -53,8 +53,7 @@ public class InsertNotice extends HttpServlet {
 				msg.setMessageDetail("公告发布失败");
 			}
 		}
-		JSONObject obj = JSONObject.fromObject(msg);
-		response.getWriter().write(obj.toString());
+		response.getWriter().write(mapper.writeValueAsString(msg));
 	}
 
 	

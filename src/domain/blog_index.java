@@ -2,12 +2,15 @@ package domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class blog_index {
 	
 	private String index_id;
 	private String index_type;
 	private String index_glance;
 	private String index_title;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",locale="zh",timezone="GMT+8")
 	private Date index_date;
 	public String getIndex_id() {
 		return index_id;

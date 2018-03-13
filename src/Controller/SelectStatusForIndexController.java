@@ -6,9 +6,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogStatus2DBService;
 import domain.blog_page;
-import net.sf.json.JSONObject;
 
 
 public class SelectStatusForIndexController extends HttpServlet {
@@ -24,8 +25,8 @@ public class SelectStatusForIndexController extends HttpServlet {
 		if(page == null){
 			response.getWriter().write("≤È—Ø ß∞‹");
 		}else{
-			JSONObject obj = JSONObject.fromObject(page);
-			response.getWriter().write(obj.toString());
+			ObjectMapper mapper = new ObjectMapper();
+			response.getWriter().write(mapper.writeValueAsString(page));
 		}
 	}
 

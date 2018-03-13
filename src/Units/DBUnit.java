@@ -22,6 +22,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import DAO.BlogVisitArticle2DB;
 import DAO.BlogVisitor2DB;
 import Factory.DataAccessFactory;
@@ -53,9 +56,7 @@ import domain.blog_status;
 import domain.blog_visit;
 import domain.blog_visit_article;
 import domain.blog_visitor;
-import net.sf.json.JSONObject;
 import sun.misc.BASE64Encoder;
-import test.article_test;
 
 public class DBUnit {
 	
@@ -67,10 +68,7 @@ public class DBUnit {
 	}
 	@Test
 	public void test2(){
-		String sql = "select article_id,article_content,article_title,holder_id from blog_article where article_id=?";
-		Object[] params = {"1234567"};
-		article_test test = (article_test) DBUtils.query(sql, params, new BeanHandler(article_test.class));
-		System.out.println(test.getArticle_content());
+		
 	}
 	
 	@Test
@@ -300,11 +298,11 @@ public class DBUnit {
 	}
 	
 	@Test
-	public void test21(){
+	public void test21() throws JsonProcessingException{
 		BlogArticle2DBService service = new BlogArticle2DBService();
 		blog_page page = service.selectArticleIndex(1, 9, 5);
-		JSONObject obj = JSONObject.fromObject(page);
-		System.out.println(obj.toString());
+		ObjectMapper mapper = new ObjectMapper();
+		System.out.println(mapper.writeValueAsString(page));
 	}
 	
 	@Test

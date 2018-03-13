@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib uri="http://localhost:8088" prefix="fn" %>
+<%@ taglib uri="http://localhost:8088" prefix="fn"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
@@ -30,9 +30,9 @@
 	#head_div_domain{width:50%;margin-left:15px;color:#666;font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:900;}
 	#head_div_domain a{color:#ccc;text-decoration:none;}
 	#middle_content{margin-top:80px;width:100%;border:1px #fff solid;}
-	#passage_area{width:90%;margin:auto;margin-top:10px;}
+	#passage_area{width:93%;margin:auto;margin-top:10px;}
 	#passage_date{width:100%;font-size:16px;color:#999;}
-	#passage_content{width:100%;font-size:18px;font-family:serif;color:#333;}
+	#passage_content{width:100%;font-size:17px;font-family:serif;color:#333;}
 	img{width:100%;}
 	</style>
 	<body>

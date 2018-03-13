@@ -7,9 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogVisitArticle2DBService;
 import domain.blog_page;
-import net.sf.json.JSONObject;
 
 
 public class SelectArticleVisitController extends HttpServlet {
@@ -32,8 +33,8 @@ public class SelectArticleVisitController extends HttpServlet {
 		BlogVisitArticle2DBService service = new BlogVisitArticle2DBService();
 		blog_page page = service.selectVisitArticle(Integer.parseInt(pageIndex), 12, 10);
 		if(page != null){
-			JSONObject obj = JSONObject.fromObject(page);
-			response.getWriter().write(obj.toString());
+			ObjectMapper mapper = new ObjectMapper();
+			response.getWriter().write(mapper.writeValueAsString(page));
 		}
 	}
 

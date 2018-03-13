@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import domain.blog_holder;
-import net.sf.json.JSONObject;
 
 
 public class SelectHolderForIndexController extends HttpServlet {
@@ -24,8 +25,8 @@ public class SelectHolderForIndexController extends HttpServlet {
 		}
 		String pass = holder.getHolder_pwd();
 		holder.setHolder_pwd("");
-		JSONObject obj = JSONObject.fromObject(holder);
-		response.getWriter().write(obj.toString());
+		ObjectMapper mapper = new ObjectMapper();
+		response.getWriter().write(mapper.writeValueAsString(holder));
 		holder.setHolder_pwd(pass);
 	}
 

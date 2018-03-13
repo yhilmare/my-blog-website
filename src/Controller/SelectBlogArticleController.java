@@ -7,10 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogArticle2DBService;
 import domain.blog_article;
 import domain.blog_holder;
-import net.sf.json.JSONObject;
 
 
 public class SelectBlogArticleController extends HttpServlet {
@@ -36,8 +37,8 @@ public class SelectBlogArticleController extends HttpServlet {
 		if(article == null){
 			response.getWriter().write("≤È—Ø ß∞‹");
 		}else{
-			JSONObject obj = JSONObject.fromObject(article);
-			response.getWriter().write(obj.toString());
+			ObjectMapper mapper = new ObjectMapper();
+			response.getWriter().write(mapper.writeValueAsString(article));
 		}
 	}
 

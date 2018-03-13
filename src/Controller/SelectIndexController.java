@@ -6,9 +6,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Service.BlogIndex2DBService;
 import domain.blog_page;
-import net.sf.json.JSONObject;
 
 
 public class SelectIndexController extends HttpServlet {
@@ -21,8 +22,8 @@ public class SelectIndexController extends HttpServlet {
 		}
 		BlogIndex2DBService service = new BlogIndex2DBService();
 		blog_page page = service.selectIndex(Integer.parseInt(pageIndex), 5, 5);
-		JSONObject obj = JSONObject.fromObject(page);
-		response.getWriter().write(obj.toString());
+		ObjectMapper mapper = new ObjectMapper();
+		response.getWriter().write(mapper.writeValueAsString(page));
 	}
 
 	

@@ -69,10 +69,8 @@
 			
 			status_body_content_Info.appendChild(status_body_content_Info_date);
 			status_body_content_Info.appendChild(status_body_content_Info_content);
-			
-			var date = new Date(status.publish_date.time);
-			
-			status_body_content_Info_date.innerHTML = date.toLocaleString();
+						
+			status_body_content_Info_date.innerHTML = status.publish_date;
 			status_body_content_Info_content.innerHTML = status.status_content;
 			status_body_content_area_list.appendChild(status_body_content_Info);
 		}

@@ -2,11 +2,14 @@ package domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class blog_visit_article {
 	private String visit_id;
 	private String article_title;
 	private String article_id;
 	private String visitor_id;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",locale="zh",timezone="GMT+8")
 	private Date visit_date;
 	
 	public String getArticle_title() {

@@ -2,12 +2,15 @@ package domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class blog_article {
 
 	private String article_id;
 	private String article_content;
 	private String article_title;
 	private String holder_id;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",locale="zh",timezone="GMT+8")
 	private Date create_time;
 	
 	public Date getCreate_time() {

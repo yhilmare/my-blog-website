@@ -504,8 +504,7 @@
 			
 			article_visit_name.innerHTML = visit.visitor_id;
 			article_visit_title.innerHTML = visit.article_title;
-			var date = new Date(visit.visit_date.time);
-			article_visit_date.innerHTML = date.toLocaleString();
+			article_visit_date.innerHTML = visit.visit_date;
 			
 			visitor.appendChild(article_visit_name);
 			visitor.appendChild(article_visit_title);
@@ -634,8 +633,7 @@
 			visit_name.innerHTML = visit.visitor_id;
 			visit_longitude.innerHTML = visit.visit_longitude;
 			visit_latitude.innerHTML = visit.visit_latitude;
-			var date = new Date(visit.visit_date.time);
-			visit_date.innerHTML = date.toLocaleString();
+			visit_date.innerHTML = visit.visit_date;
 			
 			visitor.appendChild(visit_name);
 			visitor.appendChild(visit_longitude);
@@ -821,7 +819,7 @@
 			
 			var liuyan_management_date = document.createElement("div");
 			liuyan_management_date.className = "liuyan_management_date";
-			liuyan_management_date.innerHTML = (new Date(message.message_date.time)).toLocaleString();
+			liuyan_management_date.innerHTML = message.message_date;
 			liuyan_management.appendChild(liuyan_management_date);
 			
 			var liuyan_management_content = document.createElement("div");
@@ -859,7 +857,7 @@
 			
 			var liuyan_management_date = document.createElement("div");
 			liuyan_management_date.className = "liuyan_management_date";
-			liuyan_management_date.innerHTML = (new Date(message.message_date.time)).toLocaleString();
+			liuyan_management_date.innerHTML = message.message_date;
 			liuyan_management.appendChild(liuyan_management_date);
 			
 			var liuyan_management_content = document.createElement("div");
@@ -926,8 +924,7 @@
 			status_management.appendChild(status_management_content);
 			status_management.appendChild(status_management_op);
 			
-			var date = new Date(status.publish_date.time);
-			status_management_date.innerHTML = date.toLocaleString();
+			status_management_date.innerHTML = status.publish_date;
 			status_management_content.innerHTML = status.status_content;
 			status_management_op.innerHTML = "<a class='status_op_del' id='" + status.status_id + "'>删除</a>";
 			status_manage.appendChild(status_management);
@@ -1141,8 +1138,7 @@
 
 			blog_list_div.appendChild(blog_list_div_op);
 			blog_list_div_title.innerHTML = article.article_title;
-			var date = new Date(article.create_time.time);
-			blog_list_div_op.innerHTML = date.toLocaleString() + "<a class='div_op_edit' id='"+article.article_id+"'>编辑</a><a id='"+article.article_id+"' class='div_op_del'>删除</a>";
+			blog_list_div_op.innerHTML = article.create_time + "<a class='div_op_edit' id='"+article.article_id+"'>编辑</a><a id='"+article.article_id+"' class='div_op_del'>删除</a>";
 			back_center_blog_list.appendChild(blog_list_div);
 		}
 		initEditFunc();

@@ -2,9 +2,12 @@ package domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class blog_visit {
 	private double visit_longitude;
 	private double visit_latitude;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",locale="zh",timezone="GMT+8")
 	private Date visit_date;
 	private String visitor_id;
 	public double getVisit_longitude() {

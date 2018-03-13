@@ -237,9 +237,8 @@
 			status_body_content_Info.appendChild(status_body_content_Info_date);
 			status_body_content_Info.appendChild(status_body_content_Info_content);
 			
-			var date = new Date(status.publish_date.time);
 			status_body_content_Info_name.innerHTML = holder.holder_name_zh;
-			status_body_content_Info_date.innerHTML = date.toLocaleString();
+			status_body_content_Info_date.innerHTML = status.publish_date;
 			status_body_content_Info_content.innerHTML = status.status_content;
 			status_body_content_area_list.appendChild(status_body_content_Info);
 		}
@@ -325,7 +324,7 @@
 			var blog_list_date = document.createElement("div");
 			blog_list_date.className = "blog_list_date";
 			blog_list_date.style.float = "right";
-			blog_list_date.innerHTML = new Date(article.create_time.time).toLocaleString();
+			blog_list_date.innerHTML = article.create_time;
 			blod_contener.appendChild(blog_list_href);
 			blod_contener.appendChild(blog_list_date);
 			
@@ -569,7 +568,7 @@
 		var index_body_notice_content = document.getElementById("index_body_notice_content");
 		sendHttpPOST("/blog/SelectNoticeController", {}, function(request){
 			var info = JSON.parse(request.responseText);
-			index_body_notice_content.innerHTML = new Date(info.publish_date.time).toLocaleString() + "<br/>" + info.notice_content;
+			index_body_notice_content.innerHTML = info.publish_date + "<br/>" + info.notice_content;
 		});
 	}
 	function initBasicInfo(){
@@ -664,7 +663,7 @@
 			
 			var index_body_content_Info_date = document.createElement("div");
 			index_body_content_Info_date.className = "index_body_content_Info_date";
-			index_body_content_Info_date.innerHTML = new Date(index.index_date.time).toLocaleString();
+			index_body_content_Info_date.innerHTML = index.index_date;
 			
 			if(index.index_type == "1"){
 				var index_body_content_Info_title = document.createElement("div");
@@ -692,7 +691,7 @@
 		var passage_date = document.getElementById("passage_date");
 		var passage_detail = document.getElementById("passage_detail");
 		article_title.innerHTML = article.article_title;
-		passage_date.innerHTML = new Date(article.create_time.time).toLocaleString();
+		passage_date.innerHTML = article.create_time;
 		passage_detail.innerHTML = article.article_content;
 		passage_content.appendChild(article_title);
 		passage_content.appendChild(passage_date);

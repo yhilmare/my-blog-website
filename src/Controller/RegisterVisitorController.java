@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import Service.BlogVisitor2DBService;
-import domain.TipMessage;
 import domain.blog_visitor;
-import net.sf.json.JSONObject;
 
 //·Ã¿Í×¢²á½Ó¿Ú
 public class RegisterVisitorController extends HttpServlet {
