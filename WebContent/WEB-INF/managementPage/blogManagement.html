@@ -192,9 +192,9 @@
 		var status_edit = document.getElementById("status_edit");
 		var text_index = document.getElementById("text_index");
 		status_edit.addEventListener("input", function(){
-			var index = 140 - this.value.length;
+			var index = 1500 - this.value.length;
 			if(index <= 0){
-				text_index.innerHTML = "已经输入<font color='#FF0000'>" + this.value.length + "字（最多输入140字）</font>";
+				text_index.innerHTML = "已经输入<font color='#FF0000'>" + this.value.length + "字（最多输入1500字）</font>";
 			}else{
 				if(index <=20){
 					text_index.innerHTML = "已经输入" + this.value.length + "字<font color='#FF0000'>（还能输入" + index + "字）</font>";
@@ -205,8 +205,8 @@
 			}
 		}, false);
 		status_submit_buttn.addEventListener("click", function(){
-			if(status_edit.value.length > 140){
-				alert("状态不能超过140字");
+			if(status_edit.value.length > 1500){
+				alert("状态不能超过1500字");
 			}else{
 				sendHttpFormRequest("/blog/InsertStatusController", {status_content:status_edit.value}, function(request){
 				alert(request.responseText);
@@ -1409,7 +1409,7 @@
                     </div>
                     
                     <div class="back_center_class" data-tag="4">
-                        <div id="status_manage" style="width:900px;margin:auto">
+                        <div id="status_manage" style="width:920px;margin:auto;height:400px;overflow:auto;">
                         	
                         </div>
                         <div id="status_pageIndex">
