@@ -28,5 +28,26 @@
 
 文章列表界面：
 
+![blog](https://github.com/yhswjtuILMARE/Blog/blob/master/image/blog.jpg)
+
+状态展示界面：
+
 ![status](https://github.com/yhswjtuILMARE/Blog/blob/master/image/status.jpg)
 
+About Me界面：
+
+![About Me](https://github.com/yhswjtuILMARE/Blog/blob/master/image/about.jpg)
+
+后端管理界面：
+
+![manage](https://github.com/yhswjtuILMARE/Blog/blob/master/image/manage_1.jpg)
+
+以上是PC端的界面设计，在手机wap端ILMARE也做了相应的适配，在这里就只展示wap首页：
+
+![wapindex](https://github.com/yhswjtuILMARE/Blog/blob/master/image/wap.png)
+
+## 软件和硬件
+
+这个博客是基于腾讯的云服务器，每个月10块钱租了一台云主机。云主机的性能平平，内存只有1G，硬盘只有40G。不久前在putty上查看了一下，仅仅运行基本的服务器软件和数据库就消耗了七百余兆内存，很难说在大并发条件下会不会出现拒绝服务的情况。
+
+在软件方面，在云主机操作系统上我选择的是性能稳定的Linux的一个很流行的版本CentOS。之所以用这个版本主要是因为这个版本之前上课的时候用过，各方面都比较熟悉。在服务器软件方面，我选择的是apache研发的tomcat。数据库方面，选择的是mysql数据库。总的来说这样的硬件和软件配置不是很高，但是我想对于一个博客网站来说还是够用的。
