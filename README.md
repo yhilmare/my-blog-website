@@ -24,7 +24,7 @@
 
 首页摘要信息界面
 
-![index](https://github.com/yhswjtuILMARE/Blog/blob/master/image/index.jpg)
+![index](https://github.com/yhswjtuILMARE/Blog/blob/master/image/index.jpg){:width="10%"}
 
 文章列表界面：
 
