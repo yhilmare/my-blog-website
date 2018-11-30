@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,7 +57,6 @@ import domain.blog_status;
 import domain.blog_visit;
 import domain.blog_visit_article;
 import domain.blog_visitor;
-import sun.misc.BASE64Encoder;
 
 public class DBUnit {
 	
@@ -268,6 +268,7 @@ public class DBUnit {
 	@Test
 	public void test18() throws Exception{
 		BlogIndex2DBService service = new BlogIndex2DBService();
+		System.out.println(service.getTotalRecord());
 		
 	}
 	
@@ -293,8 +294,8 @@ public class DBUnit {
 		//System.out.println(MD5Utils.getToken("940805"));
 		MessageDigest digest = MessageDigest.getInstance("md5");
 		byte[] buffer = digest.digest("yanghang19940805".getBytes());
-		BASE64Encoder encoder = new BASE64Encoder();
-		System.out.println(encoder.encode(buffer));
+		Base64 encoder = new Base64();
+		System.out.println(encoder.encodeToString(buffer));
 	}
 	
 	@Test

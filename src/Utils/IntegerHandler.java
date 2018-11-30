@@ -5,13 +5,13 @@ import java.sql.SQLException;
 
 import Interfaces.ResultSetHandler;
 
-public class IntegerHandler implements ResultSetHandler{
+public class IntegerHandler<T> implements ResultSetHandler<T>{
 
 	@Override
-	public Object operate(ResultSet result) {
+	public <T> T operate(ResultSet result) {
 		try {
 			if(result.next()){
-				return new Integer(result.getInt(1));
+				return (T) new Integer(result.getInt(1));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

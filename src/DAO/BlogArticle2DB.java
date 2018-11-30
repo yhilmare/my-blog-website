@@ -13,13 +13,13 @@ import domain.blog_article;
 import domain.blog_index;
 import domain.blog_page;
 
-public class BlogArticle2DB implements DataObject2DB {
+public class BlogArticle2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public int getTotalRecord() {
 		String sql = "select count(*) from blog_article";
 		Object[] params = {};
-		return (int)DBUtils.query(sql, params, new IntegerHandler());
+		return (int)DBUtils.query(sql, params, new IntegerHandler<Integer>());
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class BlogArticle2DB implements DataObject2DB {
 		}
 		String sql = "select article_id, article_content, article_title, holder_id, create_time from blog_artilce_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_article.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List>(blog_article.class)));
 		return page;
 	}
 
@@ -90,14 +90,14 @@ public class BlogArticle2DB implements DataObject2DB {
 		}
 		String sql = "select article_id, article_title, holder_id, create_time from blog_artilce_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_article.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List>(blog_article.class)));
 		return page;
 	}
 
 	@Override
-	public Object selectByID(String id) {
+	public T selectByID(String id) {
 		String sql = "select * from blog_article where article_id=?";
 		Object[] params = {id};
-		return DBUtils.query(sql, params, new BeanHandler(blog_article.class));
+		return DBUtils.query(sql, params, new BeanHandler<T>(blog_article.class));
 	}
 }

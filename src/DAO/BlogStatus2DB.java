@@ -12,7 +12,7 @@ import domain.blog_index;
 import domain.blog_page;
 import domain.blog_status;
 
-public class BlogStatus2DB implements DataObject2DB {
+public class BlogStatus2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public int getTotalRecord() {
@@ -66,7 +66,7 @@ public class BlogStatus2DB implements DataObject2DB {
 		}
 		String sql = "select status_id, status_content, publish_date, holder_id from blog_status_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_status.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_status.class)));
 		return page;
 	}
 
@@ -77,7 +77,7 @@ public class BlogStatus2DB implements DataObject2DB {
 	}
 
 	@Override
-	public Object selectByID(String id) {
+	public T selectByID(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

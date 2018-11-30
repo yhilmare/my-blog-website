@@ -9,7 +9,7 @@ import Utils.ListHandler;
 import domain.blog_notice;
 import domain.blog_page;
 
-public class BlogNotice2DB implements DataObject2DB {
+public class BlogNotice2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public int getTotalRecord() {
@@ -48,7 +48,7 @@ public class BlogNotice2DB implements DataObject2DB {
 		}
 		String sql = "select * from blog_notice order by publish_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_notice.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_notice.class)));
 		return page;
 	}
 
@@ -59,7 +59,7 @@ public class BlogNotice2DB implements DataObject2DB {
 	}
 
 	@Override
-	public Object selectByID(String id) {
+	public T selectByID(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

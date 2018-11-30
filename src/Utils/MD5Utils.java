@@ -3,7 +3,8 @@ package Utils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import sun.misc.BASE64Encoder;
+import org.apache.tomcat.util.codec.binary.Base64;
+
 
 public class MD5Utils {
 	
@@ -12,8 +13,8 @@ public class MD5Utils {
 		try {
 			MessageDigest diggest = MessageDigest.getInstance("md5");
 			byte[] buffer = diggest.digest(info.getBytes());
-			BASE64Encoder encoder = new BASE64Encoder();
-			return encoder.encode(buffer);
+			Base64 encoder = new Base64();
+			return encoder.encodeToString(buffer);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}

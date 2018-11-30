@@ -2,7 +2,7 @@ package ServiceImpl;
 
 import domain.blog_page;
 
-public interface DataObject2DB {
+public interface DataObject2DB<T> {
 	
 	//得到该数据的全部数目
 	public int getTotalRecord();
@@ -23,6 +23,6 @@ public interface DataObject2DB {
 	public blog_page selectIndexData(int currentPage, int pageContain, int pageInFrame);
 	
 	//查询文id章索引一个条目
-	public Object selectByID(String id);
+	public <T> T selectByID(String id);
 
 }

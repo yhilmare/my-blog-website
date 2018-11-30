@@ -7,7 +7,7 @@ import domain.blog_visitor;
 
 public class BlogVisitor2DBService {
 	
-	private UserAccess2DB impl = null;
+	private UserAccess2DB<blog_visitor> impl = null;
 	public BlogVisitor2DBService(){
 		this.impl = UserAccessFactory.getFactory("DAO.BlogVisitor2DB").getImplInstance();
 	}
@@ -25,7 +25,7 @@ public class BlogVisitor2DBService {
 	}
 		//查询一个用户，此处需要传入用户的名字
 	public blog_visitor selectVisitor(String name){
-		return (blog_visitor)impl.selectUser(name);
+		return impl.selectUser(name);
 	}
 		//查看用户是否存在
 	public boolean isExist(String name){

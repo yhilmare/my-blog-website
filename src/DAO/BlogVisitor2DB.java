@@ -12,7 +12,7 @@ import Utils.UniqueCode;
 import domain.blog_page;
 import domain.blog_visitor;
 
-public class BlogVisitor2DB implements UserAccess2DB{
+public class BlogVisitor2DB<T> implements UserAccess2DB<T>{
 
 	@Override
 	public int insertUser(Object obj) {
@@ -41,10 +41,10 @@ public class BlogVisitor2DB implements UserAccess2DB{
 	}
 
 	@Override
-	public Object selectUser(String name) {
+	public T selectUser(String name) {
 		String sql = "select visitor_id,visitor_pwd,visitor_nickname,visitor_gender from blog_visitor where visitor_nickname=?";
 		Object[] params = {name};
-		return DBUtils.query(sql, params, new BeanHandler(blog_visitor.class));
+		return DBUtils.query(sql, params, new BeanHandler<T>(blog_visitor.class));
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class BlogVisitor2DB implements UserAccess2DB{
 	}
 
 	@Override
-	public Object selectUserByIndex() {
+	public T selectUserByIndex() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -70,7 +70,7 @@ public class BlogVisitor2DB implements UserAccess2DB{
 		}
 		String sql = "select * from blog_visitor limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_visitor.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_visitor.class)));
 		return page;
 	}
 
@@ -78,6 +78,6 @@ public class BlogVisitor2DB implements UserAccess2DB{
 	public int getTotalRecord() {
 		String sql = "select count(*) from blog_visitor";
 		Object[] params = {};
-		return (int)DBUtils.query(sql, params, new IntegerHandler());
+		return (int)DBUtils.query(sql, params, new IntegerHandler<Integer>());
 	}
 }

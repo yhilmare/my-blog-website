@@ -10,7 +10,7 @@ import domain.blog_page;
 import domain.blog_visit;
 import domain.blog_visit_article;
 
-public class BlogVisitArticle2DB implements DataObject2DB{
+public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 
 	@Override
 	public int getTotalRecord() {
@@ -50,7 +50,7 @@ public class BlogVisitArticle2DB implements DataObject2DB{
 		}
 		String sql = "select * from blog_article_visit_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_visit_article.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_visit_article.class)));
 		return page;
 	}
 
@@ -61,7 +61,7 @@ public class BlogVisitArticle2DB implements DataObject2DB{
 	}
 
 	@Override
-	public Object selectByID(String id) {
+	public T selectByID(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

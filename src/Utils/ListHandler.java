@@ -10,13 +10,13 @@ import java.util.List;
 
 import Interfaces.ResultSetHandler;
 
-public class ListHandler implements ResultSetHandler {
+public class ListHandler<T> implements ResultSetHandler<T> {
 
 	private Class clazz = null;
 	public ListHandler(Class clazz){
 		this.clazz = clazz;
 	}
-	public Object operate(ResultSet result) {
+	public <T> T operate(ResultSet result) {
 		
 		if(result== null) return null;
 		List list = new LinkedList();
@@ -34,7 +34,7 @@ public class ListHandler implements ResultSetHandler {
 				}
 				list.add(obj);
 			}
-			return list;
+			return (T) list;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

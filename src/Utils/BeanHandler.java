@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 import Interfaces.ResultSetHandler;
 
-public class BeanHandler implements ResultSetHandler {
+public class BeanHandler<T> implements ResultSetHandler<T> {
 
 	private Class clazz = null;
 	
@@ -16,7 +16,7 @@ public class BeanHandler implements ResultSetHandler {
 		this.clazz = clazz;
 	}
 	@Override
-	public Object operate(ResultSet result) {
+	public <T> T operate(ResultSet result) {
 		
 		if(result == null){
 			return null;
@@ -24,7 +24,7 @@ public class BeanHandler implements ResultSetHandler {
 		
 		try {
 			if(result.next()){
-				Object obj = clazz.newInstance();
+				T obj =  (T) clazz.newInstance();
 				ResultSetMetaData metaData = result.getMetaData();
 				int count = metaData.getColumnCount();
 				for(int i = 0; i < count; i++){

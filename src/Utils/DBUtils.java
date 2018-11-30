@@ -121,7 +121,7 @@ public class DBUtils {
 		return -1;
 	}
 	
-	public static Object query(String sql, Object[] params, ResultSetHandler resHandler){
+	public static <T> T query(String sql, Object[] params, ResultSetHandler<T> resHandler){
 		
 		Connection con = null;
 		PreparedStatement state = null;

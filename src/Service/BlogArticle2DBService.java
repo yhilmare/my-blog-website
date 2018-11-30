@@ -6,7 +6,7 @@ import domain.blog_article;
 import domain.blog_page;
 
 public class BlogArticle2DBService {
-	private DataObject2DB impl = null;
+	private DataObject2DB<blog_article> impl = null;
 	public BlogArticle2DBService(){
 		impl = DataAccessFactory.getFactory("DAO.BlogArticle2DB").getImpleInstance();
 	}
@@ -40,6 +40,6 @@ public class BlogArticle2DBService {
 	}
 	
 	public blog_article selectArticleByID(String article_id){
-		return (blog_article) impl.selectByID(article_id);
+		return impl.selectByID(article_id);
 	}
 }

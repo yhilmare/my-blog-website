@@ -12,7 +12,7 @@ import domain.blog_message;
 import domain.blog_page;
 import domain.blog_status;
 
-public class BlogMessage2DB implements DataObject2DB {
+public class BlogMessage2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public int getTotalRecord() {
@@ -54,7 +54,7 @@ public class BlogMessage2DB implements DataObject2DB {
 		}
 		String sql = "select * from blog_message_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_message.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_message.class)));
 		return page;
 	}
 
@@ -65,7 +65,7 @@ public class BlogMessage2DB implements DataObject2DB {
 	}
 
 	@Override
-	public Object selectByID(String id) {
+	public T selectByID(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

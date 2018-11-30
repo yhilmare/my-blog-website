@@ -6,7 +6,7 @@ import domain.blog_holder;
 
 public class BlogHolder2DBService {
 	
-	private UserAccess2DB impl = null;
+	private UserAccess2DB<blog_holder> impl = null;
 	public BlogHolder2DBService(){
 		impl = UserAccessFactory.getFactory("DAO.BlogHolder2DB").getImplInstance();
 	}
@@ -32,7 +32,7 @@ public class BlogHolder2DBService {
 	}
 	
 	public blog_holder selectHolder(){
-		return (blog_holder) impl.selectUserByIndex();
+		return impl.selectUserByIndex();
 	}
 
 }

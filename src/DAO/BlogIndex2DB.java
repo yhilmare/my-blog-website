@@ -10,7 +10,7 @@ import domain.blog_article;
 import domain.blog_index;
 import domain.blog_page;
 
-public class BlogIndex2DB implements DataObject2DB {
+public class BlogIndex2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public int getTotalRecord() {
@@ -47,7 +47,7 @@ public class BlogIndex2DB implements DataObject2DB {
 		}
 		String sql = "select * from blog_index_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList((List) DBUtils.query(sql, params, new ListHandler(blog_index.class)));
+		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_index.class)));
 		return page;
 	}
 
@@ -58,7 +58,7 @@ public class BlogIndex2DB implements DataObject2DB {
 	}
 
 	@Override
-	public Object selectByID(String id) {
+	public T selectByID(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

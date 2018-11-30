@@ -13,7 +13,7 @@ import Utils.MD5Utils;
 import domain.blog_holder;
 import domain.blog_page;
 
-public class BlogHolder2DB implements UserAccess2DB{
+public class BlogHolder2DB<T> implements UserAccess2DB<T>{
 
 	@Override
 	public int insertUser(Object obj) {
@@ -90,10 +90,10 @@ public class BlogHolder2DB implements UserAccess2DB{
 	}
 
 	@Override
-	public Object selectUser(String name) {
+	public T selectUser(String name) {
 		String sql = "select holder_city_en,holder_city_zh,holder_email,holder_img,holder_name_en,holder_name_zh,holder_province_en,holder_province_zh,holder_pwd,holder_school_en,holder_school_year,holder_school_zh,holder_id from blog_holder where holder_name_zh=?";
 		Object[] params = {name};
-		return DBUtils.query(sql, params, new BeanHandler(blog_holder.class));
+		return DBUtils.query(sql, params, new BeanHandler<T>(blog_holder.class));
 	}
 
 	@Override
@@ -106,10 +106,10 @@ public class BlogHolder2DB implements UserAccess2DB{
 	}
 
 	@Override
-	public Object selectUserByIndex() {
+	public T selectUserByIndex() {
 		String sql = "select holder_city_en,holder_city_zh,holder_email,holder_img,holder_name_en,holder_name_zh,holder_province_en,holder_province_zh,holder_pwd,holder_school_en,holder_school_year,holder_school_zh,holder_id from blog_holder limit 0,1";
 		Object[] params = {};
-		return DBUtils.query(sql, params, new BeanHandler(blog_holder.class));
+		return DBUtils.query(sql, params, new BeanHandler<T>(blog_holder.class));
 	}
 
 	@Override

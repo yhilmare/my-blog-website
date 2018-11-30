@@ -6,7 +6,7 @@ import domain.blog_message;
 import domain.blog_page;
 
 public class BlogMessage2DBService {
-	private DataObject2DB impl = null;
+	private DataObject2DB<blog_message> impl = null;
 	public BlogMessage2DBService(){
 		impl = DataAccessFactory.getFactory("DAO.BlogMessage2DB").getImpleInstance();
 	}
