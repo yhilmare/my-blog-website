@@ -371,7 +371,7 @@
 			if(section.getAttribute("data-tag") == tag){
 				section.style.display="block";
 				if(tag == "2"){//博客管理界面
-					sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:"1"}, function(request){
+					sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:"1", pageContain:"17"}, function(request){
 						var obj = JSON.parse(request.responseText);
 						updateBlogList(obj.list);
 						updateBlogPageIndex(obj);
@@ -1061,7 +1061,7 @@
 				var info = this.id;
 				array = info.split("=");
 				info = array[array.length - 1];
-				sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:info}, function(request){
+				sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:info, pageContain:"17"}, function(request){
 					var obj = JSON.parse(request.responseText);
 					updateBlogList(obj.list);
 					updateBlogPageIndex(obj);
@@ -1153,7 +1153,7 @@
 	#system_management{background-color:#e4eff7;border:1px #f8fafc solid;color:#000;border-top-right-radius:3px;margin-left:-9px;}
 	#sectionA{display:none;}
 	#sectionB{display:none;}
-	.back_center_class{display:none;}
+	.back_center_class{display:none;height:100%;position:relative;top:0px;left:0px;}
 	#logout_system{font-family:"Microsoft YaHei";position:absolute;right:15px;top:15px;height:20px;color:#FFF;font-size:14px;}
 	#logout_system a{font-family:"Microsoft YaHei";color:#fff;text-decoration:none;}
 	#time_stamp{position:absolute;right:15px;bottom:10px;height:20px;color:#FFF;font-size:14px;font-family:"Microsoft YaHei";}
@@ -1168,7 +1168,7 @@
 	.back_sys_left_buttn_container button{width:100%;height:30px;border:0;outline:0;font-family:"Microsoft YaHei";background-color:#f3f8fc;}
 	.back_sys_left_buttn_container button:hover{cursor:pointer}
 	#back_center{border:1px #fff solid;margin-left:200px;}
-	#back_center_container{margin:auto;width:1100px;margin-top:30px}
+	#back_center_container{margin:auto;width:97%;margin-top:20px;height:96%;}
 	#back_center_blog_editor{margin:auto;width:1000px;height:520px;}
 	#back_center_blog_editor_buttns{width:600px;height:30px;margin-top:10px;}
 	#back_center_blog_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
@@ -1184,12 +1184,16 @@
 	.back_center_blog_editor_buttn{outline:0;font-family:"Microsoft YaHei";width:60px;height:25px;border:1px #CCCCCC solid;background-color:#FFF;margin-top:15px;margin-left:10px;}
 	.back_center_blog_editor_buttn:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
 	#uploadImage{font-family:"Microsoft YaHei";width:180px;margin-left:10px}
-	#back_center_blog_management{border:1px #d1d1d1 solid; box-shadow:1px 1px 1px 1px #CCCCCC;border-radius:4px;font-family:"Microsoft YaHei";margin:auto;width:900px;height:520px;}
-	#back_center_blog_list{border:1px #FFFFFF solid;height:450px;width:800px;margin:auto;margin-top:15px;}
-	#back_center_page_index{height:25px;width:800px;margin:auto;margin-top:15px;text-align:center;}
+	
+	#back_center_blog_management{font-family:"Microsoft YaHei";margin:auto;width:100%;height:100%;}
+	
+	#back_center_blog_list{border-top:1px solid #ddd;height:95%;width:100%;margin:auto;overflow:auto;}
+	
+	#back_center_page_index{position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:10px;
+	}
 	#back_center_page_index a{color:#000;text-decoration:none}
 	#back_center_page_index a:hover{cursor:pointer;}
-	.blog_list_div{position:relative;top:0px;left:0px;margin-top:13px;width:800px;height:35px;border-bottom:1px #999999 dashed;}
+	.blog_list_div{position:relative;top:0px;left:0px;margin-top:13px;width:100%;height:35px;border-bottom:1px #999999 dashed;}
 	.blog_list_div_title{position:absolute;left:0px;top:5px;height:25px}
 	.blog_list_div_title a{font-family:"Microsoft YaHei";color:#000;text-decoration:none}
 	.blog_list_div_title a:hover{text-decoration:underline;}
@@ -1244,16 +1248,16 @@
 	#back_center_notice_editor_buttns{width:600px;height:30px;margin-top:10px;}
 	#back_center_notice_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
 	#back_center_notice_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
-	#visitor_list{width:100%;height:440px}
-	#visit_list{width:100%;height:440px}
+	#visitor_list{height:91%;width:100%;overflow:auto;}
+	#visit_list{height:91%;width:100%;overflow:auto;}
 	.visitor{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
 	.visitor_name{margin-left:10px;float:left;width:30%;}
 	.visitor_gender{float:left;width:33%;text-align:center}
 	.visitor_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
 	.visitor_op:hover{text-decoration:underline;cursor:pointer;}
-	#visitor_pageIndex{font-family:"Microsoft YaHei";width:100%;text-align:center}
+	#visitor_pageIndex{position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:10px;}
 	#visitor_pageIndex a:hover{cursor:pointer;}
-	#visit_pageIndex{font-family:"Microsoft YaHei";width:100%;text-align:center}
+	#visit_pageIndex{position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:10px;}
 	#visit_pageIndex a:hover{cursor:pointer;}
 	.visit{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
 	.visit_name{margin-left:10px;float:left;width:17%}
@@ -1262,8 +1266,8 @@
 	.visit_date{float:left;width:30%;text-align:center;}
 	.visit_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
 	.visit_op:hover{text-decoration:underline;cursor:pointer;}
-    #article_visit_list{width:100%;height:440px}
-    #article_visit_pageIndex{font-family:"Microsoft YaHei";width:100%;text-align:center}
+    #article_visit_list{height:91%;width:100%;overflow:auto;}
+    #article_visit_pageIndex{position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:10px;}
 	#article_visit_pageIndex a:hover{cursor:pointer;}
 	.article_visit{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
 	.article_visit_name{margin-left:10px;float:left;width:17%}

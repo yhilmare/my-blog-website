@@ -31,7 +31,7 @@ public class SelectVisitController extends HttpServlet {
 			return;
 		}
 		BlogVisit2DBService service = new BlogVisit2DBService();
-		blog_page page = service.selectVisit(Integer.parseInt(pageIndex), 12, 10);
+		blog_page page = service.selectVisit(Integer.parseInt(pageIndex), 22, 10);
 		if(page != null){
 			ObjectMapper mapper = new ObjectMapper();
 			response.getWriter().write(mapper.writeValueAsString(page));

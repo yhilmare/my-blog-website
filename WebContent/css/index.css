@@ -36,30 +36,30 @@ background-color:#f5f5f5;}
 	.navigator_buttn{color:#666;font-weight:800;font-family:"Microsoft YaHei";height:35px;background-color:#f3f6f8;outline:0;border:0;font-size:16px;}
 	.navigator_buttn:hover{cursor:pointer;}
 	.navigator_buttn_div{height:37px;float:left;margin-left:40px;}
-	#index_body{margin:auto;margin-top:15px;width:80%;background:#e9edf0;}
-	#index_container{font-family:"Microsoft YaHei";border-radius:5px;width:860px;margin:auto;}
-	#index_body_head_div{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;margin:auto;width:860px;height:360px;background-color:#fff;border:1px #d1d1d1 solid;border-radius:4px;}
-	#index_body_head_div_back{width:860px;height:310px;background-color:#CCC;}
+	#index_body{margin:auto;margin-top:35px;width:80%;background:#e9edf0;}
+	#index_container{font-family:"Microsoft YaHei";border-radius:5px;width:90%;margin:auto;}
+	#index_body_head_div{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;margin:auto;width:100%;height:360px;background-color:#fff;border:1px #d1d1d1 solid;border-radius:4px;}
+	#index_body_head_div_back{width:100%;height:310px;background-color:#CCC;}
 	#index_body_head_div_icon{box-shadow:1px 1px 10px 2px #CCCCCC;position:absolute;left:20px;bottom:26px;height:187px;width:187px;background:#FFF;
 	border:5px #f3f6f8 solid;}
 	#index_body_head_div_name{width:200px;height:40px;position:absolute;left:240px;bottom:80px;font-size:32px;color:#FFF;font-family:"Microsoft YaHei";font-weight:900;}
 	#index_body_head_div_info{position:absolute;left:240px;bottom:26px;font-size:13px;font-family:"Microsoft YaHei";color:#666666;}
-	#index_body_basicInfo{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;font-family:"Microsoft YaHei";background-color:#FFF;width:290px;height:90px;border:1px #d1d1d1 solid;border-radius:4px;}
-	#index_body_basicInfo_one{position:absolute;left:10px;top:15px;width:135px;height:60px;text-align:center;font-size:24px;border-right:1px #999999 solid;}
-	#index_body_basicInfo_three{position:absolute;left:145px;top:15px;width:135px;height:60px;text-align:center;font-size:24px;}
-	#index_body_content_area{width:500px;}
-	.index_body_content_Info{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;width:500px;margin-bottom:30px;background-color:#fff;border-radius:3px;border:1px #d1d1d1 solid;}
-	.index_body_content_Info_name{border-bottom:1px #CCCCCC solid;width:460px;height:35px;margin-top:10px;font-family:"Microsoft YaHei";margin-left:20px;font-size:20px;}
-	.index_body_content_Info_date{width:460px;height:17px;margin-top:10px;font-family:"Microsoft YaHei";margin-left:20px;color:#999;font-size:14px;}
-	.index_body_content_Info_content{margin-bottom:20px;margin-top:15px;width:460px;margin-left:20px;font-size:17px;color:#666;font-family:"Microsoft YaHei";}
-	.index_body_content_Info_title{font-family:"Microsoft YaHei";width:460px;margin-top:15px;margin-left:20px;font-size:19px;}
+	#index_body_basicInfo{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;font-family:"Microsoft YaHei";background-color:#FFF;width:100%;height:90px;border:1px #d1d1d1 solid;border-radius:4px;}
+	#index_body_basicInfo_one{position:absolute;left:10px;top:15px;width:47%;height:60px;text-align:center;font-size:24px;border-right:1px #999999 solid;}
+	#index_body_basicInfo_three{position:absolute;left:50%;top:15px;width:47%;height:60px;text-align:center;font-size:24px;}
+	#index_body_content_area{width:100%;}
+	.index_body_content_Info{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;width:100%;margin-bottom:30px;background-color:#fff;border-radius:3px;border:1px #d1d1d1 solid;}
+	.index_body_content_Info_name{border-bottom:1px #CCCCCC solid;width:92%;height:35px;margin-top:10px;font-family:"Microsoft YaHei";margin-left:20px;font-size:20px;}
+	.index_body_content_Info_date{width:92%;height:17px;margin-top:10px;font-family:"Microsoft YaHei";margin-left:20px;color:#999;font-size:14px;}
+	.index_body_content_Info_content{margin-bottom:20px;margin-top:15px;width:92%;margin-left:20px;font-size:17px;color:#666;font-family:"Microsoft YaHei";}
+	.index_body_content_Info_title{font-family:"Microsoft YaHei";width:92%;margin-top:15px;margin-left:20px;font-size:19px;}
 	a{color:#545454;text-decoration:none;}
 	a:hover{cursor:pointer;}
-	#page_index_area{box-shadow:2px 2px 20px 2px #CCCCCC;width:500px;margin-top:10px;height:30px;}
+	#page_index_area{box-shadow:2px 2px 20px 2px #CCCCCC;width:100%;margin-top:10px;height:30px;}
 	#load_more_buttn:hover{cursor:pointer}
-	#index_body_notice{box-shadow:2px 2px 20px 2px #CCCCCC;font-family:"Microsoft YaHei";margin-top:30px;width:290px;height:300px;background-color:#FFF;border:1px #d1d1d1 solid;}
-	#index_body_notice_title{position:relative;top:0px;left:0px;font-size:14px;font-weight:800;width:290px;height:30px;border-bottom:2px #CCCCCC solid;background-color:#e9edf0;}
-	#index_body_notice_content{margin-top:20px;margin-left:12px;width:260px;font-size:14px;height:240px;overflow:auto;}
+	#index_body_notice{box-shadow:2px 2px 20px 2px #CCCCCC;font-family:"Microsoft YaHei";margin-top:30px;width:100%;height:300px;background-color:#FFF;border:1px #d1d1d1 solid;}
+	#index_body_notice_title{position:relative;top:0px;left:0px;font-size:14px;font-weight:800;width:100%;height:30px;border-bottom:2px #CCCCCC solid;background-color:#e9edf0;}
+	#index_body_notice_content{margin-top:20px;margin-left:12px;width:90%;font-size:14px;height:240px;overflow:auto;}
 	#sectionA{display:none;}
 	#sectionB{display:none;}
 	#sectionC{display:none;}
@@ -68,11 +68,11 @@ background-color:#f5f5f5;}
 	#top{z-index:20;box-shadow:2px 2px 20px 2px #CCCCCC;width:45px;background-color:#FAFAF9;position:fixed;bottom:109px;right:0px;}
 	#topbutton{width:45px;height:45px;margin-left:0px;color:#999;font-size:14px;background-image:url(/blog/Images/top2.png);border:1px solid #CCC;outline:0;}
 	#topbutton:hover{cursor:pointer;background-color:#FAFAF9}
-	#blog_list{box-shadow:2px 2px 20px 2px #CCCCCC;border-radius:5px;position:relative;top:0px;left:0px;width:90%;height:650px;margin:auto;background-color:#fff;border:1px #d1d1d1 solid;margin-bottom:50px;}
-	#blog_list_title{font-family:"Microsoft YaHei";position:absolute;left:30px;top:50px;width:93%;font-size:25px;font-weight:800;height:50px;}
-	#blog_list_titlelist{position:absolute;left:30px;top:125px;width:93%;height:400px;font-family:"Microsoft YaHei";}
+	#blog_list{box-shadow:2px 2px 20px 2px #CCCCCC;border-radius:5px;position:relative;top:0px;left:0px;width:90%;height:630px;margin:auto;background-color:#fff;border:1px #d1d1d1 solid;margin-bottom:50px;}
+	#blog_list_title{font-family:"Microsoft YaHei";position:absolute;left:30px;top:30px;width:93%;font-size:25px;font-weight:800;height:50px;}
+	#blog_list_titlelist{position:absolute;left:30px;top:105px;width:93%;height:400px;font-family:"Microsoft YaHei";}
 	.blod_contener{width:100%;font-size:16px;height:30px;margin-bottom:20px;color:#999;border-bottom:1px #ccc dashed;}
-	#blog_pageIndex{color:#545454;font-family:"Microsoft YaHei";width:93%;height:30px;position:absolute;top:595px;left:30px;text-align:center;}
+	#blog_pageIndex{color:#545454;font-family:"Microsoft YaHei";width:93%;height:30px;position:absolute;top:575px;left:30px;text-align:center;}
 	#status_body_content_area{border-radius:5px;width:90%;margin:auto;}
 	.status_body_content_Info{box-shadow:2px 2px 20px 2px #CCCCCC;position:relative;top:0px;left:0px;width:100%;margin-bottom:30px;background-color:#FFF;border-radius:3px;border:1px #d1d1d1 solid;}
 	.status_body_content_Info_name{border-bottom:1px #CCCCCC solid;width:95%;height:35px;margin-top:10px;font-family:"Microsoft YaHei";margin-left:20px;font-size:20px;}

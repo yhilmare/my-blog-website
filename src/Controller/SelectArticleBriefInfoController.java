@@ -21,8 +21,13 @@ public class SelectArticleBriefInfoController extends HttpServlet {
 			response.getWriter().write("请传递正确的页码");
 			return;
 		}
+		String pageContain = request.getParameter("pageContain");
+		int pages = 9;
+		if (pageContain != null) {
+			pages = Integer.parseInt(pageContain);
+		}
 		BlogArticle2DBService service = new BlogArticle2DBService();
-		blog_page page = service.selectArticleIndex(Integer.parseInt(pageIndex), 9, 5);
+		blog_page page = service.selectArticleIndex(Integer.parseInt(pageIndex), pages, 5);
 		if(page == null){
 			response.getWriter().write("查询失败");
 		}else{
