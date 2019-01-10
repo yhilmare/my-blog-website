@@ -33,7 +33,7 @@ public class SelectStatusController extends HttpServlet {
 			return;
 		}
 		BlogStatus2DBService service = new BlogStatus2DBService();
-		blog_page page = service.selectStatus(Integer.parseInt(pageIndex), 3, 5);
+		blog_page page = service.selectStatus(Integer.parseInt(pageIndex), 8, 5);
 		if(page == null){
 			response.getWriter().write("≤È—Ø ß∞‹");
 		}else{

@@ -371,7 +371,7 @@
 			if(section.getAttribute("data-tag") == tag){
 				section.style.display="block";
 				if(tag == "2"){//博客管理界面
-					sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:"1", pageContain:"17"}, function(request){
+					sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:"1", pageContain:"21"}, function(request){
 						var obj = JSON.parse(request.responseText);
 						updateBlogList(obj.list);
 						updateBlogPageIndex(obj);
@@ -1061,7 +1061,7 @@
 				var info = this.id;
 				array = info.split("=");
 				info = array[array.length - 1];
-				sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:info, pageContain:"17"}, function(request){
+				sendHttpFormRequest("/blog/SelectArticleBriefInfoController", {pageIndex:info, pageContain:"21"}, function(request){
 					var obj = JSON.parse(request.responseText);
 					updateBlogList(obj.list);
 					updateBlogPageIndex(obj);
@@ -1169,60 +1169,61 @@
 	.back_sys_left_buttn_container button:hover{cursor:pointer}
 	#back_center{border:1px #fff solid;margin-left:200px;}
 	#back_center_container{margin:auto;width:97%;margin-top:20px;height:96%;}
-	#back_center_blog_editor{margin:auto;width:1000px;height:520px;}
+	
+	
+	#back_center_blog_editor{margin:auto;width:100%;height:100%;}
 	#back_center_blog_editor_buttns{width:600px;height:30px;margin-top:10px;}
 	#back_center_blog_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
 	#back_center_blog_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
 	#submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
 	#storage_buttn{background-color:#ebebeb;border:1px #787878 solid;}
-	#back_center_blog_editor_title{font-family:"Microsoft YaHei";width:1000px;height:30px;margin-top:25px;border-bottom:1px #CCCCCC solid;font-size:16px;}
-	#blog_title{font-family:"Microsoft YaHei";width:900px;height:28px;border:0;outline:0;font-size:16px;}
-	#back_center_blog_editor_passage{width:1000px;height:405px;margin-top:20px;}
-	#container{width:1000px;height:405px;border:1px #d1d1d1 solid;border-radius:5px;box-shadow:2px 2px 5px 2px #CCCCCC;margin:auto}
-	#text_editor{width:860px;height:305px; margin:auto;margin-top:10px; border:1px #CCCCCC solid;padding:20px 60px 20px 60px;outline:0;overflow:auto;}
+	#back_center_blog_editor_title{font-family:"Microsoft YaHei";width:80%;height:30px;margin-top:25px;border-bottom:1px #CCCCCC solid;font-size:16px;}
+	#blog_title{font-family:"Microsoft YaHei";width:90%;height:28px;border:0;outline:0;font-size:16px;}
+	#back_center_blog_editor_passage{width:80%;height:80%;margin-top:20px;}
+	#container{width:100%;height:100%;border:1px #d1d1d1 solid;border-radius:5px;margin:auto}
+	#text_editor{width:95%;height:88%;margin:auto;margin-top:10px;border:1px #CCCCCC solid;padding:10px 20px 10px 20px;outline:0;overflow:auto;}
 	.back_center_blog_editor_sel{font-family:"Microsoft YaHei";border:1px #CCCCCC solid;background-color:#FFF;margin-top:15px;margin-left:10px;}
 	.back_center_blog_editor_buttn{outline:0;font-family:"Microsoft YaHei";width:60px;height:25px;border:1px #CCCCCC solid;background-color:#FFF;margin-top:15px;margin-left:10px;}
 	.back_center_blog_editor_buttn:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
 	#uploadImage{font-family:"Microsoft YaHei";width:180px;margin-left:10px}
-	
 	#back_center_blog_management{font-family:"Microsoft YaHei";margin:auto;width:100%;height:100%;}
-	
-	#back_center_blog_list{border-top:1px solid #ddd;height:95%;width:100%;margin:auto;overflow:auto;}
-	
+	#back_center_blog_list{border-top:1px #999999 dashed;height:95%;width:100%;margin:auto;overflow:auto;}
 	#back_center_page_index{position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:10px;
 	}
 	#back_center_page_index a{color:#000;text-decoration:none}
 	#back_center_page_index a:hover{cursor:pointer;}
-	.blog_list_div{position:relative;top:0px;left:0px;margin-top:13px;width:100%;height:35px;border-bottom:1px #999999 dashed;}
+	.blog_list_div{position:relative;top:0px;left:0px;margin-top:4px;width:100%;height:35px;border-bottom:1px #999999 dashed;}
+	.blog_list_div:hover{cursor:pointer;}
 	.blog_list_div_title{position:absolute;left:0px;top:5px;height:25px}
 	.blog_list_div_title a{font-family:"Microsoft YaHei";color:#000;text-decoration:none}
 	.blog_list_div_title a:hover{text-decoration:underline;}
 	.blog_list_div_op{color:#999;font-size:14px;position:absolute;right:5px;top:6.5px;height:22px}
 	.blog_list_div_op a{color:#03F;font-family:"Microsoft YaHei";font-size:14px;margin-left:10px;text-decoration:none}
 	.blog_list_div_op a:hover{text-decoration:underline;cursor:pointer}
-	#back_center_blog_modify{display:none;margin:auto;width:1000px;height:520px;}
+	#back_center_blog_modify{display:none;margin:auto;width:100%;height:100%;}
 	#back_center_blog_modify_buttns{width:600px;height:30px;margin-top:10px;}
 	#back_center_blog_modify_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
 	#back_center_blog_modify_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
 	#modify_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
-	#back_center_blog_modify_title{font-family:"Microsoft YaHei";width:1000px;height:30px;margin-top:25px;border-bottom:1px #CCCCCC solid;font-size:16px;}
-	#modify_blog_title{font-family:"Microsoft YaHei";width:900px;height:28px;border:0;outline:0;font-size:16px;}
-	#text_modify{width:860px;height:305px; margin:auto;margin-top:10px; border:1px #CCCCCC solid;padding:20px 60px 20px 60px;outline:0;overflow:auto;}
+	#back_center_blog_modify_title{font-family:"Microsoft YaHei";width:80%;height:30px;margin-top:25px;border-bottom:1px #CCCCCC solid;font-size:16px;}
+	#modify_blog_title{font-family:"Microsoft YaHei";width:90%;height:28px;border:0;outline:0;font-size:16px;}
+	#text_modify{width:95%;height:88%; margin:auto;margin-top:10px;border:1px #CCCCCC solid;padding:10px 20px 10px 20px;outline:0;overflow:auto;}
 	#modify_uploadImage{font-family:"Microsoft YaHei";width:180px;margin-left:10px}
-	#status_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;margin:auto;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px;}
+	#status_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px;}
 	#back_center_status_editor_buttns{width:600px;height:30px;margin-top:10px;}
 	#back_center_status_editor_buttns button{height:28px;width:72px;outline:0;margin-right:7px;border-radius:4px;font-family:"Microsoft YaHei"}
 	#back_center_status_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
 	#status_submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
 	#status_edit{border-radius:2px;outline:0;padding:20px 20px 20px 20px;font-family:"Microsoft YaHei";font-size:16px;}
 	#text_index{overflow:auto;font-size:14px;margin-bottom:5px;float:right;padding-right:5px;font-family:"Microsoft YaHei";margin-top:10px;}
-	.status_management{width:900px;border:1px #d1d1d1 solid;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;border-radius:3px;font-family:"Microsoft YaHei";margin-bottom:20px;}
-	.status_management_date{margin-top:10px;margin-left:20px;color:#999;}
-	.status_management_content{width:860px;margin:auto;margin-top:10px;margin-left:20px;}
-	.status_management_op{margin-top:10px;margin-left:20px;margin-bottom:10px;}
+	.status_management{width:100%;border-bottom:1px #d1d1d1 solid;font-family:"Microsoft YaHei";margin-bottom:10px;}
+	.status_management:hover{cursor:pointer;}
+	.status_management_date{margin-top:10px;color:#999;}
+	.status_management_content{width:97%;margin-top:10px;}
+	.status_management_op{margin-top:10px;margin-bottom:10px;}
 	.status_management_op a{font-family:"Microsoft YaHei";font-size:14px;text-decoration:none;color:#03F}
 	.status_management_op a:hover{cursor:pointer;}
-	#status_pageIndex{margin:auto;margin-top:5px;text-align:center;color:#333;font-family:"Microsoft YaHei";}
+	#status_pageIndex{width:100%;padding-top:10px;position:absolute;bottom:0px;border-top:1px solid #ddd;margin-bottom:10px;text-align:left;color:#333;font-family:"Microsoft YaHei";}
 	#status_pageIndex a{color:#333;font-family:"Microsoft YaHei";text-decoration:none;}
 	#status_pageIndex a:hover{cursor:pointer;}
 	.profile_setting{width:400px;border:1px #FFFFFF solid;margin-bottom:10px;}
@@ -1231,17 +1232,17 @@
 	.profile_setting_input input{font-family:"Microsoft YaHei";background-color:#fafafa;font-size:16px;outline:0px;border:1px #CCCCCC solid; border-radius:3px;width:280px; height:28px;padding-left:10px;padding-right:10px;}
 	.profile_setting_input button{height:35px;width:90px;outline:0;border-radius:4px;font-family:"Microsoft YaHei";background-color:#40a628;color:#FFF;border:1px #146700 solid;font-size:16px;}
 	.profile_setting_input button:hover{cursor:pointer;}
-	.liuyan_management{width:900px;border:1px #d1d1d1 solid;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;border-radius:3px;font-family:"Microsoft YaHei";margin-bottom:20px;}
-	.liuyan_management_person{margin-top:10px;margin-left:20px;color:#999;}
-	.liuyan_management_date{margin-top:10px;margin-left:20px;color:#999;}
-	.liuyan_management_content{width:860px;margin:auto;margin-top:10px;margin-left:20px;}
-	.liuyan_management_op{margin-top:10px;margin-left:20px;margin-bottom:10px;}
+	.liuyan_management{width:100%;border-bottom:1px #d1d1d1 solid;font-family:"Microsoft YaHei";margin-bottom:20px;}
+	.liuyan_management_person{margin-top:10px;color:#999;}
+	.liuyan_management_date{margin-top:10px;color:#999;}
+	.liuyan_management_content{width:97%;margin-top:10px;}
+	.liuyan_management_op{margin-top:10px;margin-bottom:10px;}
 
 	.liuyan_management_op a{font-family:"Microsoft YaHei";font-size:14px;text-decoration:none;color:#03f;}
 	.liuyan_management_op a:hover{cursor:pointer;}
-	.liuyan_management button{width:900px;height:33px;border:0;outline:0;background-color:#FFF;font-family:"Microsoft YaHei";font-size:18px;color:#999;}
+	.liuyan_management button{width:100%;height:33px;border:1px #d1d1d1 solid;outline:0;background-color:#FFF;font-family:"Microsoft YaHei";font-size:18px;color:#333;}
 	.liuyan_management button:hover{cursor:pointer;}
-	#notice_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;margin:auto;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px}
+	#notice_editor{border-radius:2px;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;width:900px;border:1px #CCCCCC solid;padding:10px 20px 20px 20px}
 	#back_center_notice_editor_buttns{width:600px;height:30px;margin-top:10px;}
 	#notice_submit_buttn{background-color:#40a628;color:#FFF;border:1px #146700 solid;}
 	#notice_edit{border-radius:2px;outline:0;padding:20px 20px 20px 20px;font-family:"Microsoft YaHei";font-size:16px;}
@@ -1413,7 +1414,7 @@
                     </div>
                     
                     <div class="back_center_class" data-tag="4">
-                        <div id="status_manage" style="width:920px;margin:auto;height:400px;overflow:auto;">
+                        <div id="status_manage" style="width:100%;margin:auto;height:95%;overflow:auto;">
                         	
                         </div>
                         <div id="status_pageIndex">
@@ -1485,7 +1486,7 @@
                     </div>
                     
                     <div class="back_center_class" data-tag="6">
-                         <div id="liuyan_show" style="width:920px;margin:auto;height:500px;overflow:auto;">
+                         <div id="liuyan_show" style="width:100%;margin:auto;height:100%;overflow:auto;">
                         	
                         </div>
                         
