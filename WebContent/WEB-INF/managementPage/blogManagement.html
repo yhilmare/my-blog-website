@@ -524,17 +524,19 @@
 		for(var i = 0; i < visitor_op.length; i++){
 			var a = visitor_op[i];
 			a.addEventListener("click", function(){
-				var back_center_blog_modify = document.getElementById("back_center_blog_modify");
-				var back_center_blog_management = document.getElementById("back_center_blog_management");
-				back_center_blog_modify.style.display = "none";
-				back_center_blog_management.style.display = "block";
-				sendHttpFormRequest("/blog/DeleteArticleVisitController", {visit_id:this.id}, function(request){
-					alert(request.responseText);
-					if(request.responseText == "记录删除成功"){
-						var buttn = document.getElementById("buttn_temp4");
-						buttn.click();
-					}
-				});
+				if(confirm("确定要删除这条访问记录吗？")){
+					var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+					var back_center_blog_management = document.getElementById("back_center_blog_management");
+					back_center_blog_modify.style.display = "none";
+					back_center_blog_management.style.display = "block";
+					sendHttpFormRequest("/blog/DeleteArticleVisitController", {visit_id:this.id}, function(request){
+						alert(request.responseText);
+						if(request.responseText == "记录删除成功"){
+							var buttn = document.getElementById("buttn_temp4");
+							buttn.click();
+						}
+					});
+				}
 				if(event.preventDefault){
 					event.preventDefault();
 				}else if(event.returnValue){
@@ -765,17 +767,19 @@
 		for(var i = 0; i < visitor_op.length; i++){
 			var a = visitor_op[i];
 			a.addEventListener("click", function(){
-				var back_center_blog_modify = document.getElementById("back_center_blog_modify");
-				var back_center_blog_management = document.getElementById("back_center_blog_management");
-				back_center_blog_modify.style.display = "none";
-				back_center_blog_management.style.display = "block";
-				sendHttpFormRequest("/blog/DeleteVisitorController", {visitor_id:this.id}, function(request){
-					alert(request.responseText);
-					if(request.responseText == "用户删除成功"){
-						var buttn = document.getElementById("buttn_temp3");
-						buttn.click();
-					}
-				});
+				if (confirm("确定要删除这个用户吗？")){
+					var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+					var back_center_blog_management = document.getElementById("back_center_blog_management");
+					back_center_blog_modify.style.display = "none";
+					back_center_blog_management.style.display = "block";
+					sendHttpFormRequest("/blog/DeleteVisitorController", {visitor_id:this.id}, function(request){
+						alert(request.responseText);
+						if(request.responseText == "用户删除成功"){
+							var buttn = document.getElementById("buttn_temp3");
+							buttn.click();
+						}
+					});
+				}
 				if(event.preventDefault){
 					event.preventDefault();
 				}else if(event.returnValue){
@@ -879,12 +883,20 @@
 		for(var i = 0; i < message_op_del.length; i++){
 			var a = message_op_del[i];
 			a.addEventListener("click", function(){
-				sendHttpFormRequest("/blog/DeleteMessageController", {message_id:this.id}, function(request){
-					alert(request.responseText);
-					if(request.responseText == "删除成功"){
-						document.getElementById("buttn_temp2").click();
-					}
-				});
+				if (confirm("确定要删除这条留言吗？")){
+					sendHttpFormRequest("/blog/DeleteMessageController", {message_id:this.id}, function(request){
+						alert(request.responseText);
+						if(request.responseText == "删除成功"){
+							document.getElementById("buttn_temp2").click();
+						}
+					});
+				}
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
 			}, false);
 		}
 	}
@@ -936,12 +948,14 @@
 		for(var i = 0; i < status_op_del.length; i++){
 			var a = status_op_del[i];
 			a.addEventListener("click", function(){
-				sendHttpFormRequest("/blog/DeleteStatusController", {status_id:this.id}, function(request){
-					alert(request.responseText);
-					if(request.responseText == "删除成功"){
-						document.getElementById("buttn_temp1").click();
-					}
-				});
+				if (confirm("确定要删除这条状态吗？")){
+					sendHttpFormRequest("/blog/DeleteStatusController", {status_id:this.id}, function(request){
+						alert(request.responseText);
+						if(request.responseText == "删除成功"){
+							document.getElementById("buttn_temp1").click();
+						}
+					});
+				}
 				if(event.preventDefault){
 					event.preventDefault();
 				}else if(event.returnValue){
@@ -1107,12 +1121,14 @@
 		for(var i = 0; i < div_op_del.length; i++){
 			var a = div_op_del[i];
 			a.addEventListener("click", function(){
-				sendHttpFormRequest("/blog/DeleteArticleByIDController", {article_id:this.id}, function(request){
-					alert(request.responseText);
-					if(request.responseText == "删除成功"){
-						document.getElementById("buttn_temp").click();
-					}
-				});
+				if (confirm("确定要删除这篇文章吗？")){
+					sendHttpFormRequest("/blog/DeleteArticleByIDController", {article_id:this.id}, function(request){
+						alert(request.responseText);
+						if(request.responseText == "删除成功"){
+							document.getElementById("buttn_temp").click();
+						}
+					});
+				}
 				if(event.preventDefault){
 					event.preventDefault();
 				}else if(event.returnValue){
