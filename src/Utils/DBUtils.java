@@ -17,7 +17,7 @@ public class DBUtils {
 	private static ComboPooledDataSource com = null;
 	
 	static{
-		com = new ComboPooledDataSource("mysql");
+		com = new ComboPooledDataSource("blog");
 	}
 	
 	private static Connection getConnection() throws SQLException{
@@ -54,6 +54,7 @@ public class DBUtils {
 				e.printStackTrace();
 			}
 		}
+		System.gc();
 	}
 	
 	public static int updateTranscation(String[] sql, Object[][] params){
