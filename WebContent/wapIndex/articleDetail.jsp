@@ -33,6 +33,7 @@
 	#passage_area{width:94%;margin:auto;margin-top:10px;}
 	#passage_date{width:100%;font-size:16px;color:#999;}
 	#passage_content{width:100%;font-size:17px;font-family:serif;color:#333;}
+	#passage_content pre{overflow-x:auto;}
 	img{width:100%;}
 	</style>
 	<body>
