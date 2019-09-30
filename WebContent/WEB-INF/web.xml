@@ -14,6 +14,7 @@
     <filter-name>charsetFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
   <error-page>
     <error-code>404</error-code>
     <location>/WEB-INF/errorPage/404.html</location>
@@ -67,6 +68,19 @@
   <filter-mapping>
     <filter-name>gzipFilter</filter-name>
     <url-pattern>*.js</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+  </filter-mapping>
+  <filter>
+    <display-name>QQLoginFilter</display-name>
+    <filter-name>QQLoginFilter</filter-name>
+    <filter-class>filter.QQLoginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>QQLoginFilter</filter-name>
+    <url-pattern>/index.html</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
     <dispatcher>INCLUDE</dispatcher>
@@ -594,4 +608,15 @@
     <servlet-name>SelectVisitor</servlet-name>
     <url-pattern>/interfaces/SelectVisitor</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>QQLoginController</display-name>
+    <servlet-name>QQLoginController</servlet-name>
+    <servlet-class>Controller.QQLoginController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>QQLoginController</servlet-name>
+    <url-pattern>/QQLoginController</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

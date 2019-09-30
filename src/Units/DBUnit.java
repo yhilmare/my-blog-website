@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -378,6 +379,12 @@ public class DBUnit {
 			Method mt = pd.getReadMethod();
 			System.out.println(pd.getName() + mt.invoke(holder, null));
 		}
+	}
+	
+	@Test
+	public void test28() throws UnsupportedEncodingException {
+		String result = URLEncoder.encode("http://www.ilmareblog.com", "GBK");
+		System.out.println(result);
 	}
 }
 

@@ -13,8 +13,8 @@
 	.login_usr_pwd_area{border:1px #CCCCCC solid;height:30px;width:228px;margin-top:10px;background-color:#FFF;}
 	.inputs{font-family:"Microsoft YaHei";margin-top:2.5px;height:22px;width:190px;float:right;outline:0;border:0;}
 	.input_icon{margin-top:2.5px;}
-	#forget{margin-top:5px;width:228px;height:20px;font-size:8px;color:#999;}
-	#forget_button{font-family:"Microsoft YaHei";height:20px;font-size:12px;float:right;outline:0;border:0;color:#999;background-color:#FFF;}
+	#forget{margin-top:5px;width:228px;height:24px;font-size:8px;color:#999;}
+	#forget_button{font-family:"Microsoft YaHei";height:24px;font-size:12px;float:right;outline:0;border:0;color:#999;background-color:#FFF;}
 	#forget_button:hover{cursor:pointer;}
 	#button_div{width:228px;height:120px;margin-top:10px;}
 	#login_buttn{font-family:"Microsoft YaHei";margin-top:5px;width:228px;height:35px;background-color:#57a7e8;outline:0;border:0;color:#FFF;font-weight:700;font-size:16px;border-radius:2px;}
@@ -828,6 +828,9 @@ background-color:#f5f5f5;}
 			}, false);
 		}
 	}
+	function toLogin() {
+		window.open("/blog/QQLoginController");
+	}
     </script>
     <body>
     	 <div id="top">
@@ -847,8 +850,10 @@ background-color:#f5f5f5;}
                 	<input class="inputs" type="password" placeholder="请输入密码" name="password"/>
                 </div>
                 <div id="forget">
+                	<img src="/blog/Images/Connect_logo_7.png" onclick="toLogin()">
                 	<button id="forget_button">忘记密码？</button>
                 </div>
+                
                 <div id="button_div">
                 	<button id="login_buttn">登录</button>
                     <button id="register_buttn">注册</button>
