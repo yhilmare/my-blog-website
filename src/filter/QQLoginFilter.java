@@ -33,7 +33,7 @@ public class QQLoginFilter implements Filter {
 
     
 	public void destroy() {
-		// TODO Auto-generated method stub
+		
 	}
 
 	
@@ -129,6 +129,7 @@ public class QQLoginFilter implements Filter {
 		input.close();
 		return new String(buffer, "UTF-8");
 	}
+	
 	public void init(FilterConfig fConfig) throws ServletException {
 		
 	}
