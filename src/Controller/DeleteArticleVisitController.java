@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import Service.BlogVisitArticle2DBService;
-import Service.BlogVisitor2DBService;
-import domain.blog_visitor;
 
 
 public class DeleteArticleVisitController extends HttpServlet {

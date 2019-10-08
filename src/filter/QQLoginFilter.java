@@ -1,6 +1,7 @@
 package filter;
 
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -26,7 +27,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import domain.OpenID;
 import domain.QQApp;
-import domain.QQUser;
+import domain.QQUserReturnMsg;
+import domain.blog_visitor1;
 
 
 public class QQLoginFilter implements Filter {
@@ -89,9 +91,9 @@ public class QQLoginFilter implements Filter {
 		uriStr = "https://graph.qq.com/user/get_user_info?access_token=" + 
 		accessToken + "&oauth_consumer_key=" + app.getAPPID() + "&openid=" + obj.getOpenid();
 		returnMat = sendHttpsGet(uriStr, null);
-		QQUser user = mapper.readValue(returnMat, QQUser.class);
+		QQUserReturnMsg user = mapper.readValue(returnMat, QQUserReturnMsg.class);
 		try {
-			BeanInfo info = Introspector.getBeanInfo(QQUser.class, Object.class);
+			BeanInfo info = Introspector.getBeanInfo(QQUserReturnMsg.class, Object.class);
 			PropertyDescriptor[] pds = info.getPropertyDescriptors();
 			for(PropertyDescriptor pd : pds) {
 				Method method = pd.getReadMethod();
@@ -100,7 +102,40 @@ public class QQLoginFilter implements Filter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//将腾讯服务器返回的用户资料对象转换成数据库能用的对象
+		
+		blog_visitor1 visitor = parseObj(user);
+		visitor.setVisitor_id(obj.getOpenid());
+		
+		//将解析好的对象传入到数据库中作持久化存储
 		chain.doFilter(request, response);
+	}
+	
+	private blog_visitor1 parseObj(QQUserReturnMsg obj) {
+		if (obj == null) {
+			return null;
+		}
+		blog_visitor1 visitor = new blog_visitor1();
+		visitor.setIs_lost(Integer.toString(obj.getIs_lost()));
+		visitor.setVisitor_nickname(obj.getNickname());
+		visitor.setVisitor_gender(obj.getGender());
+		visitor.setProvince(obj.getProvince());
+		visitor.setCity(obj.getCity());
+		visitor.setYear(obj.getYear());
+		visitor.setConstellation(obj.getConstellation());
+		visitor.setFigureurl(obj.getFigureurl());
+		visitor.setFigureurl_1(obj.getFigureurl_1());
+		visitor.setFigureurl_2(obj.getFigureurl_2());
+		visitor.setFigureurl_qq(obj.getFigureurl_qq());
+		visitor.setFigureurl_qq_1(obj.getFigureurl_qq_1());
+		visitor.setFigureurl_qq_2(obj.getFigureurl_qq_2());
+		visitor.setFigureurl_type(obj.getFigureurl_type());
+		visitor.setIs_yellow_vip(obj.getIs_yellow_vip());
+		visitor.setVip(obj.getVip());
+		visitor.setYellow_vip_level(obj.getYellow_vip_level());
+		visitor.setLevel(obj.getLevel());
+		visitor.setIs_yellow_year_vip(obj.getIs_yellow_year_vip());
+		return visitor;
 	}
 
 	private String sendHttpsGet(String uri, Map<String, String> parameters) throws IOException {

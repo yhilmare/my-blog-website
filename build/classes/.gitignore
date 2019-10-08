@@ -3,3 +3,7 @@
 /domain/
 /Listener/
 /filter/
+/DAO/
+/OuterInterfaces/
+/Service/
+/WebUI/

@@ -6,6 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -58,6 +59,7 @@ import domain.blog_status;
 import domain.blog_visit;
 import domain.blog_visit_article;
 import domain.blog_visitor;
+import domain.blog_visitor1;
 
 public class DBUnit {
 	
@@ -383,8 +385,22 @@ public class DBUnit {
 	
 	@Test
 	public void test28() throws UnsupportedEncodingException {
-		String result = URLEncoder.encode("http://www.ilmareblog.com", "GBK");
-		System.out.println(result);
+		Base64 encoder = new Base64();
+		String str = "Ñîº½";
+		String s = encoder.encodeToString(str.getBytes("UTF-8"));
+		System.out.println(s);
+		System.out.println(new String(encoder.decode(s), "UTF-8"));
+		
+	}
+	
+	@Test
+	public void test29() throws IntrospectionException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		PropertyDescriptor pd = new PropertyDescriptor("asdasd", blog_visitor1.class);
+		Class clazz = Class.forName("domain.blog_visitor1");
+		Constructor con = clazz.getConstructor(null);
+		blog_visitor1 obj = (blog_visitor1) con.newInstance(null);
+		obj.setCity("ººÖÐ");
+		System.out.println(obj.getCity());
 	}
 }
 

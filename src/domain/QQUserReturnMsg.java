@@ -1,6 +1,6 @@
 package domain;
 
-public class QQUser {
+public class QQUserReturnMsg {
 	
 	private Integer ret;
 	private String msg;
@@ -149,5 +149,6 @@ public class QQUser {
 	public void setIs_yellow_year_vip(String is_yellow_year_vip) {
 		this.is_yellow_year_vip = is_yellow_year_vip;
 	}
+
 
 }
