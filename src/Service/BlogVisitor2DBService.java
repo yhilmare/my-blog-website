@@ -1,5 +1,6 @@
 package Service;
 
+import DAO.BlogVisitor2DB;
 import Factory.UserAccessFactory;
 import ServiceImpl.UserAccess2DB;
 import domain.blog_page;
@@ -7,9 +8,9 @@ import domain.blog_visitor;
 
 public class BlogVisitor2DBService {
 	
-	private UserAccess2DB<blog_visitor> impl = null;
+	private BlogVisitor2DB<blog_visitor> impl = new BlogVisitor2DB();
 	public BlogVisitor2DBService(){
-		this.impl = UserAccessFactory.getFactory("DAO.BlogVisitor2DB").getImplInstance();
+		super();
 	}
 	//插入一个用户
 	public int insertVisitor(blog_visitor visitor){
@@ -26,6 +27,9 @@ public class BlogVisitor2DBService {
 		//查询一个用户，此处需要传入用户的名字
 	public blog_visitor selectVisitor(String name){
 		return impl.selectUser(name);
+	}
+	public blog_visitor selectVisitorByID(String ID){
+		return impl.selectUserByID(ID);
 	}
 		//查看用户是否存在
 	public boolean isExist(String name){

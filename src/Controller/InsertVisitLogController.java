@@ -25,7 +25,7 @@ public class InsertVisitLogController extends HttpServlet {
 				PropertyDescriptor pd = new PropertyDescriptor(name, blog_visit.class);
 				if(name.equals("visitor_id")){
 					String value = request.getParameter(name);
-					value = value.equals("notlogin")?request.getRemoteAddr():value;
+					value = value.equals("notlogin") ? request.getRemoteAddr() : value;
 					pd.getWriteMethod().invoke(visit, value);
 					continue;
 				}

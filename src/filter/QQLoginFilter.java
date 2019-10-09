@@ -9,9 +9,11 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Base64.Decoder;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.Filter;
@@ -22,14 +24,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import DAO.BlogVisitor2DB;
+import Service.BlogVisitor2DBService;
 import domain.OpenID;
 import domain.QQApp;
 import domain.QQUserReturnMsg;
-import domain.blog_visitor1;
+import domain.blog_visitor;
 
 
 public class QQLoginFilter implements Filter {
@@ -93,29 +97,65 @@ public class QQLoginFilter implements Filter {
 		accessToken + "&oauth_consumer_key=" + app.getAPPID() + "&openid=" + obj.getOpenid();
 		returnMat = sendHttpsGet(uriStr, null);
 		QQUserReturnMsg user = mapper.readValue(returnMat, QQUserReturnMsg.class);
-		try {
-			BeanInfo info = Introspector.getBeanInfo(QQUserReturnMsg.class, Object.class);
-			PropertyDescriptor[] pds = info.getPropertyDescriptors();
-			for(PropertyDescriptor pd : pds) {
-				Method method = pd.getReadMethod();
-				System.out.println(pd.getName() + ": " + method.invoke(user, null));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
 		//将腾讯服务器返回的用户资料对象转换成数据库能用的对象
-		blog_visitor1 visitor = parseObj(user);
+		blog_visitor visitor = parseObj(user);
 		visitor.setVisitor_id(obj.getOpenid());
 		
-		//将解析好的对象传入到数据库中作持久化存储
+		BlogVisitor2DBService service = new BlogVisitor2DBService();
+		blog_visitor visitorFromDB = service.selectVisitorByID(visitor.getVisitor_id());
+		if (visitorFromDB == null) {
+			if (service.insertVisitor(visitor) <= 0) {
+				response.getWriter().write("数据库写入失败，登录失败");
+				return;
+			}
+		}else {
+			if (!isEqual(visitor, visitorFromDB)) {
+				service.updateVisitor(visitor);
+			}
+		}
+		HttpSession session = request.getSession(true);
+		Decoder decoder = Base64.getDecoder();
+		if (visitor.getVisitor_nickname() != null && visitor.getVisitor_nickname().length() != 0) {
+			String nickName = new String(decoder.decode(visitor.getVisitor_nickname()), "UTF-8");
+			visitor.setVisitor_nickname(nickName);
+		}
+		if (visitor.getConstellation() != null && visitor.getConstellation().length() != 0) {
+			String constellation = new String(decoder.decode(visitor.getConstellation()), "UTF-8");
+			visitor.setConstellation(constellation);
+		}
+		session.setAttribute("visitor", visitor);
 		chain.doFilter(request, response);
 	}
 	
-	private blog_visitor1 parseObj(QQUserReturnMsg obj) {
+	private boolean isEqual(blog_visitor v1, blog_visitor v2) {
+		try {
+			BeanInfo info = Introspector.getBeanInfo(blog_visitor.class, Object.class);
+			PropertyDescriptor[] pds = info.getPropertyDescriptors();
+			for(PropertyDescriptor pd : pds) {
+				Method method = pd.getReadMethod();
+				Object value1 = method.invoke(v1, null);
+				Object value2 = method.invoke(v2, null);
+				if (value1 != null && value2 != null) {
+					if (!value1.equals(value2)) {
+						return false;
+					}
+				}else {
+					return false;
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	private blog_visitor parseObj(QQUserReturnMsg obj) {
 		if (obj == null) {
 			return null;
 		}
-		blog_visitor1 visitor = new blog_visitor1();
+		blog_visitor visitor = new blog_visitor();
 		visitor.setIs_lost(Integer.toString(obj.getIs_lost()));
 		visitor.setVisitor_nickname(obj.getNickname());
 		visitor.setVisitor_gender(obj.getGender());

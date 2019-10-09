@@ -280,8 +280,10 @@
 			event.stopPropagation();
 		}, false);
 		var back_center_container = document.getElementById("back_center_container");
-		var temp1 = new Array();var temp = new Array();
-		var array = new Array();var size = getScreenSize();
+		var temp1 = new Array();
+		var temp = new Array();
+		var array = new Array();
+		var size = getScreenSize();
 		var buttns = document.getElementsByClassName("management_buttn");
 		var back_left = document.getElementById("back_left");
 		back_left.style.height = (size.h - 87) + "px";
@@ -289,8 +291,10 @@
 		var sectionB = document.getElementById("sectionB");
 		var sectionC = document.getElementById("sectionC");
 		var sectionD = document.getElementById("sectionD");
-		back_left.appendChild(sectionA);sectionA.style.display = "block";
-		back_center_container.appendChild(sectionC);sectionC.style.display = "block";
+		back_left.appendChild(sectionA);
+		sectionA.style.display = "block";
+		back_center_container.appendChild(sectionC);
+		sectionC.style.display = "block";
 		for(var i = 0; i < buttns.length; i++){
 			var buttn = buttns[i];
 			array.push(buttn);
@@ -747,11 +751,33 @@
 			var visitor_gender = document.createElement("div");
 			visitor_gender.className = "visitor_gender";
 			
+			var visitor_birthday = document.createElement("div");
+			visitor_birthday.className = "visitor_birthday";
+			
+			var visitor_region = document.createElement("div");
+			visitor_region.className = "visitor_region";
+			
 			visitor_name.innerHTML = visit.visitor_nickname;
 			visitor_gender.innerHTML = visit.visitor_gender;
+			var myDate = new Date();
+		    var tYear = myDate.getFullYear();
+		    if (visit.year != null){
+		    	visitor_birthday.innerHTML = visit.year + "年/" + (tYear - parseInt(visit.year)) + "岁";
+		    }else{
+		    	visitor_birthday.innerHTML = "-年/-岁";
+		    }
+			if (visit.province != null && visit.city != null){
+				visitor_region.innerHTML = visit.province + "/" + visit.city;
+			}else if(visit.province == null && visit.city == null){
+				visitor_region.innerHTML = "-/-";
+			}else{
+				visitor_region.innerHTML = (visit.province == null ? "-" :  visit.province == null) + "/" + (visit.city == null ? "-" : visit.city == null);
+			}
 			
 			visitor.appendChild(visitor_name);
 			visitor.appendChild(visitor_gender);
+			visitor.appendChild(visitor_birthday);
+			visitor.appendChild(visitor_region);
 			
 			var visitor_op = document.createElement("a");
 			visitor_op.className = "visitor_op";
@@ -1268,9 +1294,11 @@
 	#back_center_notice_editor_buttns button:hover{cursor:pointer;box-shadow:0.5px 0.5px 5px 1px #CCCCCC;}
 	#visitor_list{height:87%;width:100%;overflow:auto;font-size:15px;}
 	#visit_list{height:87%;width:100%;overflow:auto;font-size:15px;}
-	.visitor{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
-	.visitor_name{margin-left:10px;float:left;width:30%;}
-	.visitor_gender{float:left;width:33%;text-align:center}
+	.visitor{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:30px;border-bottom:1px #ccc solid;}
+	.visitor_name{margin-left:10px;float:left;width:20%;margin-top:5px;}
+	.visitor_gender{float:left;width:20%;text-align:center;margin-top:5px;}
+	.visitor_birthday{float:left;width:26%;text-align:center;margin-top:5px;}
+	.visitor_region{float:left;width:26%;text-align:center;margin-top:5px;}
 	.visitor_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
 	.visitor_op:hover{text-decoration:underline;cursor:pointer;}
 	#visitor_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
@@ -1329,12 +1357,44 @@
             	<!--正文内容开始-->
             	 	<div class="back_center_class" data-tag="8" id="sectionD">
             	 		<div style="font-family:Microsoft YaHei;width:100%;height:25px;margin-bottom:10px;border-bottom:1px #000 solid">
-                    		<div class="visitor_name">用户ID</div>
-                    		<div class="visitor_gender">性别</div>
+                    		<div class="visitor_name" style="margin-top:0px;">用户ID</div>
+                    		<div class="visitor_gender" style="margin-top:0px">性别</div>
+                    		<div class="visitor_birthday" style="margin-top:0px">生日/年龄</div>
+                       		<div class="visitor_region" style="margin-top:0px">地区</div>
 	                       	<div style="float:right;margin-right:10px">操作</div>
                     	</div>
                        	<div id="visitor_list">
+                       		<div class="visitor">
+                       			<div class="visitor_name">光的文明</div>
+                       			<div class="visitor_gender">男</div>
+                       			<div class="visitor_birthday">1994年/25岁</div>
+                       			<div class="visitor_region">香港/九龙城区</div>
+                       			<div class="visitor_op">删除</div>
+                       		</div>
                        		
+                       		<div class="visitor">
+                       			<div class="visitor_name">光的文明</div>
+                       			<div class="visitor_gender">男</div>
+                       			<div class="visitor_birthday">1994年/25岁</div>
+                       			<div class="visitor_region">香港/九龙城区</div>
+                       			<div class="visitor_op">删除</div>
+                       		</div>
+                       		
+                       		<div class="visitor">
+                       			<div class="visitor_name">光的文明</div>
+                       			<div class="visitor_gender">男</div>
+                       			<div class="visitor_birthday">1994年/25岁</div>
+                       			<div class="visitor_region">香港/九龙城区</div>
+                       			<div class="visitor_op">删除</div>
+                       		</div>
+                       		
+                       		<div class="visitor">
+                       			<div class="visitor_name">光的文明</div>
+                       			<div class="visitor_gender">男</div>
+                       			<div class="visitor_birthday">1994年/25岁</div>
+                       			<div class="visitor_region">香港/九龙城区</div>
+                       			<div class="visitor_op">删除</div>
+                       		</div>
                        	</div>
                        	<div id="visitor_pageIndex">
                        		

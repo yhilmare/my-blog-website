@@ -54,7 +54,6 @@ public class DBUtils {
 				e.printStackTrace();
 			}
 		}
-		System.gc();
 	}
 	
 	public static int updateTranscation(String[] sql, Object[][] params){

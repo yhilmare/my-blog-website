@@ -1,6 +1,10 @@
 package DAO;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.List;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 
 import ServiceImpl.DataObject2DB;
 import Utils.DBUtils;
@@ -23,8 +27,18 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 	public int insertData(Object obj) {
 		blog_visit_article visit = (blog_visit_article) obj;
 		String sql = "insert into blog_visit_article(visit_id,article_id,visitor_id) values(?,?,?)";
-		Object[] params = {visit.getVisit_id(), visit.getArticle_id(), visit.getVisitor_id()};
-		return DBUtils.update(sql, params);
+		Encoder encoder = Base64.getEncoder();
+		try {
+			if (visit.getVisitor_id() != null) {
+				String visitorID = encoder.encodeToString(visit.getVisitor_id().getBytes("UTF-8"));
+				visit.setVisitor_id(visitorID);
+			}
+			Object[] params = {visit.getVisit_id(), visit.getArticle_id(), visit.getVisitor_id()};
+			return DBUtils.update(sql, params);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}	
+		return -1;
 	}
 
 	@Override
@@ -50,7 +64,19 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 		}
 		String sql = "select * from blog_article_visit_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_visit_article.class)));
+		List<blog_visit_article> list = DBUtils.query(sql, params, new ListHandler<List<blog_visit_article>>(blog_visit_article.class));
+		Decoder decoder = Base64.getDecoder();
+		for(int i = 0; i < list.size(); i ++) {
+			blog_visit_article visit = list.get(i);
+			if (visit.getVisitor_id() != null) {
+				try {
+					visit.setVisitor_id(new String(decoder.decode(visit.getVisitor_id()), "UTF-8"));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		page.setList(list);
 		return page;
 	}
 

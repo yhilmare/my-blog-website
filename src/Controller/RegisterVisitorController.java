@@ -2,6 +2,8 @@ package Controller;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -47,6 +49,11 @@ public class RegisterVisitorController extends HttpServlet {
 		BlogVisitor2DBService service = new BlogVisitor2DBService();
 		String msg;
 		if(service.insertVisitor(visitor) > 0){
+			Decoder decoder = Base64.getDecoder();
+			if (visitor.getVisitor_nickname() != null && visitor.getVisitor_nickname().length() != 0) {
+				String nickName = new String(decoder.decode(visitor.getVisitor_nickname()), "UTF-8");
+				visitor.setVisitor_nickname(nickName);
+			}
 			session.setAttribute("visitor", visitor);
 			msg = "注册成功，3秒钟后返回首页。若返回失败请点击这里<a href='/blog'>返回首页</a>";
 		}else{

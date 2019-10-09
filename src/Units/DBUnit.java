@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -63,7 +64,6 @@ import domain.blog_status;
 import domain.blog_visit;
 import domain.blog_visit_article;
 import domain.blog_visitor;
-import domain.blog_visitor1;
 
 public class DBUnit {
 	
@@ -388,19 +388,19 @@ public class DBUnit {
 	@Test
 	public void test28() throws UnsupportedEncodingException {
 		Encoder encoder = Base64.getEncoder();
-		String str = "杨航";
-		String s = encoder.encodeToString(str.getBytes("UTF-8"));
-		System.out.println(s);
+		String str = "5qiK6Zuq5p6r";
+//		String s = encoder.encodeToString(str.getBytes("UTF-8"));
+//		System.out.println(s);
 		Decoder decoder = Base64.getDecoder();
-		System.out.println(new String(decoder.decode(s), "UTF-8"));
+		System.out.println(new String(decoder.decode(str), "UTF-8"));
 	}
 	
 	@Test
 	public void test29() throws IntrospectionException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		PropertyDescriptor pd = new PropertyDescriptor("asdasd", blog_visitor1.class);
+		PropertyDescriptor pd = new PropertyDescriptor("asdasd", blog_visitor.class);
 		Class clazz = Class.forName("domain.blog_visitor1");
 		Constructor con = clazz.getConstructor(null);
-		blog_visitor1 obj = (blog_visitor1) con.newInstance(null);
+		blog_visitor obj = (blog_visitor) con.newInstance(null);
 		obj.setCity("汉中");
 		System.out.println(obj.getCity());
 	}
@@ -408,9 +408,9 @@ public class DBUnit {
 	@Test
 	public void test30() {
 		BlogVisitor2DB dao = new BlogVisitor2DB();
-		blog_visitor1 obj = (blog_visitor1) dao.selectUser("光的文明");
+		blog_visitor obj = (blog_visitor) dao.selectUser("光的文明");
 		try {
-			BeanInfo info = Introspector.getBeanInfo(blog_visitor1.class, Object.class);
+			BeanInfo info = Introspector.getBeanInfo(blog_visitor.class, Object.class);
 			PropertyDescriptor[] pds = info.getPropertyDescriptors();
 			for(PropertyDescriptor pd : pds) {
 				Method method = pd.getReadMethod();
@@ -424,12 +424,12 @@ public class DBUnit {
 		System.out.println(dao.updateUser(obj));
 		System.out.println(dao.getTotalRecord());
 		System.out.println("=======================");
-		blog_page page = dao.selectUserByList(2, 1, 5);
+		blog_page page = dao.selectUserByList(1, 10, 5);
 		List list = page.getList();
 		for(int i = 0; i < list.size(); i ++) {
-			blog_visitor1 v = (blog_visitor1) list.get(i);
+			blog_visitor v = (blog_visitor) list.get(i);
 			try {
-				BeanInfo info = Introspector.getBeanInfo(blog_visitor1.class, Object.class);
+				BeanInfo info = Introspector.getBeanInfo(blog_visitor.class, Object.class);
 				PropertyDescriptor[] pds = info.getPropertyDescriptors();
 				for(PropertyDescriptor pd : pds) {
 					Method method = pd.getReadMethod();
@@ -437,6 +437,105 @@ public class DBUnit {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+			System.out.println("------------------------------");
+		}
+		
+		System.out.println(dao.deleteUser(obj));
+	}
+	
+	@Test
+	public void test31() {
+		BlogVisitor2DBService service = new BlogVisitor2DBService();
+		blog_visitor visitor = service.selectVisitorByID("F6E4A58522E750595C7D2E1C718554A7");
+		if(visitor == null) {
+			System.out.println("null");
+			return;
+		}
+		try {
+			BeanInfo info = Introspector.getBeanInfo(blog_visitor.class, Object.class);
+			PropertyDescriptor[] pds = info.getPropertyDescriptors();
+			for(PropertyDescriptor pd : pds) {
+				Method method = pd.getReadMethod();
+				System.out.println(pd.getName() + ": " + method.invoke(visitor, null));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void test32() {
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet result = null;
+		PreparedStatement st1 = null;
+		try {
+			con = DriverManager.getConnection("jdbc:mysql://123.207.64.189:3306/blogtest?autoReconnect=true&amp;useSSL=false", 
+					"root", "HaErBin123!@");
+			String sql = "select * from blog_visit_article";
+			String sql1 = "update blog_visit_article set visitor_id=?,visit_date=? where visit_id=?";
+			Encoder encoder = Base64.getEncoder();
+			st1 = con.prepareStatement(sql1);
+			st = con.prepareStatement(sql);
+			result = st.executeQuery();
+			ResultSetMetaData metaData = result.getMetaData();
+			int count = metaData.getColumnCount();
+			while(result.next()) {
+				for(int i = 0; i < count; i ++) {
+					Object value = result.getObject(i + 1);
+					String name = metaData.getColumnName(i + 1);
+					System.out.print(name + ": " + value + " ");
+					if (name.equals("visitor_id")) {
+						String temp = (String) value;
+						st1.setObject(1, encoder.encodeToString(temp.getBytes("UTF-8")));
+					}
+					if (name.equals("visit_date")) {
+						st1.setObject(2, value);
+					}
+					if (name.equals("visit_id")) {
+						st1.setObject(3, value);
+					}
+				}
+				st1.addBatch();
+				System.out.println();
+			}
+			System.out.println(st1.executeBatch().length);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(result != null){
+				try {
+					result.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(st != null){
+				try {
+					st.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(st1 != null){
+				try {
+					st1.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(con != null){
+				try {
+					con.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
