@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import DAO.BlogVisitor2DB;
 import domain.OpenID;
 import domain.QQApp;
 import domain.QQUserReturnMsg;
@@ -103,7 +104,6 @@ public class QQLoginFilter implements Filter {
 			e.printStackTrace();
 		}
 		//将腾讯服务器返回的用户资料对象转换成数据库能用的对象
-		
 		blog_visitor1 visitor = parseObj(user);
 		visitor.setVisitor_id(obj.getOpenid());
 		

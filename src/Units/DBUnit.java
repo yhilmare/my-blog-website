@@ -18,16 +18,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import DAO.BlogHolder2DB;
 import DAO.BlogVisitArticle2DB;
 import DAO.BlogVisitor2DB;
 import Factory.DataAccessFactory;
@@ -48,6 +51,7 @@ import Utils.DBUtils;
 import Utils.DateFormateUtil;
 import Utils.MD5Utils;
 import Utils.UniqueCode;
+import domain.QQUserReturnMsg;
 import domain.TipMessage;
 import domain.blog_article;
 import domain.blog_holder;
@@ -297,8 +301,6 @@ public class DBUnit {
 		//System.out.println(MD5Utils.getToken("940805"));
 		MessageDigest digest = MessageDigest.getInstance("md5");
 		byte[] buffer = digest.digest("yanghang19940805".getBytes());
-		Base64 encoder = new Base64();
-		System.out.println(encoder.encodeToString(buffer));
 	}
 	
 	@Test
@@ -385,12 +387,12 @@ public class DBUnit {
 	
 	@Test
 	public void test28() throws UnsupportedEncodingException {
-		Base64 encoder = new Base64();
+		Encoder encoder = Base64.getEncoder();
 		String str = "杨航";
 		String s = encoder.encodeToString(str.getBytes("UTF-8"));
 		System.out.println(s);
-		System.out.println(new String(encoder.decode(s), "UTF-8"));
-		
+		Decoder decoder = Base64.getDecoder();
+		System.out.println(new String(decoder.decode(s), "UTF-8"));
 	}
 	
 	@Test
@@ -401,6 +403,42 @@ public class DBUnit {
 		blog_visitor1 obj = (blog_visitor1) con.newInstance(null);
 		obj.setCity("汉中");
 		System.out.println(obj.getCity());
+	}
+	
+	@Test
+	public void test30() {
+		BlogVisitor2DB dao = new BlogVisitor2DB();
+		blog_visitor1 obj = (blog_visitor1) dao.selectUser("光的文明");
+		try {
+			BeanInfo info = Introspector.getBeanInfo(blog_visitor1.class, Object.class);
+			PropertyDescriptor[] pds = info.getPropertyDescriptors();
+			for(PropertyDescriptor pd : pds) {
+				Method method = pd.getReadMethod();
+				System.out.println(pd.getName() + ": " + method.invoke(obj, null));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		obj.setCity("汉中");
+		System.out.println(dao.updateUser(obj));
+		System.out.println(dao.getTotalRecord());
+		System.out.println("=======================");
+		blog_page page = dao.selectUserByList(2, 1, 5);
+		List list = page.getList();
+		for(int i = 0; i < list.size(); i ++) {
+			blog_visitor1 v = (blog_visitor1) list.get(i);
+			try {
+				BeanInfo info = Introspector.getBeanInfo(blog_visitor1.class, Object.class);
+				PropertyDescriptor[] pds = info.getPropertyDescriptors();
+				for(PropertyDescriptor pd : pds) {
+					Method method = pd.getReadMethod();
+					System.out.println(pd.getName() + ": " + method.invoke(v, null));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
 
