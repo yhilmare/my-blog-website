@@ -1,7 +1,7 @@
 # class
 
-*/build/
+/build/
 
 # c3p0
 
-*/src/c3p0-config.xml
+/src/c3p0-config.xml
