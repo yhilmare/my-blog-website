@@ -415,12 +415,171 @@
 						updateArticleVisitList(obj.list);
 						updateArticleVisitPageIndex(obj);
 					});
+				}else if(tag == "12"){//访客登录记录管理页面
+					sendHttpFormRequest("/blog/SelectLoginRecordController", {pageIndex:"1"}, function(request){
+						var obj = JSON.parse(request.responseText);
+						updateBlogLoginList(obj.list);
+						updateBlogLoginPageIndex(obj);
+					});
 				}
 			}else{
 				section.style.display="none";
 			}
 		}
 	}
+	
+	function updateBlogLoginPageIndex(page){
+		var array = new Array();
+		var login_pageIndex = document.getElementById("login_pageIndex");
+		login_pageIndex.innerHTML = "";
+		removerAllChildNodes(login_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var totalRecord = parseInt(page.totalRecord);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_login_pageIndex";
+		login_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_login_pageIndex";
+			login_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_login_pageIndex";
+				login_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_login_pageIndex";
+			login_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_login_pageIndex";
+		login_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		login_pageIndex.appendChild(div);
+		div = document.createElement("span");
+		div.innerHTML = "&nbsp;共" + totalRecord + "条记录";
+		login_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_login_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectLoginRecordController", {pageIndex:info}, function(request){
+					var obj = JSON.parse(request.responseText);
+					updateBlogLoginList(obj.list);
+					updateBlogLoginPageIndex(obj);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	
+	function updateBlogLoginList(array){
+		var login_list = document.getElementById("login_list");
+		login_list.innerHTML = "";
+		removerAllChildNodes(login_list);
+		for(var i = 0; i < array.length; i++){
+			var login = array[i];
+			var loginer = document.createElement("div");
+			loginer.className = "login";
+			
+			var login_name = document.createElement("div");
+			login_name.className = "login_name";
+			var login_ip = document.createElement("div");
+			login_ip.className = "login_ip";
+			var login_date = document.createElement("div");
+			login_date.className = "login_date";
+			var login_isp = document.createElement("div");
+			login_isp.className = "login_isp";
+			var login_country = document.createElement("div");
+			login_country.className = "login_country";
+			var login_province = document.createElement("div");
+			login_province.className = "login_province";
+			var login_city = document.createElement("div");
+			login_city.className = "login_city";
+			var login_other = document.createElement("div");
+			login_other.className = "login_other";
+			
+			login_name.innerHTML = login.login_nickname;
+			login_ip.innerHTML = login.login_ip;
+			login_date.innerHTML = login.login_date;
+			login_isp.innerHTML = login.login_isp;
+			login_country.innerHTML = login.login_country;
+			login_province.innerHTML = login.login_province;
+			login_city.innerHTML = login.login_city;
+			login_other.innerHTML = (login.login_address.length == 0 ? "-" : login.login_address) 
+			+ "/" + (login.login_area.length == 0 ? "-" : login.login_area) 
+			+ "/" + (login.login_street.length == 0 ? "-" : login.login_street);
+			
+			loginer.appendChild(login_name);
+			loginer.appendChild(login_ip);
+			loginer.appendChild(login_date);
+			loginer.appendChild(login_isp);
+			loginer.appendChild(login_country);
+			loginer.appendChild(login_province);
+			loginer.appendChild(login_city);
+			loginer.appendChild(login_other);
+			
+			var login_op = document.createElement("a");
+			login_op.className = "login_op";
+			login_op.innerHTML = "删除";
+			login_op.id = login.login_id;
+			loginer.appendChild(login_op);
+			login_list.appendChild(loginer);
+		}
+		initLoginOperationFunc();
+	}
+	
+	function initLoginOperationFunc(){
+		var login_op = document.getElementsByClassName("login_op");
+		for(var i = 0; i < login_op.length; i++){
+			var a = login_op[i];
+			a.addEventListener("click", function(){
+				if(confirm("确定要删除这条访问记录吗？")){
+					var back_center_blog_modify = document.getElementById("back_center_blog_modify");
+					var back_center_blog_management = document.getElementById("back_center_blog_management");
+					back_center_blog_modify.style.display = "none";
+					back_center_blog_management.style.display = "block";
+					sendHttpFormRequest("/blog/DeleteLoginRecordController", {login_id:this.id}, function(request){
+						alert(request.responseText);
+						if(request.responseText == "记录删除成功"){
+							var buttn = document.getElementById("buttn_temp5");
+							buttn.click();
+						}
+					});
+				}
+				if(event.preventDefault){
+					event.preventDefault();
+				}else if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	
 	
 	function updateArticleVisitPageIndex(page){
 		var array = new Array();
@@ -1299,7 +1458,7 @@
 	.visitor_gender{float:left;width:20%;text-align:center;margin-top:5px;}
 	.visitor_birthday{float:left;width:26%;text-align:center;margin-top:5px;}
 	.visitor_region{float:left;width:26%;text-align:center;margin-top:5px;}
-	.visitor_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
+	.visitor_op{color:#03f;float:right;text-decoration:none;margin-right:10px;margin-top:5px;}
 	.visitor_op:hover{text-decoration:underline;cursor:pointer;}
 	#visitor_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
 	#visitor_pageIndex a:hover{cursor:pointer;}
@@ -1321,6 +1480,22 @@
 	.article_visit_date{float:left;width:20%;text-align:center}
 	.article_visit_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
 	.article_visit_op:hover{text-decoration:underline;cursor:pointer;}
+	
+	
+	#login_list{height:87%;width:100%;overflow:auto;font-size:15px;}
+	#login_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
+	#login_pageIndex a:hover{cursor:pointer;}
+	.login{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:30px;border-bottom:1px #ccc solid;}
+	.login_name{margin-left:10px;float:left;width:13%;margin-top:5px;}
+	.login_ip{float:left;width:11%;text-align:center;margin-top:5px;}
+	.login_date{float:left;width:11%;text-align:center;margin-top:5px;}
+	.login_isp{float:left;width:15%;text-align:center;margin-top:5px;}
+	.login_country{float:left;width:8%;text-align:center;margin-top:5px;;}
+	.login_province{float:left;width:8%;text-align:center;margin-top:5px;}
+	.login_city{float:left;width:11%;text-align:center;margin-top:5px;}
+	.login_other{float:left;width:15%;text-align:center;margin-top:5px;}
+	.login_op{color:#03f;float:right;text-decoration:none;margin-right:10px;margin-top:5px;}
+	.login_op:hover{text-decoration:underline;cursor:pointer;}
 	</style>
     <body>
     	<div id="back_head">
@@ -1349,6 +1524,8 @@
                     <div class="back_sys_left_buttn_container"><button id="buttn_temp3" data-tag="8" class="back_sys_left_buttn">注册用户管理</button></div>
                     <div class="back_sys_left_buttn_container"><button data-tag="9" class="back_sys_left_buttn">访客管理</button></div>
                     <div class="back_sys_left_buttn_container"><button id="buttn_temp4" data-tag="11" class="back_sys_left_buttn">文章访客管理</button></div>
+                    
+                    <div class="back_sys_left_buttn_container"><button id="buttn_temp5" data-tag="12" class="back_sys_left_buttn">用户登录管理</button></div>
                 </div>
         </div>
        
@@ -1364,39 +1541,29 @@
 	                       	<div style="float:right;margin-right:10px">操作</div>
                     	</div>
                        	<div id="visitor_list">
-                       		<div class="visitor">
-                       			<div class="visitor_name">光的文明</div>
-                       			<div class="visitor_gender">男</div>
-                       			<div class="visitor_birthday">1994年/25岁</div>
-                       			<div class="visitor_region">香港/九龙城区</div>
-                       			<div class="visitor_op">删除</div>
-                       		</div>
                        		
-                       		<div class="visitor">
-                       			<div class="visitor_name">光的文明</div>
-                       			<div class="visitor_gender">男</div>
-                       			<div class="visitor_birthday">1994年/25岁</div>
-                       			<div class="visitor_region">香港/九龙城区</div>
-                       			<div class="visitor_op">删除</div>
-                       		</div>
-                       		
-                       		<div class="visitor">
-                       			<div class="visitor_name">光的文明</div>
-                       			<div class="visitor_gender">男</div>
-                       			<div class="visitor_birthday">1994年/25岁</div>
-                       			<div class="visitor_region">香港/九龙城区</div>
-                       			<div class="visitor_op">删除</div>
-                       		</div>
-                       		
-                       		<div class="visitor">
-                       			<div class="visitor_name">光的文明</div>
-                       			<div class="visitor_gender">男</div>
-                       			<div class="visitor_birthday">1994年/25岁</div>
-                       			<div class="visitor_region">香港/九龙城区</div>
-                       			<div class="visitor_op">删除</div>
-                       		</div>
                        	</div>
                        	<div id="visitor_pageIndex">
+                       		
+                       	</div>
+                    </div>
+                    
+                    <div class="back_center_class" data-tag="12">
+            	 		<div style="font-family:Microsoft YaHei;width:100%;height:25px;margin-bottom:10px;border-bottom:1px #000 solid">
+                    		<div class="login_name" style="margin-top:0px;">用户ID</div>
+                    		<div class="login_ip" style="margin-top:0px">登录IP</div>
+                    		<div class="login_date" style="margin-top:0px">登录时间</div>
+                    		<div class="login_isp" style="margin-top:0px">服务提供商</div>
+                       		<div class="login_country" style="margin-top:0px">国家</div>
+                       		<div class="login_province" style="margin-top:0px">省份</div>
+                       		<div class="login_city" style="margin-top:0px">城市</div>
+                       		<div class="login_other" style="margin-top:0px">其他信息</div>
+	                       	<div style="float:right;margin-right:10px">操作</div>
+                    	</div>
+                       	<div id="login_list">
+                       		
+                       	</div>
+                       	<div id="login_pageIndex">
                        		
                        	</div>
                     </div>

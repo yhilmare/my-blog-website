@@ -10,29 +10,38 @@ import ServiceImpl.DataObject2DB;
 import Utils.DBUtils;
 import Utils.IntegerHandler;
 import Utils.ListHandler;
+import Utils.UniqueCode;
+import domain.blog_login;
 import domain.blog_page;
-import domain.blog_visit_article;
 
-public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
+public class BlogLogin2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public int getTotalRecord() {
-		String sql = "select count(*) from blog_visit_article";
+		String sql = "select count(*) from blog_login";
 		Object[] params = {};
 		return (int)DBUtils.query(sql, params, new IntegerHandler());
 	}
 
 	@Override
 	public int insertData(Object obj) {
-		blog_visit_article visit = (blog_visit_article) obj;
-		String sql = "insert into blog_visit_article(visit_id,article_id,visitor_id) values(?,?,?)";
+		blog_login login = (blog_login) obj;
+		
+		String sql = "insert into blog_login(login_id,login_nickname,login_ip,login_province," 
+				+ "login_isp,login_area,login_address,login_city," 
+				+ "login_country,login_street,visitor_id) values(?,?,?,?,?,?,?,?,?,?,?)";
+		if (login.getLogin_id() == null) {
+			login.setLogin_id(UniqueCode.getUUID());
+		}
 		Encoder encoder = Base64.getEncoder();
 		try {
-			if (visit.getVisitor_id() != null) {
-				String visitorID = encoder.encodeToString(visit.getVisitor_id().getBytes("UTF-8"));
-				visit.setVisitor_id(visitorID);
+			if (login.getLogin_nickname() != null) {
+				String loginNickname = encoder.encodeToString(login.getLogin_nickname().getBytes("UTF-8"));
+				login.setLogin_nickname(loginNickname);
 			}
-			Object[] params = {visit.getVisit_id(), visit.getArticle_id(), visit.getVisitor_id()};
+			Object[] params = {login.getLogin_id(), login.getLogin_nickname(), login.getLogin_ip(), login.getLogin_province(),
+					login.getLogin_isp(), login.getLogin_area(), login.getLogin_address(), login.getLogin_city(),
+					login.getLogin_country(), login.getLogin_street(), login.getVisitor_id()};
 			return DBUtils.update(sql, params);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -42,7 +51,7 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 
 	@Override
 	public int deleteData(String id) {
-		String sql = "delete from blog_visit_article where visit_id=?";
+		String sql = "delete from blog_login where login_id=?";
 		Object[] params = {id};
 		return DBUtils.update(sql, params);
 	}
@@ -50,7 +59,7 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 	@Override
 	public int updateData(Object obj) {
 		// TODO Auto-generated method stub
-		return -1;
+		return 0;
 	}
 
 	@Override
@@ -61,15 +70,15 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select * from blog_article_visit_view limit ?,?";
+		String sql = "select * from blog_login_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
-		List<blog_visit_article> list = DBUtils.query(sql, params, new ListHandler<List<blog_visit_article>>(blog_visit_article.class));
+		List<blog_login> list = DBUtils.query(sql, params, new ListHandler<List<blog_login>>(blog_login.class));
 		Decoder decoder = Base64.getDecoder();
 		for(int i = 0; i < list.size(); i ++) {
-			blog_visit_article visit = list.get(i);
-			if (visit.getVisitor_id() != null) {
+			blog_login login = list.get(i);
+			if (login.getLogin_nickname() != null) {
 				try {
-					visit.setVisitor_id(new String(decoder.decode(visit.getVisitor_id()), "UTF-8"));
+					login.setLogin_nickname(new String(decoder.decode(login.getLogin_nickname()), "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}
@@ -86,7 +95,7 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 	}
 
 	@Override
-	public T selectByID(String id) {
+	public <T> T selectByID(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

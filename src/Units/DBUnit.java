@@ -32,6 +32,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -46,6 +47,7 @@ import Factory.UserAccessFactory;
 import Service.BlogArticle2DBService;
 import Service.BlogHolder2DBService;
 import Service.BlogIndex2DBService;
+import Service.BlogLogin2DBService;
 import Service.BlogMessage2DBService;
 import Service.BlogNotice2DBService;
 import Service.BlogStatus2DBService;
@@ -64,6 +66,7 @@ import domain.TipMessage;
 import domain.blog_article;
 import domain.blog_holder;
 import domain.blog_index;
+import domain.blog_login;
 import domain.blog_message;
 import domain.blog_notice;
 import domain.blog_page;
@@ -71,6 +74,7 @@ import domain.blog_status;
 import domain.blog_visit;
 import domain.blog_visit_article;
 import domain.blog_visitor;
+import domain.IPResolve.IPResolveData;
 
 public class DBUnit {
 	
@@ -549,7 +553,7 @@ public class DBUnit {
 	
 	@Test
 	public void test33() throws IOException {
-		String url = "https://m.so.com/position?ip=47.100.2.191";
+		String url = "https://m.so.com/position?ip=203.208.60.109";
 		URL uri = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) uri.openConnection();
 		con.setConnectTimeout(10000);
@@ -560,7 +564,22 @@ public class DBUnit {
 		InputStream input = con.getInputStream();
 		byte[] buffer = input.readAllBytes();
 		input.close();
-		System.out.println(new String(buffer, "UTF-8"));
+		String returnStr = new String(buffer, "UTF-8");
+		System.out.println(returnStr);
+		ObjectMapper mapper = new ObjectMapper();
+		IPResolveData data = mapper.readValue(returnStr, IPResolveData.class);
+		System.out.println(data.getData().getPosition().getCity());
+	}
+	
+	@Test
+	public void test34() {
+		BlogLogin2DBService service = new BlogLogin2DBService();
+		blog_page page = service.selectVisit(3, 1, 5);
+		List<blog_login> list = page.getList();
+		for(blog_login  login : list) {
+			System.out.println(login.getLogin_nickname());
+		}
+		service.deleteByID("1c3788a3-198c-47a1-8b19-cf29ffc49625");
 	}
 }
 
