@@ -45,7 +45,7 @@ public class BlogIndex2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select * from blog_index_view limit ?,?";
+		String sql = "select * from blog_index order by index_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_index.class)));
 		return page;

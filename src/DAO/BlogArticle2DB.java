@@ -74,7 +74,7 @@ public class BlogArticle2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select article_id, article_content, article_title, holder_id, create_time from blog_artilce_view limit ?,?";
+		String sql = "select article_id, article_content, article_title, holder_id, create_time from blog_article order by create_time desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		page.setList(DBUtils.query(sql, params, new ListHandler<List>(blog_article.class)));
 		return page;
@@ -88,7 +88,7 @@ public class BlogArticle2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select article_id, article_title, holder_id, create_time from blog_artilce_view limit ?,?";
+		String sql = "select article_id, article_title, holder_id, create_time from blog_article order by create_time desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		page.setList(DBUtils.query(sql, params, new ListHandler<List>(blog_article.class)));
 		return page;

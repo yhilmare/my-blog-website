@@ -64,7 +64,7 @@ public class BlogStatus2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select status_id, status_content, publish_date, holder_id from blog_status_view limit ?,?";
+		String sql = "select status_id, status_content, publish_date, holder_id from blog_status order by publish_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		page.setList(DBUtils.query(sql, params, new ListHandler<List<T>>(blog_status.class)));
 		return page;

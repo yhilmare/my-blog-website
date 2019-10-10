@@ -31,9 +31,9 @@ public class BlogArticle2DBService {
 	}
 		
 		//查询一个条目
-	public blog_page selectArticle(int currentPage, int pageContain, int pageInFrame){
-		return impl.selectData(currentPage, pageContain, pageInFrame);
-	}
+//	public blog_page selectArticle(int currentPage, int pageContain, int pageInFrame){
+//		return impl.selectData(currentPage, pageContain, pageInFrame);
+//	}
 	
 	public blog_page selectArticleIndex(int currentPage, int pageContain, int pageInFrame){
 		return impl.selectIndexData(currentPage, pageContain, pageInFrame);

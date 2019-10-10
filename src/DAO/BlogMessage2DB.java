@@ -65,7 +65,7 @@ public class BlogMessage2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select * from blog_message_view limit ?,?";
+		String sql = "select * from blog_message order by message_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		List<blog_message> list = DBUtils.query(sql, params, new ListHandler<List<blog_message>>(blog_message.class));
 		Decoder decoder = Base64.getDecoder();

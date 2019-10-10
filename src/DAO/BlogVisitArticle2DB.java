@@ -61,7 +61,7 @@ public class BlogVisitArticle2DB<T> implements DataObject2DB<T>{
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select * from blog_article_visit_view limit ?,?";
+		String sql = "select * from blog_visit_article_view limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		List<blog_visit_article> list = DBUtils.query(sql, params, new ListHandler<List<blog_visit_article>>(blog_visit_article.class));
 		Decoder decoder = Base64.getDecoder();

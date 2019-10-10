@@ -39,6 +39,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import DAO.BlogComment2DB;
 import DAO.BlogHolder2DB;
 import DAO.BlogVisitArticle2DB;
 import DAO.BlogVisitor2DB;
@@ -64,6 +65,7 @@ import Utils.UniqueCode;
 import domain.QQUserReturnMsg;
 import domain.TipMessage;
 import domain.blog_article;
+import domain.blog_comment;
 import domain.blog_holder;
 import domain.blog_index;
 import domain.blog_login;
@@ -580,6 +582,32 @@ public class DBUnit {
 			System.out.println(login.getLogin_nickname());
 		}
 		service.deleteByID("1c3788a3-198c-47a1-8b19-cf29ffc49625");
+	}
+	
+	@Test
+	public void test35() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		BlogComment2DB dao = new BlogComment2DB();
+		blog_comment comment = new blog_comment();
+		comment.setArticle_id("ca3a93ce-d9cd-4e55-a273-a58f727ca446");
+		comment.setVisitor_id("F6E4A58522E750595C7D2E1C718554A7");
+		comment.setComment_content("真的是太好了");
+		comment.setComment_ip("123.207.64.189");
+		comment.setComment_visibility(0);
+//		System.out.println(dao.updateData(comment));
+//		System.out.println(dao.insertData(comment));
+//		System.out.println(dao.getTotalRecord());
+//		System.out.println(dao.getTotalRecordForArticle("ca3a93ce-d9cd-4e55-a273-a58f727ca446"));
+		blog_page page = dao.selectData(2, 2, 5);
+		List<blog_comment> list = page.getList();
+		BeanInfo info = Introspector.getBeanInfo(blog_comment.class, Object.class);
+		PropertyDescriptor[] pds = info.getPropertyDescriptors();
+		for(blog_comment item : list) {
+			for(PropertyDescriptor pd : pds) {
+				Method method = pd.getReadMethod();
+				System.out.println(pd.getName() + ": " + method.invoke(item, null));
+			}
+			System.out.println("-----------------------");
+		}
 	}
 }
 
