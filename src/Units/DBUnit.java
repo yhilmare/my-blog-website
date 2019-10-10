@@ -4,12 +4,16 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,6 +26,9 @@ import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -538,6 +545,22 @@ public class DBUnit {
 				}
 			}
 		}
+	}
+	
+	@Test
+	public void test33() throws IOException {
+		String url = "https://m.so.com/position?ip=47.100.2.191";
+		URL uri = new URL(url);
+		HttpsURLConnection con = (HttpsURLConnection) uri.openConnection();
+		con.setConnectTimeout(10000);
+		con.setReadTimeout(10000);
+		con.setDoInput(true);
+		con.setDoOutput(true);
+		con.setRequestMethod("GET");
+		InputStream input = con.getInputStream();
+		byte[] buffer = input.readAllBytes();
+		input.close();
+		System.out.println(new String(buffer, "UTF-8"));
 	}
 }
 
