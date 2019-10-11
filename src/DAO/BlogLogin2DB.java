@@ -70,7 +70,7 @@ public class BlogLogin2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select * from blog_login order by login_date limit ?,?";
+		String sql = "select * from blog_login order by login_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		List<blog_login> list = DBUtils.query(sql, params, new ListHandler<List<blog_login>>(blog_login.class));
 		Decoder decoder = Base64.getDecoder();
