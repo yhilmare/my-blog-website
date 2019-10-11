@@ -637,4 +637,14 @@
     <servlet-name>DeleteLoginRecordController</servlet-name>
     <url-pattern>/DeleteLoginRecordController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SelectArticleCommentController</display-name>
+    <servlet-name>SelectArticleCommentController</servlet-name>
+    <servlet-class>Controller.SelectArticleCommentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SelectArticleCommentController</servlet-name>
+    <url-pattern>/SelectArticleCommentController</url-pattern>
+  </servlet-mapping>
 </web-app>

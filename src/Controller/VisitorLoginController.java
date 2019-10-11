@@ -32,6 +32,10 @@ public class VisitorLoginController extends HttpServlet {
 			response.getWriter().write("用户不存在");
 			return;
 		}
+		if (visitor.getVisitor_pwd() == null || visitor.getVisitor_pwd().length() == 0) {
+			response.getWriter().write("登录用户类型错误");
+			return;
+		}
 		if(!visitor.getVisitor_pwd().equals(MD5Utils.getToken(password))){
 			response.getWriter().write("密码错误");
 			return;

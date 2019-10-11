@@ -16,6 +16,21 @@ public class blog_comment {
 	private String comment_content;
 	private String comment_ip;
 	private Integer comment_visibility;
+	private String article_title;
+	private blog_page subComment;
+	
+	public blog_page getSubComment() {
+		return subComment;
+	}
+	public void setSubComment(blog_page subComment) {
+		this.subComment = subComment;
+	}
+	public String getArticle_title() {
+		return article_title;
+	}
+	public void setArticle_title(String article_title) {
+		this.article_title = article_title;
+	}
 	public String getComment_id() {
 		return comment_id;
 	}

@@ -558,6 +558,8 @@ background-color:#f5f5f5;}
 						alert(request.responseText);
 					}else if(request.responseText == "密码错误"){
 						alert(request.responseText);
+					}else if (request.responseText == "登录用户类型错误"){
+						alert(request.responseText);
 					}else{
 						visitor = JSON.parse(request.response);
 						removeFromSuperView("test", "test1", "login_content", "none");
