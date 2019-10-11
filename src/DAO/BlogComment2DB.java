@@ -75,9 +75,10 @@ public class BlogComment2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select blog_comment.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq_1 " 
-				+ "from blog_comment,blog_visitor where blog_comment.visitor_id=blog_visitor.visitor_id " 
-				+ "and blog_comment.article_id=? and blog_comment.comment_visibility=1 ORDER BY comment_date desc limit ?,?";
+		String sql = "select blog_comment.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq,blog_article.article_title " 
+				+ "from blog_comment,blog_visitor,blog_article where blog_comment.visitor_id=blog_visitor.visitor_id " 
+				+ "and blog_comment.article_id=? and blog_comment.article_id=blog_article.article_id and " 
+				+ "blog_comment.comment_visibility=1 ORDER BY comment_date desc limit ?,?";
 		Object[] params = {articleID, start, page.getPageContain()};
 		List<blog_comment> list = DBUtils.query(sql, params, new ListHandler<List<blog_comment>>(blog_comment.class));
 		Decoder decoder = Base64.getDecoder();
@@ -110,7 +111,7 @@ public class BlogComment2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select blog_comment.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq_1," 
+		String sql = "select blog_comment.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq," 
 				+ "blog_article.article_title from blog_comment,blog_visitor,blog_article where " 
 				+ "blog_comment.visitor_id=blog_visitor.visitor_id and " 
 				+ "blog_comment.article_id=blog_article.article_id ORDER BY comment_date limit ?,?";

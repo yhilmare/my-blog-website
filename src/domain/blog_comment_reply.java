@@ -15,7 +15,7 @@ public class blog_comment_reply {
 	private String comment_reply_ip;
 	private Integer comment_reply_visibility;
 	private String visitor_nickname;
-	private String figureurl_qq_1;
+	private String figureurl_qq;
 	
 	public String getComment_reply_id() {
 		return comment_reply_id;
@@ -65,11 +65,11 @@ public class blog_comment_reply {
 	public void setVisitor_nickname(String visitor_nickname) {
 		this.visitor_nickname = visitor_nickname;
 	}
-	public String getFigureurl_qq_1() {
-		return figureurl_qq_1;
+	public String getFigureurl_qq() {
+		return figureurl_qq;
 	}
-	public void setFigureurl_qq_1(String figureurl_qq_1) {
-		this.figureurl_qq_1 = figureurl_qq_1;
+	public void setFigureurl_qq(String figureurl_qq) {
+		this.figureurl_qq = figureurl_qq;
 	}
-
+	
 }

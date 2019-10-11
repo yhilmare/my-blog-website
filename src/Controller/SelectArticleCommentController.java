@@ -28,7 +28,7 @@ public class SelectArticleCommentController extends HttpServlet {
 		blog_page page = commentService.selectCommentByArticleID(index, 5, 5, articleID);
 		for(int i = 0; i < page.getList().size(); i ++) {
 			blog_comment comment = (blog_comment) page.getList().get(i);
-			blog_page subPage = commentReplyService.selectCommentReplyForFrontEnd(1, 5, 5, comment.getComment_id());
+			blog_page subPage = commentReplyService.selectCommentReplyForFrontEnd(1, 3, 5, comment.getComment_id());
 			comment.setSubComment(subPage);
 		}
 		ObjectMapper mapper = new ObjectMapper();

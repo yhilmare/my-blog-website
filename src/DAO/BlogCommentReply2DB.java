@@ -84,12 +84,12 @@ public class BlogCommentReply2DB<T> implements DataObject2DB<T> {
 		}
 		String sql = null;
 		if(useVisibility) {
-			sql = "select blog_comment_reply.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq_1 " 
+			sql = "select blog_comment_reply.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq " 
 					+ "from blog_comment_reply,blog_visitor where blog_comment_reply.visitor_id=blog_visitor.visitor_id " 
 					+ "and blog_comment_reply.comment_id=? and blog_comment_reply.comment_reply_visibility=1 ORDER BY " 
 					+ "comment_reply_date desc limit ?,?";
 		}else {
-			sql = "select blog_comment_reply.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq_1 " 
+			sql = "select blog_comment_reply.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq " 
 					+ "from blog_comment_reply,blog_visitor where blog_comment_reply.visitor_id=blog_visitor.visitor_id " 
 					+ "and blog_comment_reply.comment_id=? ORDER BY comment_reply_date desc limit ?,?";
 		}
@@ -137,7 +137,7 @@ public class BlogCommentReply2DB<T> implements DataObject2DB<T> {
 		if(start < 0){
 			start = 0;
 		}
-		String sql = "select blog_comment_reply.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq_1 " 
+		String sql = "select blog_comment_reply.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq " 
 				+ "from blog_comment_reply,blog_visitor where blog_comment_reply.visitor_id=blog_visitor.visitor_id " 
 				+ "ORDER BY comment_reply_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
