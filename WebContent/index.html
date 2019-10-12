@@ -215,6 +215,150 @@
 			}, false);
 		}
 	}
+	
+
+	function initArticleField(article){
+		var passage_content = document.getElementById("passage_content");
+		var article_title = document.getElementById("article_title");
+		var passage_date = document.getElementById("passage_date");
+		var passage_detail = document.getElementById("passage_detail");
+		article_title.innerHTML = article.article_title;
+		passage_date.innerHTML = article.create_time;
+		passage_detail.innerHTML = article.article_content;
+		passage_content.appendChild(article_title);
+		passage_content.appendChild(passage_date);
+		passage_content.appendChild(passage_detail);
+		
+		sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:article.article_id}, function(request){
+			if (request.responseTest == "参数传递错误"){
+				alert("参数传递错误");
+			}else{
+				var obj = JSON.parse(request.responseText);
+				console.log(obj.list);
+				initArticleCommentList(obj.list)
+			}
+		});
+	}
+	
+	function updateBlogList(array){
+		var blog_list_titlelist = document.getElementById("blog_list_titlelist");
+		blog_list_titlelist.innerHTML = "";
+		removerAllChildNodes(blog_list_titlelist);
+		for(var i = 0; i < array.length; i++){
+			var article = array[i];
+			var blod_contener = document.createElement("div");
+			blod_contener.className = "blod_contener";
+			
+			var blog_list_href = document.createElement("a");
+			blog_list_href.className = "blog_list_href";
+			blog_list_href.id = article.article_id;
+			blog_list_href.innerHTML = article.article_title;
+			
+			var blog_list_date = document.createElement("div");
+			blog_list_date.className = "blog_list_date";
+			blog_list_date.style.float = "right";
+			blog_list_date.innerHTML = article.create_time;
+			blod_contener.appendChild(blog_list_href);
+			blod_contener.appendChild(blog_list_date);
+			
+			blog_list_titlelist.appendChild(blod_contener);
+		}
+		initEditFunc();
+	}
+	
+	
+
+	function initArticleCommentList(array){
+		var passage_comment_content = document.getElementById("passage_comment_content");
+		passage_comment_content.innerHTML = "";
+		removerAllChildNodes(passage_comment_content);
+		for(var i = 0; i < array.length; i ++){
+			var comment  = array[i];
+			var comment_item = document.createElement("div");
+			comment_item.className = "comment_item";
+			
+			var comment_item_avator = document.createElement("div");
+			comment_item_avator.className = "comment_item_avator";
+			var img = document.createElement("img");
+			img.src=comment.figureurl_qq;
+			img.alt="avator";
+			comment_item_avator.appendChild(img);
+			comment_item.appendChild(comment_item_avator);
+						
+			var comment_item_content = document.createElement("div");
+			comment_item_content.className = "comment_item_content";
+			var comment_item_content_meta = document.createElement("div");
+			comment_item_content_meta.className = "comment_item_content_meta";
+			var comment_item_content_meta_name = document.createElement("span");
+			comment_item_content_meta_name.className = "comment_item_content_meta_name";
+			comment_item_content_meta_name.innerHTML = comment.visitor_nickname + "&nbsp;";
+			var comment_item_content_meta_date = document.createElement("span");
+			comment_item_content_meta_date.className = "comment_item_content_meta_date";
+			comment_item_content_meta_date.innerHTML = "发表于&nbsp;" + comment.comment_date;
+			var comment_item_content_meta_op1 = document.createElement("span");
+			comment_item_content_meta_op1.className = "comment_item_content_meta_op1";
+			comment_item_content_meta_op1.innerHTML = "删除";
+			var comment_item_content_meta_op2 = document.createElement("span");
+			comment_item_content_meta_op2.className = "comment_item_content_meta_op2";
+			comment_item_content_meta_op2.innerHTML = "回复";
+			comment_item_content_meta.appendChild(comment_item_content_meta_name);
+			comment_item_content_meta.appendChild(comment_item_content_meta_date);
+			comment_item_content_meta.appendChild(comment_item_content_meta_op1);
+			comment_item_content_meta.appendChild(comment_item_content_meta_op2);
+			comment_item_content.appendChild(comment_item_content_meta);
+			
+			var comment_item_content_detail = document.createElement("div");
+			comment_item_content_detail.className = "comment_item_content_detail";
+			comment_item_content_detail.innerHTML = comment.comment_content;
+			comment_item_content.appendChild(comment_item_content_detail);
+			
+			var comment_item_content_reply = initCommentReplyList(comment.subComment);
+			comment_item_content.appendChild(comment_item_content_reply);
+			comment_item.appendChild(comment_item_content);
+			passage_comment_content.appendChild(comment_item);
+		}
+	}
+	
+	function initCommentReplyList(array){
+		var comment_item_content_reply = document.createElement("div");
+		comment_item_content_reply.className = "comment_item_content_reply";
+		for(var i = 0; i < array.list.length; i ++){
+			commentReply = array.list[i];
+			var comment_item_reply_item = document.createElement("div");
+			comment_item_reply_item.className = "comment_item_reply_item";
+			
+			var comment_item_reply_meta = document.createElement("div");
+			comment_item_reply_meta.className = "comment_item_reply_meta";
+			var comment_item_reply_meta_name = document.createElement("span");
+			comment_item_reply_meta_name.className = "comment_item_reply_meta_name";
+			comment_item_reply_meta_name.innerHTML = commentReply.visitor_nickname + "&nbsp;";
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_name);
+			var comment_item_reply_meta_date = document.createElement("span");
+			comment_item_reply_meta_date.className = "comment_item_reply_meta_date";
+			comment_item_reply_meta_date.innerHTML = "发表于&nbsp;" + commentReply.comment_reply_date;
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_date);
+			var comment_item_reply_meta_op1 = document.createElement("span");
+			comment_item_reply_meta_op1.className = "comment_item_reply_meta_op1";
+			comment_item_reply_meta_op1.innerHTML = "删除";
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_op1);
+			comment_item_reply_item.appendChild(comment_item_reply_meta);
+			
+			var comment_item_reply_detail = document.createElement("div");
+			comment_item_reply_detail.className = "comment_item_reply_detail";
+			comment_item_reply_detail.innerHTML = commentReply.comment_reply_content;
+			comment_item_reply_item.appendChild(comment_item_reply_detail);
+			
+			comment_item_content_reply.appendChild(comment_item_reply_item);
+		}
+		var comment_item_reply_loadmore = document.createElement("div");
+		comment_item_reply_loadmore.className = "comment_item_reply_loadmore";
+		var a = document.createElement("a");
+		a.innerHTML = "共" + array.totalRecord + "条回复>>";
+		comment_item_reply_loadmore.appendChild(a);
+		comment_item_content_reply.appendChild(comment_item_reply_loadmore);
+		return comment_item_content_reply;
+	}
+	
 	//==================================================================================
 	function updateStatusList(array){
 		var status_body_content_area_list = document.getElementById("status_body_content_area_list");
@@ -307,31 +451,7 @@
 		}
 	}
 	//====================================================================================
-	function updateBlogList(array){
-		var blog_list_titlelist = document.getElementById("blog_list_titlelist");
-		blog_list_titlelist.innerHTML = "";
-		removerAllChildNodes(blog_list_titlelist);
-		for(var i = 0; i < array.length; i++){
-			var article = array[i];
-			var blod_contener = document.createElement("div");
-			blod_contener.className = "blod_contener";
-			
-			var blog_list_href = document.createElement("a");
-			blog_list_href.className = "blog_list_href";
-			blog_list_href.id = article.article_id;
-			blog_list_href.innerHTML = article.article_title;
-			
-			var blog_list_date = document.createElement("div");
-			blog_list_date.className = "blog_list_date";
-			blog_list_date.style.float = "right";
-			blog_list_date.innerHTML = article.create_time;
-			blod_contener.appendChild(blog_list_href);
-			blod_contener.appendChild(blog_list_date);
-			
-			blog_list_titlelist.appendChild(blod_contener);
-		}
-		initEditFunc();
-	}
+	
 	function initEditFunc(){
 		var blog_list_href = document.getElementsByClassName("blog_list_href");
 		for(var i = 0; i < blog_list_href.length; i++){
@@ -523,6 +643,7 @@
 	}
 	checkUserAgent();
 	window.onload = function(){
+		
 		initLoginAndRegister();
 		initNavigatorBar();
 		initHeadNavigator();
@@ -690,18 +811,7 @@
 		}
 		addEventListenerIndexList();
 	}
-	function initArticleField(article){
-		var passage_content = document.getElementById("passage_content");
-		var article_title = document.getElementById("article_title");
-		var passage_date = document.getElementById("passage_date");
-		var passage_detail = document.getElementById("passage_detail");
-		article_title.innerHTML = article.article_title;
-		passage_date.innerHTML = article.create_time;
-		passage_detail.innerHTML = article.article_content;
-		passage_content.appendChild(article_title);
-		passage_content.appendChild(passage_date);
-		passage_content.appendChild(passage_detail);
-	}
+	
 	function addEventListenerIndexList(){
 		var sectionA = document.getElementById("sectionA");var sectionB = document.getElementById("sectionB");
 		var sectionC = document.getElementById("sectionC");var sectionD = document.getElementById("sectionD");
@@ -1002,215 +1112,60 @@ background-color:#f5f5f5;}
                 	
                 	<!-- 评论区内容开始 -->
                 	<div id="passage_comment_content">
-                	
-                	 <!-- 一条评论 -->
+                	<!--
                 		<div class="comment_item">
-                			<div class="comment_item_avator">
-                				<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567" alt="avator"/>
-                			</div>
-                			<div class="comment_item_content">
-                				<div class="comment_item_content_meta">
-                					<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-                					<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-                					<span class="comment_item_content_meta_op1">删除</span>
-                					<span class="comment_item_content_meta_op2">回复</span>
-                				</div>
-                				<div class="comment_item_content_detail">
-                				10月10日上午，教育部发展规划司副司长田福元、发展规划司处长王长树一行到中国西部科技创新港调研，西安交通大学党委书记张迈曾，校长王树国，党委常委、校长助理洪军，校长助理程建设等陪同。针对学校办学和建设工作，田福元提出三点建议：一是要继续坚持探索高等教育的创新之路和改革之路，“教育要引领未来”，为人民谋幸福，为民族谋复兴；二是注重队伍建设和制度建设，将办学和建设工作中的实际经验及时进行总结梳理，形成可以推广的模式和做法；三是加强部门沟通协作，解决现实问题。
-                				</div>
-                				<div class="comment_item_content_reply">
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">梦晓交的男朋友&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:40:18</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					副部陪副厅啊  看来带钱来了
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">进击的Arbra&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 17:47:56</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					这副部陪副厅啊啊啊
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					中尼是互学互鉴的好邻居。中国在兰毗尼建设的中华寺，成为中尼宗教文化交流的标志。尼泊尔是南亚首个中国公民出境旅游目的地国，目前每周有约60个航班往来两国之间，每年人员互访达30多万人次。两国已缔结11对友好城市。日益频繁的交往促进了两国人民相互了解，为两国各自发展进步提供了助力。
-		                				</div>
-                					</div>
-                					
-                					
-                				</div>
-                			</div>
-                		</div>
-                	<!-- 一条评论 -->
-                	
-                	 <!-- 一条评论 -->
-                		<div class="comment_item">
-                			<div class="comment_item_avator">
-                				<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567" alt="avator"/>
-                			</div>
-                			<div class="comment_item_content">
-                				<div class="comment_item_content_meta">
-                					<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-                					<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-                					<span class="comment_item_content_meta_op1">删除</span>
-                					<span class="comment_item_content_meta_op2">回复</span>
-                				</div>
-                				<div class="comment_item_content_detail">
-                					大佬，我想闻言喜爱这篇文章到底讲了什么？
-                				</div>
-                				<div class="comment_item_content_reply">
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					这个评论十分中肯
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					同一楼主的评价。
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					其实还可以再深入一下
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_loadmore"><a>共145条回复>><a/></div>
-                				</div>
-                			</div>
-                		</div>
-                	<!-- 一条评论 -->
-                		
-                		 <!-- 一条评论 -->
-                		<div class="comment_item">
-                			<div class="comment_item_avator">
-                				<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567" alt="avator"/>
-                			</div>
-                			<div class="comment_item_content">
-                				<div class="comment_item_content_meta">
-                					<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-                					<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-                					<span class="comment_item_content_meta_op1">删除</span>
-                					<span class="comment_item_content_meta_op2">回复</span>
-                				</div>
-                				<div class="comment_item_content_detail">
-                					大佬，我想闻言喜爱这篇文章到底讲了什么？
-                				</div>
-                				<div class="comment_item_content_reply">
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					这个评论十分中肯
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					同一楼主的评价。
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					其实还可以再深入一下
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_loadmore"><a>共145条回复>><a/></div>
-                				</div>
-                			</div>
-                		</div>
-                	<!-- 一条评论 -->
-                	
-                	 <!-- 一条评论 -->
-                		<div class="comment_item">
-                			<div class="comment_item_avator">
-                				<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567" alt="avator"/>
-                			</div>
-                			<div class="comment_item_content">
-                				<div class="comment_item_content_meta">
-                					<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-                					<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-                					<span class="comment_item_content_meta_op1">删除</span>
-                					<span class="comment_item_content_meta_op2">回复</span>
-                				</div>
-                				<div class="comment_item_content_detail">
-                					大佬，我想闻言喜爱这篇文章到底讲了什么？
-                				</div>
-                				<div class="comment_item_content_reply">
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					这个评论十分中肯
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_item">
-                						<div class="comment_item_reply_meta">
-		                					<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-		                					<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
-		                					<span class="comment_item_reply_meta_op1">删除</span>
-		                				</div>
-		                				<div class="comment_item_reply_detail">
-		                					其实还可以再深入一下
-		                				</div>
-                					</div>
-                					
-                					<div class="comment_item_reply_loadmore"><a>共145条回复>><a/></div>
-                				</div>
-                			</div>
-                		</div>
-                	<!-- 一条评论 -->
+							<div class="comment_item_avator">
+								<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567" alt="avator"/>
+							</div>
+							<div class="comment_item_content">
+								<div class="comment_item_content_meta">
+									<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
+									<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
+									<span class="comment_item_content_meta_op1">删除</span>
+									<span class="comment_item_content_meta_op2">回复</span>
+								</div>
+								<div class="comment_item_content_detail">
+									大佬，我想闻言喜爱这篇文章到底讲了什么？
+								</div>
+								<div class="comment_item_content_reply">
+									<div class="comment_item_reply_item">
+										<div class="comment_item_reply_meta">
+											<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
+											<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
+											<span class="comment_item_reply_meta_op1">删除</span>
+										</div>
+										<div class="comment_item_reply_detail">
+											这个评论十分中肯
+										</div>
+									</div>
+									
+									<div class="comment_item_reply_item">
+										<div class="comment_item_reply_meta">
+											<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
+											<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
+											<span class="comment_item_reply_meta_op1">删除</span>
+										</div>
+										<div class="comment_item_reply_detail">
+											同一楼主的评价。
+										</div>
+									</div>
+									
+									<div class="comment_item_reply_item">
+										<div class="comment_item_reply_meta">
+											<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
+											<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26:25</span>
+											<span class="comment_item_reply_meta_op1">删除</span>
+										</div>
+										<div class="comment_item_reply_detail">
+											其实还可以再深入一下
+										</div>
+									</div>
+									
+									<div class="comment_item_reply_loadmore"><a>共145条回复>><a/></div>
+								</div>
+							</div>
+						</div>
+                	-->
 
                 	</div>
                 	<!-- 评论区内容结束 -->
