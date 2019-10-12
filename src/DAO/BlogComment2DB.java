@@ -7,6 +7,7 @@ import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
 import ServiceImpl.DataObject2DB;
+import Utils.BeanHandler;
 import Utils.DBUtils;
 import Utils.IntegerHandler;
 import Utils.ListHandler;
@@ -147,8 +148,23 @@ public class BlogComment2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public <T> T selectByID(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "select * from blog_comment where comment_id=?";
+		Decoder decoder = Base64.getDecoder();
+		try {
+			Object[] params = {id};
+			blog_comment obj = DBUtils.query(sql, params, new BeanHandler<blog_comment>(blog_comment.class));
+			if (obj == null) {
+				return null;
+			}
+			if (obj.getComment_content()!= null && obj.getComment_content().length() != 0) {
+				String constellation = new String(decoder.decode(obj.getComment_content()), "UTF-8");
+				obj.setComment_content(constellation);
+			}
+			return (T) obj;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

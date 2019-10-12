@@ -234,8 +234,10 @@
 				alert("参数传递错误");
 			}else{
 				var obj = JSON.parse(request.responseText);
-				console.log(obj.list);
+				var total_comment_record = document.getElementById("total_comment_record");
+				total_comment_record.innerHTML = obj.totalRecord;
 				initArticleCommentList(obj.list)
+				updateCommentPageIndex(obj, article.article_id);
 			}
 		});
 	}
@@ -267,8 +269,77 @@
 	}
 	
 	
+	function updateCommentPageIndex(page, ID){
+		var array = new Array();
+		var pageIndex_container = document.getElementById("pageIndex_container");
+		pageIndex_container.innerHTML = "";
+		removerAllChildNodes(pageIndex_container);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "comment_list_pageIndex";
+		pageIndex_container.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "comment_list_pageIndex";
+			pageIndex_container.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "comment_list_pageIndex";
+				pageIndex_container.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "comment_list_pageIndex";
+			pageIndex_container.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "comment_list_pageIndex";
+		pageIndex_container.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		pageIndex_container.appendChild(div);
+		var as = document.getElementsByClassName("comment_list_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:info, articleID:ID}, function(request){
+					if (request.responseTest == "参数传递错误"){
+						alert("参数传递错误");
+					}else{
+						var obj = JSON.parse(request.responseText);
+						initArticleCommentList(obj.list)
+						updateCommentPageIndex(obj, article.article_id);
+					}
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
 
+	
 	function initArticleCommentList(array){
+		
 		var passage_comment_content = document.getElementById("passage_comment_content");
 		passage_comment_content.innerHTML = "";
 		removerAllChildNodes(passage_comment_content);
@@ -280,7 +351,11 @@
 			var comment_item_avator = document.createElement("div");
 			comment_item_avator.className = "comment_item_avator";
 			var img = document.createElement("img");
-			img.src=comment.figureurl_qq;
+			if(comment.figureurl_qq == null){
+				img.src="/blog/Images/avator.jpg";
+			}else{
+				img.src=comment.figureurl_qq;
+			}
 			img.alt="avator";
 			comment_item_avator.appendChild(img);
 			comment_item.appendChild(comment_item_avator);
@@ -292,19 +367,28 @@
 			var comment_item_content_meta_name = document.createElement("span");
 			comment_item_content_meta_name.className = "comment_item_content_meta_name";
 			comment_item_content_meta_name.innerHTML = comment.visitor_nickname + "&nbsp;";
+			comment_item_content_meta.appendChild(comment_item_content_meta_name);
 			var comment_item_content_meta_date = document.createElement("span");
 			comment_item_content_meta_date.className = "comment_item_content_meta_date";
 			comment_item_content_meta_date.innerHTML = "发表于&nbsp;" + comment.comment_date;
-			var comment_item_content_meta_op1 = document.createElement("span");
-			comment_item_content_meta_op1.className = "comment_item_content_meta_op1";
-			comment_item_content_meta_op1.innerHTML = "删除";
-			var comment_item_content_meta_op2 = document.createElement("span");
-			comment_item_content_meta_op2.className = "comment_item_content_meta_op2";
-			comment_item_content_meta_op2.innerHTML = "回复";
-			comment_item_content_meta.appendChild(comment_item_content_meta_name);
 			comment_item_content_meta.appendChild(comment_item_content_meta_date);
-			comment_item_content_meta.appendChild(comment_item_content_meta_op1);
-			comment_item_content_meta.appendChild(comment_item_content_meta_op2);
+			
+			if (visitor.visitor_id != "undefined"){
+				if (visitor.visitor_id == comment.visitor_id){
+					var comment_item_content_meta_op1 = document.createElement("span");
+					comment_item_content_meta_op1.className = "comment_item_content_meta_op1";
+					comment_item_content_meta_op1.innerHTML = "删除";
+					comment_item_content_meta.appendChild(comment_item_content_meta_op1);
+					comment_item_content_meta_op1.addEventListener("click", function(){
+						console.log("asdasdasdasd");
+					}, false);
+				}
+				var comment_item_content_meta_op2 = document.createElement("span");
+				comment_item_content_meta_op2.className = "comment_item_content_meta_op2";
+				comment_item_content_meta_op2.innerHTML = "回复";
+				comment_item_content_meta.appendChild(comment_item_content_meta_op2);
+			}
+			
 			comment_item_content.appendChild(comment_item_content_meta);
 			
 			var comment_item_content_detail = document.createElement("div");
@@ -312,16 +396,17 @@
 			comment_item_content_detail.innerHTML = comment.comment_content;
 			comment_item_content.appendChild(comment_item_content_detail);
 			
-			var comment_item_content_reply = initCommentReplyList(comment.subComment);
-			comment_item_content.appendChild(comment_item_content_reply);
+			if (comment.subComment.list.length != 0){
+				var comment_item_content_reply = initCommentReplyList(comment.subComment);
+				comment_item_content.appendChild(comment_item_content_reply);
+			}
+			
 			comment_item.appendChild(comment_item_content);
 			passage_comment_content.appendChild(comment_item);
 		}
 	}
 	
-	function initCommentReplyList(array){
-		var comment_item_content_reply = document.createElement("div");
-		comment_item_content_reply.className = "comment_item_content_reply";
+	function generateAllCommentReplyList(array, comment_item_content_reply){
 		for(var i = 0; i < array.list.length; i ++){
 			commentReply = array.list[i];
 			var comment_item_reply_item = document.createElement("div");
@@ -337,10 +422,14 @@
 			comment_item_reply_meta_date.className = "comment_item_reply_meta_date";
 			comment_item_reply_meta_date.innerHTML = "发表于&nbsp;" + commentReply.comment_reply_date;
 			comment_item_reply_meta.appendChild(comment_item_reply_meta_date);
-			var comment_item_reply_meta_op1 = document.createElement("span");
-			comment_item_reply_meta_op1.className = "comment_item_reply_meta_op1";
-			comment_item_reply_meta_op1.innerHTML = "删除";
-			comment_item_reply_meta.appendChild(comment_item_reply_meta_op1);
+			
+			if (visitor.visitor_id == commentReply.visitor_id){
+				var comment_item_reply_meta_op1 = document.createElement("span");
+				comment_item_reply_meta_op1.className = "comment_item_reply_meta_op1";
+				comment_item_reply_meta_op1.innerHTML = "删除";
+				comment_item_reply_meta.appendChild(comment_item_reply_meta_op1);
+			}
+			
 			comment_item_reply_item.appendChild(comment_item_reply_meta);
 			
 			var comment_item_reply_detail = document.createElement("div");
@@ -350,12 +439,70 @@
 			
 			comment_item_content_reply.appendChild(comment_item_reply_item);
 		}
-		var comment_item_reply_loadmore = document.createElement("div");
-		comment_item_reply_loadmore.className = "comment_item_reply_loadmore";
-		var a = document.createElement("a");
-		a.innerHTML = "共" + array.totalRecord + "条回复>>";
-		comment_item_reply_loadmore.appendChild(a);
-		comment_item_content_reply.appendChild(comment_item_reply_loadmore);
+	}
+	
+	function initCommentReplyList(array){
+		var comment_item_content_reply = document.createElement("div");
+		comment_item_content_reply.className = "comment_item_content_reply";
+		comment_item_content_reply.id = array.list[0].comment_id;
+		for(var i = 0; i < array.list.length; i ++){
+			commentReply = array.list[i];
+			var comment_item_reply_item = document.createElement("div");
+			comment_item_reply_item.className = "comment_item_reply_item";
+			
+			var comment_item_reply_meta = document.createElement("div");
+			comment_item_reply_meta.className = "comment_item_reply_meta";
+			var comment_item_reply_meta_name = document.createElement("span");
+			comment_item_reply_meta_name.className = "comment_item_reply_meta_name";
+			comment_item_reply_meta_name.innerHTML = commentReply.visitor_nickname + "&nbsp;";
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_name);
+			var comment_item_reply_meta_date = document.createElement("span");
+			comment_item_reply_meta_date.className = "comment_item_reply_meta_date";
+			comment_item_reply_meta_date.innerHTML = "发表于&nbsp;" + commentReply.comment_reply_date;
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_date);
+			if (visitor.visitor_id == commentReply.visitor_id){
+				var comment_item_reply_meta_op1 = document.createElement("span");
+				comment_item_reply_meta_op1.className = "comment_item_reply_meta_op1";
+				comment_item_reply_meta_op1.innerHTML = "删除";
+				comment_item_reply_meta.appendChild(comment_item_reply_meta_op1);
+			}
+			comment_item_reply_item.appendChild(comment_item_reply_meta);
+			
+			var comment_item_reply_detail = document.createElement("div");
+			comment_item_reply_detail.className = "comment_item_reply_detail";
+			comment_item_reply_detail.innerHTML = commentReply.comment_reply_content;
+			comment_item_reply_item.appendChild(comment_item_reply_detail);
+			
+			comment_item_content_reply.appendChild(comment_item_reply_item);
+		}
+		
+		if(array.totalRecord > array.list.length){
+			var comment_item_reply_loadmore = document.createElement("div");
+			comment_item_reply_loadmore.className = "comment_item_reply_loadmore";
+			var a = document.createElement("a");
+			a.innerHTML = "共" + array.totalRecord + "条回复>>";
+			comment_item_reply_loadmore.appendChild(a);
+			comment_item_content_reply.appendChild(comment_item_reply_loadmore);
+			a.addEventListener("click", function(){
+				var comment_id = array.list[0].comment_id;
+				sendHttpPOST("/blog/SelectArticleCommentReplyController", {pageIndex:"1", commentID:comment_id, pageContain:array.totalRecord}, function(request){
+					var obj = JSON.parse(request.responseText);
+					var comment_item_content_reply = document.getElementById(comment_id);
+					comment_item_content_reply.innerHTML = "";
+					removerAllChildNodes(comment_item_content_reply);
+					generateAllCommentReplyList(obj, comment_item_content_reply);
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+		
 		return comment_item_content_reply;
 	}
 	
@@ -579,6 +726,12 @@
 						visitor = JSON.parse(request.response);
 						removeFromSuperView("test", "test1", "login_content", "none");
 						updateLoginAndRegiste();
+						var img = document.getElementById("comment_avator");
+						img.src = visitor.figureurl_qq == null ? "/blog/Images/avator.jpg" : visitor.figureurl_qq;
+						var qqloginbutton = document.getElementById("qqloginbutton");
+						var commentSubmitbutton = document.getElementById("commentSubmitbutton");
+						commentSubmitbutton.style.display = "block";
+						qqloginbutton.style.display = "none";
 					}
 				});
 			}
@@ -593,6 +746,12 @@
 			if(request.responseText != "false"){
 				visitor = JSON.parse(request.responseText);
 				updateLoginAndRegiste();
+				var img = document.getElementById("comment_avator");
+				img.src = visitor.figureurl_qq == null ? "/blog/Images/avator.jpg" : visitor.figureurl_qq;
+				var qqloginbutton = document.getElementById("qqloginbutton");
+				var commentSubmitbutton = document.getElementById("commentSubmitbutton");
+				commentSubmitbutton.style.display = "block";
+				qqloginbutton.style.display = "none";
 			}
 		});
 	}
@@ -643,7 +802,6 @@
 	}
 	checkUserAgent();
 	window.onload = function(){
-		
 		initLoginAndRegister();
 		initNavigatorBar();
 		initHeadNavigator();
@@ -663,6 +821,12 @@
 					for(var i = 0; i < names.length; i++){
 						visitor[names[i]] = "undefined";
 					}
+					var img = document.getElementById("comment_avator");
+					img.src = "/blog/Images/avator.jpg";
+					var qqloginbutton = document.getElementById("qqloginbutton");
+					var commentSubmitbutton = document.getElementById("commentSubmitbutton");
+					commentSubmitbutton.style.display = "none";
+					qqloginbutton.style.display = "block";
 				}else{
 					alert(request.responseText);
 				}
@@ -842,6 +1006,7 @@
 	function toLogin() {
 		window.open("/blog/QQLoginController");
 	}
+	
     </script>
     <style>
     #login_content{border-radius:2px;margin-top:20px;position:fixed;height:300px;width:230px;display:none;}
@@ -950,11 +1115,6 @@ background-color:#f5f5f5;}
 	#passage_slogan{padding:25px 0 25px 0;border-top:1px #ccc solid;margin:auto;width:88%;}
     #passage_slogan_name{font-family:'Microsoft YaHei';font-size:35px;color:#999}
     #passage_slogan_content{margin-top:10px;font-family:'Microsoft YaHei';font-size:17px;color:#999;}
-    
-    
-    
-    
-    
     
     #passage_comment{margin:auto;margin-bottom:55px;margin-top:35px;width:88%;}
     #passage_total{color:#606060;font-family:"Microsoft YaHei";font-size:16px;padding-bottom:25px;border-bottom:1px #ccc solid;}
@@ -1096,16 +1256,17 @@ background-color:#f5f5f5;}
                 </div>
                 <hr style="border:0;border-top:1px #ccc solid;"/>
                 <div id="passage_comment">
-                	<div id="passage_total">全部评论&nbsp;<span style="color:#4f7ae2">35</span></div>
+                	<div id="passage_total">全部评论&nbsp;<span id="total_comment_record" style="color:#4f7ae2"></span></div>
                 	<div id="passage_comment_edit">
                 		<div id="passage_comment_avator">
-                			<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567" alt="avator" />
+                			<img id="comment_avator" src="/blog/Images/avator.jpg" alt="avator" />
                 		</div>
                 		<div id="passage_comment_editreal">
                 			<textarea placeholder="说点什么吧..."></textarea>
                 			<div id="passage_comment_loginbutton">
                 				<div>评论支持emoji表情😍</div>
-                				<button id="qqloginbutton">使用QQ登录</button>
+                				<button id="qqloginbutton"  onclick="toLogin()">使用QQ登录</button>
+                				<button style="display:none" id="commentSubmitbutton">发表评论</button>
                 			</div>
                 		</div>
                 	</div>
@@ -1171,14 +1332,7 @@ background-color:#f5f5f5;}
                 	<!-- 评论区内容结束 -->
                 	<div id="comment_pageIndex">
                 		<div id="pageIndex_container">
-	                		<a>首页</a>
-	                		<a>上一页</a>
-	                		<a>1</a>
-	                		<a>2</a>
-	                		<a>3</a>
-	                		<a>4</a>
-	                		<a>下一页</a>
-	                		<a>尾页</a>
+	                		
                 		</div>
                 	</div>
                 </div>

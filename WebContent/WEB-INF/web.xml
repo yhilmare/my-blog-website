@@ -647,4 +647,34 @@
     <servlet-name>SelectArticleCommentController</servlet-name>
     <url-pattern>/SelectArticleCommentController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SelectArticleCommentReplyController</display-name>
+    <servlet-name>SelectArticleCommentReplyController</servlet-name>
+    <servlet-class>Controller.SelectArticleCommentReplyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SelectArticleCommentReplyController</servlet-name>
+    <url-pattern>/SelectArticleCommentReplyController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DeleteArticleCommentController</display-name>
+    <servlet-name>DeleteArticleCommentController</servlet-name>
+    <servlet-class>Controller.DeleteArticleCommentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteArticleCommentController</servlet-name>
+    <url-pattern>/DeleteArticleCommentController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DeleteArticelCommentReplyController</display-name>
+    <servlet-name>DeleteArticelCommentReplyController</servlet-name>
+    <servlet-class>Controller.DeleteArticelCommentReplyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteArticelCommentReplyController</servlet-name>
+    <url-pattern>/DeleteArticelCommentReplyController</url-pattern>
+  </servlet-mapping>
 </web-app>

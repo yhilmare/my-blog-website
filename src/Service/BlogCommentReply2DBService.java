@@ -6,10 +6,10 @@ import domain.blog_page;
 
 public class BlogCommentReply2DBService {
 	
-	private BlogCommentReply2DB impl = null;
+	private BlogCommentReply2DB<blog_comment_reply> impl = null;
 	
 	public BlogCommentReply2DBService() {
-		impl = new BlogCommentReply2DB();
+		impl = new BlogCommentReply2DB<>();
 	}
 	//得到该数据的全部数目
 	public int getTotalRecord(){
@@ -48,5 +48,9 @@ public class BlogCommentReply2DBService {
 		
 	public blog_page selectCommentReplyForBackEnd(int currentPage, int pageContain, int pageInFrame, String commentID){
 		return impl.selectDataForCommentAndVisibility(currentPage, pageContain, pageInFrame, commentID, false);
+	}
+	
+	public blog_comment_reply selectCommentById(String commentReplyID){
+		return impl.selectByID(commentReplyID);
 	}
 }
