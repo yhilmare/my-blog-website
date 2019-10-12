@@ -12,7 +12,7 @@ import domain.blog_comment_reply;
 import domain.blog_visitor;
 
 
-public class DeleteArticelCommentReplyController extends HttpServlet {
+public class InsertCommentReplyController extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
@@ -25,22 +25,24 @@ public class DeleteArticelCommentReplyController extends HttpServlet {
 			response.getWriter().write("Äú»¹Î´µÇÂ¼");
 			return;
 		}
-		String commentReplyID = request.getParameter("commentReplyID");
-		if (commentReplyID == null) {
+		String commentID = request.getParameter("commentID");
+		String commentReplyContent = request.getParameter("commentReplyContent");
+		if (commentID == null || commentReplyContent == null) {
 			response.getWriter().write("²ÎÊý´íÎó");
 			return;
 		}
+		String remoteAddr = request.getRemoteAddr();
+		blog_comment_reply reply = new blog_comment_reply();
+		reply.setComment_id(commentID);
+		reply.setVisitor_id(visitor.getVisitor_id());
+		reply.setComment_reply_content(commentReplyContent);
+		reply.setComment_reply_ip(remoteAddr);
+		reply.setComment_reply_visibility(1);
 		BlogCommentReply2DBService service = new BlogCommentReply2DBService();
-		blog_comment_reply comment = service.selectCommentReplyById(commentReplyID);
-		if (!comment.getVisitor_id().equals(visitor.getVisitor_id())) {
-			response.getWriter().write("ID´íÎó£¬É¾³ýÊ§°Ü");
-			return;
-		}
-		comment.setComment_reply_visibility(0);
-		if(service.updateCommentReply(comment)< 1) {
-			response.getWriter().write("É¾³ýÊ§°Ü");
+		if(service.insertCommentReply(reply) < 1) {
+			response.getWriter().write("ÆÀÂÛ·¢²¼Ê§°Ü");
 		}else {
-			response.getWriter().write("É¾³ý³É¹¦");
+			response.getWriter().write("ÆÀÂÛ·¢²¼³É¹¦");
 		}
 	}
 

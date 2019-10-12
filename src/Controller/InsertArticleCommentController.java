@@ -7,12 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import Service.BlogCommentReply2DBService;
-import domain.blog_comment_reply;
+import Service.BlogComment2DBService;
+import domain.blog_comment;
 import domain.blog_visitor;
 
 
-public class DeleteArticelCommentReplyController extends HttpServlet {
+public class InsertArticleCommentController extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
@@ -25,26 +25,27 @@ public class DeleteArticelCommentReplyController extends HttpServlet {
 			response.getWriter().write("Äú»¹Î´µÇÂ¼");
 			return;
 		}
-		String commentReplyID = request.getParameter("commentReplyID");
-		if (commentReplyID == null) {
+		String articleID = request.getParameter("articleID");
+		String commentContent = request.getParameter("commentContent");
+		if (articleID == null || commentContent == null) {
 			response.getWriter().write("²ÎÊý´íÎó");
 			return;
 		}
-		BlogCommentReply2DBService service = new BlogCommentReply2DBService();
-		blog_comment_reply comment = service.selectCommentReplyById(commentReplyID);
-		if (!comment.getVisitor_id().equals(visitor.getVisitor_id())) {
-			response.getWriter().write("ID´íÎó£¬É¾³ýÊ§°Ü");
-			return;
-		}
-		comment.setComment_reply_visibility(0);
-		if(service.updateCommentReply(comment)< 1) {
-			response.getWriter().write("É¾³ýÊ§°Ü");
+		String remoteAddr = request.getRemoteAddr();
+		blog_comment comment = new blog_comment();
+		comment.setArticle_id(articleID);
+		comment.setVisitor_id(visitor.getVisitor_id());
+		comment.setComment_content(commentContent);
+		comment.setComment_ip(remoteAddr);
+		comment.setComment_visibility(1);
+		BlogComment2DBService service = new BlogComment2DBService();
+		if(service.insertComment(comment) < 1) {
+			response.getWriter().write("ÆÀÂÛ·¢²¼Ê§°Ü");
 		}else {
-			response.getWriter().write("É¾³ý³É¹¦");
+			response.getWriter().write("ÆÀÂÛ·¢²¼³É¹¦");
 		}
 	}
 
-	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

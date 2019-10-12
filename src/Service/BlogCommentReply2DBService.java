@@ -50,7 +50,7 @@ public class BlogCommentReply2DBService {
 		return impl.selectDataForCommentAndVisibility(currentPage, pageContain, pageInFrame, commentID, false);
 	}
 	
-	public blog_comment_reply selectCommentById(String commentReplyID){
+	public blog_comment_reply selectCommentReplyById(String commentReplyID){
 		return impl.selectByID(commentReplyID);
 	}
 }

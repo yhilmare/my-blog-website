@@ -595,6 +595,7 @@ public class DBUnit {
 		comment.setComment_content("真的没有见过这么好的文章了");
 		comment.setComment_ip("123.207.64.189");
 		comment.setComment_visibility(1);
+		blog_comment item = (blog_comment) dao.selectByID("fefb9d6c-a33a-4a55-92b5-6d5696b0280f");
 //		System.out.println(dao.updateData(comment));
 		System.out.println(dao.insertData(comment));
 //		System.out.println(dao.getTotalRecord());
@@ -616,7 +617,7 @@ public class DBUnit {
 	public void test36() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		BlogCommentReply2DB dao = new BlogCommentReply2DB();
 		blog_comment_reply reply = new blog_comment_reply();
-		reply.setComment_id("fefb9d6c-a33a-4a55-92b5-6d5696b0280f");
+		reply.setComment_id("baa93764-7841-429e-b83d-d6dbd50aaec2");
 		reply.setVisitor_id("93f55d89-2611-4f17-a3ca-7118e6070bdb");
 		reply.setComment_reply_content("这个评论真的很好，真的很欣慰看见这么好的评论，希望楼主再接再厉哈哈哈哈");
 		reply.setComment_reply_ip("123.207.64.189");

@@ -677,4 +677,24 @@
     <servlet-name>DeleteArticelCommentReplyController</servlet-name>
     <url-pattern>/DeleteArticelCommentReplyController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>InsertArticleCommentController</display-name>
+    <servlet-name>InsertArticleCommentController</servlet-name>
+    <servlet-class>Controller.InsertArticleCommentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InsertArticleCommentController</servlet-name>
+    <url-pattern>/InsertArticleCommentController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>InsertCommentReplyController</display-name>
+    <servlet-name>InsertCommentReplyController</servlet-name>
+    <servlet-class>Controller.InsertCommentReplyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InsertCommentReplyController</servlet-name>
+    <url-pattern>/InsertCommentReplyController</url-pattern>
+  </servlet-mapping>
 </web-app>

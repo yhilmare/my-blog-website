@@ -36,7 +36,8 @@ public class DeleteArticleCommentController extends HttpServlet {
 			response.getWriter().write("ID´íÎó£¬É¾³ıÊ§°Ü");
 			return;
 		}
-		if(service.deleteComment(commentID) < 1) {
+		comment.setComment_visibility(0);
+		if(service.updateComment(comment) < 1) {
 			response.getWriter().write("É¾³ıÊ§°Ü");
 		}else {
 			response.getWriter().write("É¾³ı³É¹¦");
