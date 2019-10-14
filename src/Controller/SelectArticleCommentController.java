@@ -25,7 +25,7 @@ public class SelectArticleCommentController extends HttpServlet {
 		int index = Integer.parseInt(pageIndex);
 		BlogComment2DBService commentService = new BlogComment2DBService();
 		BlogCommentReply2DBService commentReplyService = new BlogCommentReply2DBService();
-		blog_page page = commentService.selectCommentByArticleID(index, 5, 5, articleID);
+		blog_page page = commentService.selectCommentByArticleID(index, 5, 3, articleID);
 		for(int i = 0; i < page.getList().size(); i ++) {
 			blog_comment comment = (blog_comment) page.getList().get(i);
 			blog_page subPage = commentReplyService.selectCommentReplyForFrontEnd(1, 3, 5, comment.getComment_id());

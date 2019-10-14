@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class blog_comment_reply {
 	
 	private String comment_reply_id;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",locale="zh",timezone="GMT+8")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm",locale="zh",timezone="GMT+8")
 	private Date comment_reply_date;
 	private String comment_id;
 	private String visitor_id;
