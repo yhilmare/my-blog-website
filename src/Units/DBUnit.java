@@ -403,11 +403,11 @@ public class DBUnit {
 	@Test
 	public void test28() throws UnsupportedEncodingException {
 		Encoder encoder = Base64.getEncoder();
-		String str = "5qiK6Zuq5p6r";
-//		String s = encoder.encodeToString(str.getBytes("UTF-8"));
-//		System.out.println(s);
-		Decoder decoder = Base64.getDecoder();
-		System.out.println(new String(decoder.decode(str), "UTF-8"));
+		String str = "colynhn";
+		String s = encoder.encodeToString(str.getBytes("UTF-8"));
+		System.out.println(s);
+//		Decoder decoder = Base64.getDecoder();
+//		System.out.println(new String(decoder.decode(str), "UTF-8"));
 	}
 	
 	@Test
@@ -486,10 +486,10 @@ public class DBUnit {
 		ResultSet result = null;
 		PreparedStatement st1 = null;
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://123.207.64.189:3306/blogtest?autoReconnect=true&amp;useSSL=false", 
+			con = DriverManager.getConnection("jdbc:mysql://123.207.64.189:3306/blogmanagement?autoReconnect=true&amp;useSSL=false", 
 					"root", "HaErBin123!@");
-			String sql = "select * from blog_visit_article";
-			String sql1 = "update blog_visit_article set visitor_id=?,visit_date=? where visit_id=?";
+			String sql = "select * from blog_message";
+			String sql1 = "update blog_message set visitor_id=?,message_date=? where message_id=?";
 			Encoder encoder = Base64.getEncoder();
 			st1 = con.prepareStatement(sql1);
 			st = con.prepareStatement(sql);
@@ -505,10 +505,10 @@ public class DBUnit {
 						String temp = (String) value;
 						st1.setObject(1, encoder.encodeToString(temp.getBytes("UTF-8")));
 					}
-					if (name.equals("visit_date")) {
+					if (name.equals("message_date")) {
 						st1.setObject(2, value);
 					}
-					if (name.equals("visit_id")) {
+					if (name.equals("message_id")) {
 						st1.setObject(3, value);
 					}
 				}
