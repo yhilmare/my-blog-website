@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Service.BlogLogin2DBService;
 import Service.BlogVisitor2DBService;
+import Utils.Login2DBThread;
 import Utils.MD5Utils;
 import domain.blog_login;
 import domain.blog_visitor;
@@ -41,50 +42,10 @@ public class VisitorLoginController extends HttpServlet {
 			return;
 		}
 		request.getSession().setAttribute("visitor", visitor);
-		
-		Thread loginWriteThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					String IPAddress = request.getRemoteAddr();
-					boolean flag = Pattern.matches("^([0-9]{1,3}\\.){3,3}[0-9]{1,3}$", IPAddress);
-					if (!flag) {
-						return;
-					}
-					URL url = new URL("https://m.so.com/position?ip=" + IPAddress);
-					HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-					con.setConnectTimeout(10000);
-					con.setReadTimeout(10000);
-					con.setDoInput(true);
-					con.setDoOutput(true);
-					con.setRequestMethod("GET");
-					InputStream input = con.getInputStream();
-					byte[] buffer = input.readAllBytes();
-					input.close();
-					String returnStr = new String(buffer, "UTF-8");
-					ObjectMapper mapper = new ObjectMapper();
-					IPResolveData data = mapper.readValue(returnStr, IPResolveData.class);
-					blog_login login = new blog_login();
-					login.setVisitor_id(visitor.getVisitor_id());
-					login.setLogin_nickname(visitor.getVisitor_nickname());
-					login.setLogin_ip(data.getData().getIp());
-					login.setLogin_province(data.getData().getPosition().getProvince());
-					login.setLogin_isp(data.getData().getPosition().getIsp());
-					login.setLogin_area(data.getData().getPosition().getArea());
-					login.setLogin_address(data.getData().getPosition().getAddress());
-					login.setLogin_city(data.getData().getPosition().getCity());
-					login.setLogin_country(data.getData().getPosition().getCountry());
-					login.setLogin_street(data.getData().getPosition().getStreet());
-					BlogLogin2DBService service = new BlogLogin2DBService();
-					service.insertVisit(login);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		loginWriteThread.start();
+		Login2DBThread thread = new Login2DBThread(request.getRemoteAddr(), visitor.getVisitor_id(), visitor.getVisitor_nickname());
 		ObjectMapper mapper = new ObjectMapper();
 		response.getWriter().write(mapper.writeValueAsString(visitor));
+		thread.customerJoin();
 	}
 
 	

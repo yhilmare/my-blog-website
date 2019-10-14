@@ -497,7 +497,7 @@
     #passage_comment_edit{margin-top:25px;height:150px;}
     #passage_comment_avator{width:10%;height:38px;}
     #passage_comment_avator img{margin:auto;width:38px;height:38px;border-radius:19px;}
-    #passage_comment_editreal{margin-left:12%;margin-top:-38px;width:88%;height:100%;}
+    #passage_comment_editreal{margin-left:15%;margin-top:-38px;width:85%;height:100%;}
     #passage_comment_editreal textarea{border:1px #d5d5d5 solid;background-color:#f1f1f1;outline:0;width:96%;height:40%;overflow:auto;resize:none;border-radius:6px;color:#999;font-family:"Microsoft YaHei";font-size:14px;padding:10px 2% 10px 2%;}
     #passage_comment_loginbutton{margin-top:10px;width:100%; height:30%;}
     #passage_comment_loginbutton button{font-family:"Microsoft YaHei";font-size:12px;border-radius:5px;width:100px;height:30px;float:right;outline:0;color:white;background-color:#4f7ae2;border:0;}
@@ -508,7 +508,7 @@
     .comment_item{width:100%;margin-bottom:15px;}
     .comment_item_avator{width:10%;height:38px;}
     .comment_item_avator img{margin:auto;width:38px;height:38px;border-radius:19px;}
-    .comment_item_content{margin-left:12%;margin-top:-38px;width:88%;}
+    .comment_item_content{margin-left:15%;margin-top:-38px;width:85%;}
     .comment_item_content_meta{padding:5px 0 5px 0;width:100%;font-family:"Microsoft YaHei";font-size:13px;}
     .comment_item_content_meta_name{color:#4f7ae2;}
     .comment_item_content_meta_date{color:#8c8c8c;}
