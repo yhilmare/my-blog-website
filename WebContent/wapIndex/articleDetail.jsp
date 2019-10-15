@@ -64,6 +64,8 @@
 			window.open("/blog/message.html");
 		}, false);
 		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
+		var passage_date = document.getElementById("passage_date");
+		passage_date.innerHTML += "&nbsp;&nbsp;&nbsp;<a href='#passage_comment'>给我评论</a>";
 		initVisitorUser();
 		initArticleComment();
 		initCommentSubmitButton();
@@ -345,9 +347,8 @@
 		
 		return comment_item_content_reply;
 	}
+	
 	function initArticleCommentList(array){
-		var passage_date = document.getElementById("passage_date");
-		passage_date.innerHTML += "&nbsp;&nbsp;&nbsp;<a href='#passage_comment'>给我评论</a>";
 		var passage_comment_content = document.getElementById("passage_comment_content");
 		passage_comment_content.innerHTML = "";
 		removerAllChildNodes(passage_comment_content);
