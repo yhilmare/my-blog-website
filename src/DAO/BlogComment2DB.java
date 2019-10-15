@@ -115,7 +115,7 @@ public class BlogComment2DB<T> implements DataObject2DB<T> {
 		String sql = "select blog_comment.*,blog_visitor.visitor_nickname,blog_visitor.figureurl_qq," 
 				+ "blog_article.article_title from blog_comment,blog_visitor,blog_article where " 
 				+ "blog_comment.visitor_id=blog_visitor.visitor_id and " 
-				+ "blog_comment.article_id=blog_article.article_id ORDER BY comment_date limit ?,?";
+				+ "blog_comment.article_id=blog_article.article_id ORDER BY comment_date desc limit ?,?";
 		Object[] params = {start, page.getPageContain()};
 		List<blog_comment> list = DBUtils.query(sql, params, new ListHandler<List<blog_comment>>(blog_comment.class));
 		Decoder decoder = Base64.getDecoder();

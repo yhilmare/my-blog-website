@@ -697,4 +697,14 @@
     <servlet-name>InsertCommentReplyController</servlet-name>
     <url-pattern>/InsertCommentReplyController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SelectCommentController</display-name>
+    <servlet-name>SelectCommentController</servlet-name>
+    <servlet-class>Controller.SelectCommentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SelectCommentController</servlet-name>
+    <url-pattern>/SelectCommentController</url-pattern>
+  </servlet-mapping>
 </web-app>
