@@ -522,7 +522,7 @@
 			var login_other = document.createElement("div");
 			login_other.className = "login_other";
 			
-			login_name.innerHTML = login.login_nickname;
+			login_name.innerHTML = login.login_nickname.length > 8 ? login.login_nickname.substring(0, 5) + "..." : login.login_nickname;
 			login_ip.innerHTML = login.login_ip;
 			login_date.innerHTML = login.login_date;
 			login_isp.innerHTML = login.login_isp;
@@ -665,7 +665,13 @@
 			var article_visit_date = document.createElement("div");
 			article_visit_date.className = "article_visit_date";
 			
-			article_visit_name.innerHTML = visit.visitor_id;
+			var pattern = /^([0-9]{1,3}\.){3,3}[0-9]{1,3}$/;
+		    if (pattern.test(visit.visitor_id)){
+		    	article_visit_name.innerHTML = visit.visitor_id;
+		    }else{
+		    	article_visit_name.innerHTML = visit.visitor_id.length > 10 ? visit.visitor_id.substring(0, 9) + "..." : visit.visitor_id;
+		    }
+			
 			article_visit_title.innerHTML = visit.article_title;
 			article_visit_date.innerHTML = visit.visit_date;
 			
@@ -795,7 +801,13 @@
 			var visit_date = document.createElement("div");
 			visit_date.className = "visit_date";
 			
-			visit_name.innerHTML = visit.visitor_id;
+			var pattern = /^([0-9]{1,3}\.){3,3}[0-9]{1,3}$/;
+		    if (pattern.test(visit.visitor_id)){
+		    	visit_name.innerHTML = visit.visitor_id;
+		    }else{
+		    	visit_name.innerHTML = visit.visitor_id.length > 10 ? visit.visitor_id.substring(0, 9) + "..." : visit.visitor_id;
+		    }
+			
 			visit_longitude.innerHTML = visit.visit_longitude;
 			visit_latitude.innerHTML = visit.visit_latitude;
 			visit_date.innerHTML = visit.visit_date;
@@ -916,7 +928,7 @@
 			var visitor_region = document.createElement("div");
 			visitor_region.className = "visitor_region";
 			
-			visitor_name.innerHTML = visit.visitor_nickname;
+		    visitor_name.innerHTML = visit.visitor_nickname.length > 10 ? visit.visitor_nickname.substring(0, 9) + "..." : visit.visitor_nickname;
 			visitor_gender.innerHTML = visit.visitor_gender;
 			var myDate = new Date();
 		    var tYear = myDate.getFullYear();
@@ -1486,14 +1498,14 @@
 	#login_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
 	#login_pageIndex a:hover{cursor:pointer;}
 	.login{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:30px;border-bottom:1px #ccc solid;}
-	.login_name{margin-left:10px;float:left;width:13%;margin-top:5px;}
-	.login_ip{float:left;width:11%;text-align:center;margin-top:5px;}
-	.login_date{float:left;width:11%;text-align:center;margin-top:5px;}
-	.login_isp{float:left;width:15%;text-align:center;margin-top:5px;}
+	.login_name{margin-left:10px;float:left;width:11%;margin-top:5px;}
+	.login_ip{float:left;width:9%;text-align:center;margin-top:5px;}
+	.login_date{float:left;width:15%;text-align:center;margin-top:5px;}
+	.login_isp{float:left;width:13%;text-align:center;margin-top:5px;}
 	.login_country{float:left;width:8%;text-align:center;margin-top:5px;;}
 	.login_province{float:left;width:8%;text-align:center;margin-top:5px;}
 	.login_city{float:left;width:11%;text-align:center;margin-top:5px;}
-	.login_other{float:left;width:15%;text-align:center;margin-top:5px;}
+	.login_other{float:left;width:17%;text-align:center;margin-top:5px;}
 	.login_op{color:#03f;float:right;text-decoration:none;margin-right:10px;margin-top:5px;}
 	.login_op:hover{text-decoration:underline;cursor:pointer;}
 	</style>

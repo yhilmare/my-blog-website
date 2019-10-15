@@ -224,7 +224,7 @@
 		var passage_date = document.getElementById("passage_date");
 		var passage_detail = document.getElementById("passage_detail");
 		article_title.innerHTML = article.article_title;
-		passage_date.innerHTML = article.create_time;
+		passage_date.innerHTML = article.create_time + "&nbsp;&nbsp;&nbsp;<a href='#passage_comment'>给我评论</a>";
 		passage_detail.innerHTML = article.article_content;
 		passage_content.appendChild(article_title);
 		passage_content.appendChild(passage_date);
@@ -940,13 +940,14 @@
 				alert("评论内容不能为空");
 			}else{
 				if (commentReplyInfo.commentID != "undefined" && commentReplyInfo.visitorNickname != "undefined"){
-					sendHttpPOST("/blog/InsertCommentReplyController", {commentID:commentReplyInfo.commentID, commentReplyContent:comment_textarea.value}, 
+					var tmp_value = comment_textarea.value;
+					comment_textarea.value = null;
+					comment_textarea.placeholder = "说点什么吧...";
+					sendHttpPOST("/blog/InsertCommentReplyController", {commentID:commentReplyInfo.commentID, commentReplyContent:tmp_value}, 
 							function(request){
 						if (request.responseText != "评论发布成功"){
 							alert(request.responseText);
 						}else{
-							comment_textarea.value = null;
-							comment_textarea.placeholder = "说点什么吧...";
 							commentReplyInfo.commentID = "undefined";
 							commentReplyInfo.visitorNickname = "undefined";
 							sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:articleInfo.articleID}, function(request1){
@@ -964,12 +965,13 @@
 					});
 					
 				}else{
-					sendHttpPOST("/blog/InsertArticleCommentController", {articleID:articleInfo.articleID, commentContent:comment_textarea.value}, 
+					var tmp_value = comment_textarea.value;
+					comment_textarea.value = null;
+					sendHttpPOST("/blog/InsertArticleCommentController", {articleID:articleInfo.articleID, commentContent:tmp_value}, 
 							function(request){
 						if (request.responseText != "评论发布成功"){
 							alert(request.responseText);
 						}else{
-							comment_textarea.value = null;
 							sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:articleInfo.articleID}, function(request1){
 								if (request1.responseTest == "参数传递错误"){
 									alert("参数传递错误");
@@ -1150,7 +1152,7 @@
 		}
 	}
 	function toLogin() {
-		window.open("/blog/QQLoginController");
+		window.location = "/blog/QQLoginController";
 	}
 	
     </script>
@@ -1239,6 +1241,7 @@ background-color:#f5f5f5;}
 	#passage_container{box-shadow:2px 2px 20px 2px #CCCCCC;font-family:"Microsoft YaHei";border-radius:5px;position:relative;top:0px;left:0px;width:90%;margin:auto;background-color:#fff;border:1px #d1d1d1 solid;}
 	#passage_content{margin:auto; width:88%; margin-top:55px;margin-bottom:55px;}
 	#passage_date{font-size:16px;color:#666;margin-bottom:10px;border-bottom:1px #f7f7f7 solid;padding-bottom:10px;}
+	#passage_date a{color:#666;text-decoration:underline;}
 	#passage_detail{font-size:18px;color:#262626;}
 	#passage_detail pre{overflow-x:auto}
 	#profile_container{box-shadow:2px 2px 20px 2px #CCCCCC;font-family:"Microsoft YaHei";border-radius:5px;position:relative;top:0px;left:0px;width:90%;margin:auto;background-color:#fff;border:1px #d1d1d1 solid;}

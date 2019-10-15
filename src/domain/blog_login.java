@@ -9,7 +9,7 @@ public class blog_login {
 	private String login_id;
 	private String login_nickname;
 	private String visitor_id;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",locale="zh",timezone="GMT+8")
+	@JsonFormat(pattern="yy/MM/dd HH:mm",locale="zh",timezone="GMT+8")
 	private Date login_date;
 	private String login_ip;
 	private String login_province;

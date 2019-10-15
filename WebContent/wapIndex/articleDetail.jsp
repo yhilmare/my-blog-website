@@ -76,13 +76,14 @@
 				alert("评论内容不能为空");
 			}else{
 				if (commentReplyInfo.commentID != "undefined" && commentReplyInfo.visitorNickname != "undefined"){
-					sendHttpPOST("/blog/InsertCommentReplyController", {commentID:commentReplyInfo.commentID, commentReplyContent:comment_textarea.value}, 
+					var tmp_value = comment_textarea.value;
+					comment_textarea.value = null;
+					comment_textarea.placeholder = "说点什么吧...";
+					sendHttpPOST("/blog/InsertCommentReplyController", {commentID:commentReplyInfo.commentID, commentReplyContent:tmp_value}, 
 							function(request){
 						if (request.responseText != "评论发布成功"){
 							alert(request.responseText);
 						}else{
-							comment_textarea.value = null;
-							comment_textarea.placeholder = "说点什么吧...";
 							commentReplyInfo.commentID = "undefined";
 							commentReplyInfo.visitorNickname = "undefined";
 							sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:articleInfo.articleID}, function(request1){
@@ -100,12 +101,13 @@
 					});
 					
 				}else{
-					sendHttpPOST("/blog/InsertArticleCommentController", {articleID:articleInfo.articleID, commentContent:comment_textarea.value}, 
+					var tmp_value = comment_textarea.value;
+					comment_textarea.value = null;
+					sendHttpPOST("/blog/InsertArticleCommentController", {articleID:articleInfo.articleID, commentContent:tmp_value}, 
 							function(request){
 						if (request.responseText != "评论发布成功"){
 							alert(request.responseText);
 						}else{
-							comment_textarea.value = null;
 							sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:articleInfo.articleID}, function(request1){
 								if (request1.responseTest == "参数传递错误"){
 									alert("参数传递错误");
@@ -344,6 +346,8 @@
 		return comment_item_content_reply;
 	}
 	function initArticleCommentList(array){
+		var passage_date = document.getElementById("passage_date");
+		passage_date.innerHTML += "&nbsp;&nbsp;&nbsp;<a href='#passage_comment'>给我评论</a>";
 		var passage_comment_content = document.getElementById("passage_comment_content");
 		passage_comment_content.innerHTML = "";
 		removerAllChildNodes(passage_comment_content);
@@ -467,11 +471,11 @@
 		visitor_gender:"undefined"
 	}
 	function toLogin() {
-		window.open("/blog/QQLoginController");
+		window.location = "/blog/QQLoginController?display=mobile";
 	}
 	</script>
 	<style>
-	body{padding:0;margin:auto;width:99%}
+		body{padding:0;margin:auto;width:99%}
 	#top{opacity:0.8;height:120px;z-index:20;box-shadow:2px 2px 20px 2px #CCCCCC;width:60px;background-color:#FAFAF9;position:fixed;bottom:20px;right:0px;}
 	#topbutton{font-family:"Microsoft YaHei";font-weight:900;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;}
 	#liuyanbutton{font-family:"Microsoft YaHei";font-weight:900;background-color:#fafaf9;width:60px;height:60px;color:#999;font-size:14px;border:1px solid #CCC;outline:0;border-bottom:0}
@@ -484,6 +488,7 @@
 	#middle_content{margin-top:80px;width:100%;border:1px #fff solid;}
 	#passage_area{width:94%;margin:auto;margin-top:10px;}
 	#passage_date{width:100%;font-size:16px;color:#999;}
+	#passage_date a{color:#999;text-decoration:underline;}
 	#passage_content{width:100%;font-size:17px;font-family:serif;color:#333;}
 	#passage_content pre{overflow-x:auto;}
 	img{width:100%;}
@@ -498,7 +503,7 @@
     #passage_comment_avator{width:10%;height:38px;}
     #passage_comment_avator img{margin:auto;width:38px;height:38px;border-radius:19px;}
     #passage_comment_editreal{margin-left:15%;margin-top:-38px;width:85%;height:100%;}
-    #passage_comment_editreal textarea{border:1px #d5d5d5 solid;background-color:#f1f1f1;outline:0;width:96%;height:40%;overflow:auto;resize:none;border-radius:6px;color:#999;font-family:"Microsoft YaHei";font-size:14px;padding:10px 2% 10px 2%;}
+    #passage_comment_editreal textarea{border:1px #d5d5d5 solid;background-color:#f1f1f1;outline:0;width:96%;height:40%;overflow:auto;resize:none;border-radius:6px;color:#999;font-family:"Microsoft YaHei";font-size:15px;padding:10px 2% 10px 2%;}
     #passage_comment_loginbutton{margin-top:10px;width:100%; height:30%;}
     #passage_comment_loginbutton button{font-family:"Microsoft YaHei";font-size:12px;border-radius:5px;width:100px;height:30px;float:right;outline:0;color:white;background-color:#4f7ae2;border:0;}
     #passage_comment_loginbutton div{float:left;font-size:12px;color:#4f7ae2;}
@@ -512,22 +517,22 @@
     .comment_item_content_meta{padding:5px 0 5px 0;width:100%;font-family:"Microsoft YaHei";font-size:13px;}
     .comment_item_content_meta_name{color:#4f7ae2;}
     .comment_item_content_meta_date{color:#8c8c8c;}
-    .comment_item_content_meta_op1{margin-left:10px;font-size:10px;color:#4f7ae2}
-    .comment_item_content_meta_op2{margin-left:10px;font-size:10px;color:#4f7ae2}
-    .comment_item_content_detail{padding:5px 0 10px 0;margin-top:10px;width:100%;font-size:13px;font-family:"Microsoft YaHei";color:#262626;}
-    .comment_item_content_reply{width:100%;background-color:#f7f7f7;margin-top:5px;padding-top:5px;}
+    .comment_item_content_meta_op1{margin-left:10px;font-size:12px;color:#4f7ae2}
+    .comment_item_content_meta_op2{margin-left:10px;font-size:12px;color:#4f7ae2}
+    .comment_item_content_detail{padding:5px 0 10px 0;margin-top:7px;width:100%;font-size:14px;font-family:"Microsoft YaHei";color:#262626;}
+    .comment_item_content_reply{width:100%;background-color:#f7f7f7;margin-top:3px;padding-top:5px;}
     .comment_item_reply_item{margin:auto;width:94%;border-bottom:1px #ccc solid;}
     
-    .comment_item_reply_meta{padding:7px 0 3px 0;width:100%;font-family:"Microsoft YaHei";font-size:11px;}
+    .comment_item_reply_meta{padding:7px 0 3px 0;width:100%;font-family:"Microsoft YaHei";font-size:12px;}
     .comment_item_reply_meta_name{color:#4f7ae2;}
     .comment_item_reply_meta_date{color:#8c8c8c;}
-    .comment_item_reply_meta_op1{margin-left:10px;font-size:10px;color:#4f7ae2}
-    .comment_item_reply_detail{padding:3px 0 13px 0;margin-top:5px;width:100%;font-size:11px;font-family:"Microsoft YaHei";color:#262626;}
+    .comment_item_reply_meta_op1{margin-left:10px;font-size:12px;color:#4f7ae2}
+    .comment_item_reply_detail{padding:3px 0 13px 0;margin-top:3px;width:100%;font-size:13px;font-family:"Microsoft YaHei";color:#262626;}
     
     .comment_item_reply_loadmore{padding-bottom:15px;margin:auto;margin-top:10px;width:94%;}
-    .comment_item_reply_loadmore a{color:#4f7ae2;font-size:10px;}
+    .comment_item_reply_loadmore a{color:#4f7ae2;font-size:12px;}
     
-    #comment_pageIndex{width:100%;color:#4f7ae2;font-size:10px;height:20px;}
+    #comment_pageIndex{width:100%;color:#4f7ae2;font-size:12px;height:20px;}
     #pageIndex_container{float:right;height:20px;}
     #comment_pageIndex a{color:#4f7ae2;}
 	</style>
