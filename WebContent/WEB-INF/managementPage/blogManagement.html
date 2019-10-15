@@ -523,6 +523,26 @@
 			login_other.className = "login_other";
 			
 			login_name.innerHTML = login.login_nickname.length > 8 ? login.login_nickname.substring(0, 5) + "..." : login.login_nickname;
+			login_name.setAttribute("data-tag", login.login_id);
+			
+			var login_name_hidden = document.createElement("div");
+			login_name_hidden.className = "login_name_hidden";
+			login_name_hidden.innerHTML = login.login_nickname;
+			login_name_hidden.id = login.login_id;
+			login_name.appendChild(login_name_hidden);
+			
+			
+			
+			login_name.addEventListener("mouseover", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "block";
+			}, false);
+			
+			login_name.addEventListener("mouseout", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "none";
+			}, false);
+			
 			login_ip.innerHTML = login.login_ip;
 			login_date.innerHTML = login.login_date;
 			login_isp.innerHTML = login.login_isp;
@@ -671,6 +691,26 @@
 		    }else{
 		    	article_visit_name.innerHTML = visit.visitor_id.length > 10 ? visit.visitor_id.substring(0, 9) + "..." : visit.visitor_id;
 		    }
+		    
+		    article_visit_name.setAttribute("data-tag", visit.visit_id);
+			
+			var article_visit_name_hidden = document.createElement("div");
+			article_visit_name_hidden.className = "article_visit_name_hidden";
+			article_visit_name_hidden.innerHTML = visit.visitor_id;
+			article_visit_name_hidden.id = visit.visit_id;
+			article_visit_name.appendChild(article_visit_name_hidden);
+			
+			
+			
+			article_visit_name.addEventListener("mouseover", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "block";
+			}, false);
+			
+			article_visit_name.addEventListener("mouseout", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "none";
+			}, false);
 			
 			article_visit_title.innerHTML = visit.article_title;
 			article_visit_date.innerHTML = visit.visit_date;
@@ -782,7 +822,19 @@
 			}, false);
 		}
 	}
-	
+	function uuid() {
+	    var s = [];
+	    var hexDigits = "0123456789abcdef";
+	    for (var i = 0; i < 36; i++) {
+	        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+	    }
+	    s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+	    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+	    s[8] = s[13] = s[18] = s[23] = "-";
+
+	    var uuid = s.join("");
+	    return uuid;
+	}
 	function updateVisitList(array){
 		var visit_list = document.getElementById("visit_list");
 		visit_list.innerHTML = "";
@@ -808,6 +860,27 @@
 		    	visit_name.innerHTML = visit.visitor_id.length > 10 ? visit.visitor_id.substring(0, 9) + "..." : visit.visitor_id;
 		    }
 			
+		    var uuidTag = uuid();
+		    visit_name.setAttribute("data-tag", uuidTag);
+			
+			var visit_name_hidden = document.createElement("div");
+			visit_name_hidden.className = "visit_name_hidden";
+			visit_name_hidden.innerHTML = visit.visitor_id;
+			visit_name_hidden.id = uuidTag;
+			visit_name.appendChild(visit_name_hidden);
+			
+			
+			
+			visit_name.addEventListener("mouseover", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "block";
+			}, false);
+			
+			visit_name.addEventListener("mouseout", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "none";
+			}, false);		    
+		    
 			visit_longitude.innerHTML = visit.visit_longitude;
 			visit_latitude.innerHTML = visit.visit_latitude;
 			visit_date.innerHTML = visit.visit_date;
@@ -929,6 +1002,31 @@
 			visitor_region.className = "visitor_region";
 			
 		    visitor_name.innerHTML = visit.visitor_nickname.length > 10 ? visit.visitor_nickname.substring(0, 9) + "..." : visit.visitor_nickname;
+		    
+
+
+		    visitor_name.setAttribute("data-tag", visit.visitor_id);
+			
+			var visitor_name_hidden = document.createElement("div");
+			visitor_name_hidden.className = "visitor_name_hidden";
+			visitor_name_hidden.innerHTML = visit.visitor_nickname;
+			visitor_name_hidden.id = visit.visitor_id;
+			visitor_name.appendChild(visitor_name_hidden);
+			
+			
+			
+			visitor_name.addEventListener("mouseover", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "block";
+			}, false);
+			
+			visitor_name.addEventListener("mouseout", function(){
+				var login_name_hidden = document.getElementById(this.getAttribute("data-tag"));
+				login_name_hidden.style["display"] = "none";
+			}, false);
+		    
+		    
+		    
 			visitor_gender.innerHTML = visit.visitor_gender;
 			var myDate = new Date();
 		    var tYear = myDate.getFullYear();
@@ -1466,7 +1564,8 @@
 	#visitor_list{height:87%;width:100%;overflow:auto;font-size:15px;}
 	#visit_list{height:87%;width:100%;overflow:auto;font-size:15px;}
 	.visitor{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:30px;border-bottom:1px #ccc solid;}
-	.visitor_name{margin-left:10px;float:left;width:20%;margin-top:5px;}
+	.visitor_name{margin-left:10px;float:left;width:20%;margin-top:5px;position:relative;top:0px;left:0px;}
+	.visitor_name_hidden{position:absolute;top:0px;left:0px;font-family:"Microsoft YaHei";font-size:15px;background-color:#fff;display:none;box-shadow:1px 1px 10px 1px #ddd;padding:5px 10px 5px 10px;}
 	.visitor_gender{float:left;width:20%;text-align:center;margin-top:5px;}
 	.visitor_birthday{float:left;width:26%;text-align:center;margin-top:5px;}
 	.visitor_region{float:left;width:26%;text-align:center;margin-top:5px;}
@@ -1477,7 +1576,8 @@
 	#visit_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
 	#visit_pageIndex a:hover{cursor:pointer;}
 	.visit{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
-	.visit_name{margin-left:10px;float:left;width:17%}
+	.visit_name{margin-left:10px;float:left;width:17%;position:relative;top:0px;left:0px;}
+	.visit_name_hidden{position:absolute;top:0px;left:0px;font-family:"Microsoft YaHei";font-size:15px;background-color:#fff;display:none;box-shadow:1px 1px 10px 1px #ddd;padding:5px 10px 5px 10px;}
 	.visit_longitude{float:left;width:23%;text-align:center}
 	.visit_latitude{float:left;width:23%;text-align:center;}
 	.visit_date{float:left;width:30%;text-align:center;}
@@ -1487,7 +1587,8 @@
     #article_visit_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
 	#article_visit_pageIndex a:hover{cursor:pointer;}
 	.article_visit{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:25px;border-bottom:1px #ccc solid;}
-	.article_visit_name{margin-left:10px;float:left;width:17%}
+	.article_visit_name{margin-left:10px;float:left;width:17%;position:relative;top:0px;left:0px;}
+	.article_visit_name_hidden{position:absolute;top:0px;left:0px;font-family:"Microsoft YaHei";font-size:15px;background-color:#fff;display:none;box-shadow:1px 1px 10px 1px #ddd;padding:5px 10px 5px 10px;}
 	.article_visit_title{float:left;width:51%;text-align:center}
 	.article_visit_date{float:left;width:20%;text-align:center}
 	.article_visit_op{color:#03f;float:right;text-decoration:none;margin-right:10px;}
@@ -1498,7 +1599,8 @@
 	#login_pageIndex{font-size:13px;position:absolute;bottom:0px;font-family:"Microsoft YaHei";width:100%;text-align:left;margin-bottom:10px;border-top:1px solid #ddd;padding-top:5px;}
 	#login_pageIndex a:hover{cursor:pointer;}
 	.login{margin-bottom:10px;font-family:"Microsoft YaHei";width:100%;height:30px;border-bottom:1px #ccc solid;}
-	.login_name{margin-left:10px;float:left;width:11%;margin-top:5px;}
+	.login_name{margin-left:10px;float:left;width:11%;margin-top:5px;position:relative;top:0px;left:0px;}
+	.login_name_hidden{position:absolute;top:0px;left:0px;font-family:"Microsoft YaHei";font-size:15px;background-color:#fff;display:none;box-shadow:1px 1px 10px 1px #ddd;padding:5px 10px 5px 10px;}
 	.login_ip{float:left;width:9%;text-align:center;margin-top:5px;}
 	.login_date{float:left;width:15%;text-align:center;margin-top:5px;}
 	.login_isp{float:left;width:13%;text-align:center;margin-top:5px;}
