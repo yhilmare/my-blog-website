@@ -46,8 +46,8 @@ public class BlogCommentReply2DBService {
 		return impl.selectDataForCommentAndVisibility(currentPage, pageContain, pageInFrame, commentID, true);
 	}
 		
-	public blog_page selectCommentReplyForBackEnd(int currentPage, int pageContain, int pageInFrame, String commentID){
-		return impl.selectDataForCommentAndVisibility(currentPage, pageContain, pageInFrame, commentID, false);
+	public blog_page selectCommentReplyForBackEnd(int currentPage, int pageContain, int pageInFrame){
+		return impl.selectData(currentPage, pageContain, pageInFrame);
 	}
 	
 	public blog_comment_reply selectCommentReplyById(String commentReplyID){

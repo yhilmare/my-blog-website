@@ -148,7 +148,7 @@ public class BlogComment2DB<T> implements DataObject2DB<T> {
 
 	@Override
 	public <T> T selectByID(String id) {
-		String sql = "select * from blog_comment where comment_id=?";
+		String sql = "select blog_comment.*,blog_article.article_title from blog_comment,blog_article where comment_id=? and blog_comment.article_id=blog_article.article_id";
 		Decoder decoder = Base64.getDecoder();
 		try {
 			Object[] params = {id};

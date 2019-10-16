@@ -2,7 +2,9 @@ package Controller;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Enumeration;
+import java.util.Base64.Decoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import Service.BlogHolder2DBService;
+import Service.BlogVisitor2DBService;
 import Utils.MD5Utils;
 import domain.blog_holder;
+import domain.blog_visitor;
 
 
 public class UpdateProfileInfoController extends HttpServlet {
@@ -48,6 +52,40 @@ public class UpdateProfileInfoController extends HttpServlet {
 		holder_new.setHolder_id(holder.getHolder_id());
 		holder_new.setHolder_pwd(MD5Utils.getToken(holder_new.getHolder_pwd()));
 		holder_new.setHolder_img(holder.getHolder_img());
+		
+		BlogVisitor2DBService ser = new BlogVisitor2DBService();
+		blog_visitor visitor = ser.selectVisitor("IL MARE");
+		if (visitor == null) {
+			visitor = new blog_visitor();
+			visitor.setVisitor_nickname("IL MARE");
+			visitor.setVisitor_gender("男");
+			visitor.setProvince(holder_new.getHolder_province_zh());
+			visitor.setCity(holder_new.getHolder_city_zh());
+			visitor.setFigureurl("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_1("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_2("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_qq("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_qq_1("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_qq_2("/blog/" + holder_new.getHolder_img());
+			if (ser.insertVisitor(visitor) != 1) {
+				response.getWriter().write("visitor对象插入失败，错误");
+				return;
+			}
+		}else {
+			visitor.setProvince(holder_new.getHolder_province_zh());
+			visitor.setCity(holder_new.getHolder_city_zh());
+			visitor.setFigureurl("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_1("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_2("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_qq("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_qq_1("/blog/" + holder_new.getHolder_img());
+			visitor.setFigureurl_qq_2("/blog/" + holder_new.getHolder_img());
+			if (ser.updateVisitor(visitor) != 1) {
+				response.getWriter().write("visitor对象更新失败，错误");
+				return;
+			}
+		}
+		
 		BlogHolder2DBService service = new BlogHolder2DBService();
 		if(service.updateHolder(holder_new) >= 1){
 			this.getServletContext().setAttribute("holder", holder_new);

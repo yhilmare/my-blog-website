@@ -727,4 +727,44 @@
     <servlet-name>UpdateCommentController</servlet-name>
     <url-pattern>/UpdateCommentController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>InsertCommentReplyForHolderController</display-name>
+    <servlet-name>InsertCommentReplyForHolderController</servlet-name>
+    <servlet-class>Controller.InsertCommentReplyForHolderController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InsertCommentReplyForHolderController</servlet-name>
+    <url-pattern>/InsertCommentReplyForHolderController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SelectCommentReplyController</display-name>
+    <servlet-name>SelectCommentReplyController</servlet-name>
+    <servlet-class>Controller.SelectCommentReplyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SelectCommentReplyController</servlet-name>
+    <url-pattern>/SelectCommentReplyController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>UpdateCommentReplyController</display-name>
+    <servlet-name>UpdateCommentReplyController</servlet-name>
+    <servlet-class>Controller.UpdateCommentReplyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UpdateCommentReplyController</servlet-name>
+    <url-pattern>/UpdateCommentReplyController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DeleteCommentReplyController</display-name>
+    <servlet-name>DeleteCommentReplyController</servlet-name>
+    <servlet-class>Controller.DeleteCommentReplyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteCommentReplyController</servlet-name>
+    <url-pattern>/DeleteCommentReplyController</url-pattern>
+  </servlet-mapping>
 </web-app>

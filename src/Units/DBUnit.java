@@ -640,6 +640,13 @@ public class DBUnit {
 //		}
 //		System.out.println(dao.deleteData("469bc8a4-4349-437b-86c3-201f87861747"));
 	}
+	
+	@Test
+	public void test37() {
+		String str = "ilmare";
+		System.out.println(str.trim().equalsIgnoreCase("IL MARE"));
+		System.out.println(str.trim().equalsIgnoreCase("ILMARE"));
+	}
 }
 
 class UnitUtils{

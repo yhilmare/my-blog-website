@@ -56,6 +56,11 @@ public class RegisterVisitorController extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+		if (visitor.getVisitor_nickname().trim().equalsIgnoreCase("IL MARE") 
+				|| visitor.getVisitor_nickname().trim().equalsIgnoreCase("ILMARE")) {
+			response.getWriter().write("用户名ILMARE为保留字，注册失败");
+			return;
+		}
 		BlogVisitor2DBService service = new BlogVisitor2DBService();
 		String msg;
 		Login2DBThread thread = null;

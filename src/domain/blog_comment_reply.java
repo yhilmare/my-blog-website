@@ -16,7 +16,15 @@ public class blog_comment_reply {
 	private Integer comment_reply_visibility;
 	private String visitor_nickname;
 	private String figureurl_qq;
+	private blog_comment comment;
 	
+	
+	public blog_comment getComment() {
+		return comment;
+	}
+	public void setComment(blog_comment comment) {
+		this.comment = comment;
+	}
 	public String getComment_reply_id() {
 		return comment_reply_id;
 	}

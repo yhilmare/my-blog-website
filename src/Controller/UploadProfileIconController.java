@@ -18,8 +18,10 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import Service.BlogHolder2DBService;
+import Service.BlogVisitor2DBService;
 import Utils.UniqueCode;
 import domain.blog_holder;
+import domain.blog_visitor;
 
 
 public class UploadProfileIconController extends HttpServlet {
@@ -71,6 +73,40 @@ public class UploadProfileIconController extends HttpServlet {
 			response.getWriter().write("ÐÞ¸ÄÍ·ÏñÊ§°Ü");
 		}
 		holder.setHolder_img("uploadFile" + url);
+		
+		BlogVisitor2DBService ser = new BlogVisitor2DBService();
+		blog_visitor visitor = ser.selectVisitor("IL MARE");
+		if (visitor == null) {
+			visitor = new blog_visitor();
+			visitor.setVisitor_nickname("IL MARE");
+			visitor.setVisitor_gender("ÄÐ");
+			visitor.setProvince(holder.getHolder_province_zh());
+			visitor.setCity(holder.getHolder_city_zh());
+			visitor.setFigureurl("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_1("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_2("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_qq("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_qq_1("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_qq_2("/blog/" + holder.getHolder_img());
+			if (ser.insertVisitor(visitor) != 1) {
+				response.getWriter().write("visitor¶ÔÏó²åÈëÊ§°Ü£¬´íÎó");
+				return;
+			}
+		}else {
+			visitor.setProvince(holder.getHolder_province_zh());
+			visitor.setCity(holder.getHolder_city_zh());
+			visitor.setFigureurl("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_1("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_2("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_qq("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_qq_1("/blog/" + holder.getHolder_img());
+			visitor.setFigureurl_qq_2("/blog/" + holder.getHolder_img());
+			if (ser.updateVisitor(visitor) != 1) {
+				response.getWriter().write("visitor¶ÔÏó¸üÐÂÊ§°Ü£¬´íÎó");
+				return;
+			}
+		}
+		
 		BlogHolder2DBService service = new BlogHolder2DBService();
 		if(service.updateHolder(holder) >= 1){
 			this.getServletContext().setAttribute("holder", holder);
