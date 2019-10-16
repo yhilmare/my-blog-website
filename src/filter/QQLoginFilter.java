@@ -110,7 +110,7 @@ public class QQLoginFilter implements Filter {
 		visitor.setVisitor_id(obj.getOpenid());
 		if (visitor.getVisitor_nickname().trim().equalsIgnoreCase("IL MARE") 
 				|| visitor.getVisitor_nickname().trim().equalsIgnoreCase("ILMARE")) {
-			response.getWriter().write("用户名ILMARE为保留字，注册失败");
+			response.getWriter().write("用户名ILMARE为保留字，登录失败");
 			return;
 		}
 		BlogVisitor2DBService service = new BlogVisitor2DBService();
