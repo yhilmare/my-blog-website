@@ -707,4 +707,24 @@
     <servlet-name>SelectCommentController</servlet-name>
     <url-pattern>/SelectCommentController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DeleteCommentController</display-name>
+    <servlet-name>DeleteCommentController</servlet-name>
+    <servlet-class>Controller.DeleteCommentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteCommentController</servlet-name>
+    <url-pattern>/DeleteCommentController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>UpdateCommentController</display-name>
+    <servlet-name>UpdateCommentController</servlet-name>
+    <servlet-class>Controller.UpdateCommentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UpdateCommentController</servlet-name>
+    <url-pattern>/UpdateCommentController</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -423,9 +423,15 @@
 					});
 				} else if(tag == "13"){//博客评论区
 					sendHttpFormRequest("/blog/SelectCommentController", {pageIndex:"1"}, function(request){
-						var obj = JSON.parse(request.responseText);
-						console.log(obj);
+						if (request.responseText == "参数传递错误" || request.responseText == "对不起您未登录"){
+							alert(request.responseText);
+						}else{
+							var obj = JSON.parse(request.responseText);
+							initArticleCommentList(obj.list);
+							updateBlogCommentPageIndex(obj);
+						}
 					});
+					
 				} else if(tag == "14"){//博客评论回复区
 					console.log("commentreply")
 				}
@@ -433,6 +439,258 @@
 				section.style.display="none";
 			}
 		}
+	}
+	
+	function updateBlogCommentPageIndex(page){
+		var array = new Array();
+		var comment_pageIndex = document.getElementById("comment_pageIndex");
+		comment_pageIndex.innerHTML = "";
+		removerAllChildNodes(comment_pageIndex);
+		var currentPage = parseInt(page.currentPage);
+		var startPage = parseInt(page.startPage);
+		var endPage = parseInt(page.endPage);
+		var totalPage = parseInt(page.totalPage);
+		var totalRecord = parseInt(page.totalRecord);
+		var a = document.createElement("a");
+		a.id = "pageIndex=1";a.innerHTML = "首页  ";
+		a.className = "blog_comment_pageIndex";
+		comment_pageIndex.appendChild(a);
+		if(currentPage > 1){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage - 1);a.innerHTML = " 上一页 ";
+			a.className = "blog_comment_pageIndex";
+			comment_pageIndex.appendChild(a);
+		}
+		if(startPage <= endPage){
+			for(var i = startPage; i <= endPage; i++){
+				a = document.createElement("a");
+				a.id = "pageIndex=" + i;a.innerHTML = " " + i + "";
+				a.className = "blog_comment_pageIndex";
+				comment_pageIndex.appendChild(a);
+			}
+		}
+		if(currentPage < totalPage){
+			a = document.createElement("a");
+			a.id = "pageIndex=" + (currentPage + 1);a.innerHTML = " 下一页  ";
+			a.className = "blog_comment_pageIndex";
+			comment_pageIndex.appendChild(a);
+		}
+		a = document.createElement("a");
+		a.id = "pageIndex=" + totalPage;a.innerHTML = " 尾页";
+		a.className = "blog_comment_pageIndex";
+		comment_pageIndex.appendChild(a);
+		var div = document.createElement("span");
+		div.innerHTML = " 第" + currentPage + "页";
+		comment_pageIndex.appendChild(div);
+		div = document.createElement("span");
+		div.innerHTML = "&nbsp;共" + totalRecord + "条记录";
+		comment_pageIndex.appendChild(div);
+		var as = document.getElementsByClassName("blog_comment_pageIndex");
+		for(var i = 0; i < as.length; i++){
+			var elt = as[i];
+			elt.addEventListener("click", function(){
+				var info = this.id;
+				array = info.split("=");
+				info = array[array.length - 1];
+				sendHttpFormRequest("/blog/SelectCommentController", {pageIndex:info}, function(request){
+					if (request.responseText == "参数传递错误" || request.responseText == "对不起您未登录"){
+						alert(request.responseText);
+					}else{
+						var obj = JSON.parse(request.responseText);
+						initArticleCommentList(obj.list);
+						updateBlogCommentPageIndex(obj);
+					}
+				});
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+		}
+	}
+	
+	function initArticleCommentList(array){
+		var comment_management = document.getElementById("comment_management");
+		comment_management.innerHTML = "";
+		removerAllChildNodes(comment_management);
+		for(var i = 0; i < array.length; i ++){
+			var comment  = array[i];
+			
+			var comment_management_item = document.createElement("div");
+			comment_management_item.className = "comment_management_item";
+			
+			var comment_management_item_meta = document.createElement("div");
+			comment_management_item_meta.className = "comment_management_item_meta";
+			var comment_avator = document.createElement("div");
+			comment_avator.className = "comment_avator";
+			var imgAvator = document.createElement("img");
+			if(comment.figureurl_qq == null){
+				imgAvator.src="/blog/Images/avator.jpg";
+			}else{
+				imgAvator.src=comment.figureurl_qq;
+			}
+			imgAvator.alt="avator";
+			comment_avator.appendChild(imgAvator);
+			comment_management_item_meta.appendChild(comment_avator);
+			
+			var comment_meta_info = document.createElement("div");
+			comment_meta_info.className = "comment_meta_info";
+			var comment_meta_info_upper = document.createElement("div");
+			comment_meta_info_upper.className = "comment_meta_info_upper";
+			comment_meta_info_upper.innerHTML = comment.visitor_nickname + "<span>回复</span>";
+			var comment_meta_info_down = document.createElement("div");
+			comment_meta_info_down.className = "comment_meta_info_down";
+			comment_meta_info_down.innerHTML = comment.comment_date;
+			comment_meta_info.appendChild(comment_meta_info_upper);
+			comment_meta_info.appendChild(comment_meta_info_down);
+			comment_management_item_meta.appendChild(comment_meta_info);
+			
+			var comment_visibility = document.createElement("button");
+			comment_visibility.id = "comment_visibility";
+			if (comment.comment_visibility == 1){
+				comment_visibility.innerHTML = "可见";
+			}else{
+				comment_visibility.innerHTML = "不可见";
+				comment_visibility.style["backgroundColor"] = "#ca0005";
+			}
+			
+			comment_visibility.setAttribute("data-tag", comment.comment_id);
+			comment_visibility.addEventListener("click", function(){
+				if (confirm("确认要更改这条评论的可见性吗？")){
+					sendHttpFormRequest("/blog/UpdateCommentController", {commentID:this.getAttribute("data-tag")}, function(request){
+						alert(request.responseText);
+						var btn = document.getElementById("buttn_temp14");
+						btn.click();
+					});
+				}
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+			var comment_delete = document.createElement("button");
+			comment_delete.innerHTML = "删除";
+			comment_delete.id = "comment_delete";
+			comment_delete.setAttribute("data-tag", comment.comment_id);
+			comment_delete.addEventListener("click", function(){
+				if (confirm("确认要删除这条评论吗？")){
+					sendHttpFormRequest("/blog/DeleteCommentController", {commentID:this.getAttribute("data-tag")}, function(request){
+						alert(request.responseText);
+						var btn = document.getElementById("buttn_temp14");
+						btn.click();
+					});
+				}
+				event.stopPropagation();
+				if(event.preventDefault){
+					event.preventDefault();
+				}
+				if(event.returnValue){
+					event.returnValue = false;
+				}
+				return false;
+			}, false);
+			comment_management_item_meta.appendChild(comment_visibility);
+			comment_management_item_meta.appendChild(comment_delete);
+			comment_management_item.appendChild(comment_management_item_meta);
+			
+			
+			var comment_management_item_middle = document.createElement("div");
+			comment_management_item_middle.className = "comment_management_item_middle";
+			var comment_typeAvator = document.createElement("div");
+			comment_typeAvator.innerHTML = "<img src='/blog/Images/blogAvator.png'/>";
+			comment_management_item_middle.appendChild(comment_typeAvator);
+			var comment_management_item_blogname = document.createElement("div");
+			comment_management_item_blogname.className = "comment_management_item_blogname";
+			comment_management_item_blogname.innerHTML = "博客<span>《" + comment.article_title + "》</span>";
+			comment_management_item_middle.appendChild(comment_management_item_blogname);
+			comment_management_item.appendChild(comment_management_item_middle);
+			
+			var comment_managment_item_bottom = document.createElement("div");
+			comment_managment_item_bottom.className = "comment_managment_item_bottom";
+			
+			var comment_item = document.createElement("div");
+			comment_item.className = "comment_item";
+						
+			var comment_item_content = document.createElement("div");
+			comment_item_content.className = "comment_item_content";
+			var comment_item_content_meta = document.createElement("div");
+			comment_item_content_meta.className = "comment_item_content_meta";
+			var comment_item_content_meta_name = document.createElement("span");
+			comment_item_content_meta_name.className = "comment_item_content_meta_name";
+			comment_item_content_meta_name.innerHTML = comment.visitor_nickname + "&nbsp;";
+			comment_item_content_meta.appendChild(comment_item_content_meta_name);
+			var comment_item_content_meta_date = document.createElement("span");
+			comment_item_content_meta_date.className = "comment_item_content_meta_date";
+			comment_item_content_meta_date.innerHTML = "发表于&nbsp;" + comment.comment_date;
+			comment_item_content_meta.appendChild(comment_item_content_meta_date);
+			
+			comment_item_content.appendChild(comment_item_content_meta);
+			
+			var comment_item_content_detail = document.createElement("div");
+			comment_item_content_detail.className = "comment_item_content_detail";
+			comment_item_content_detail.innerHTML = comment.comment_content;
+			comment_item_content.appendChild(comment_item_content_detail);
+			
+			if (comment.subComment.list.length != 0){
+				var comment_item_content_reply = initCommentReplyList(comment.subComment);
+				comment_item_content.appendChild(comment_item_content_reply);
+			}
+			comment_item.appendChild(comment_item_content);
+			comment_managment_item_bottom.appendChild(comment_item);
+			comment_management_item.appendChild(comment_managment_item_bottom);
+			comment_management.appendChild(comment_management_item);
+		}
+	}
+	
+	function initCommentReplyList(array){
+		var comment_item_content_reply = document.createElement("div");
+		comment_item_content_reply.className = "comment_item_content_reply";
+		comment_item_content_reply.id = array.list[0].comment_id;
+		for(var i = 0; i < array.list.length; i ++){
+			commentReply = array.list[i];
+			var comment_item_reply_item = document.createElement("div");
+			comment_item_reply_item.className = "comment_item_reply_item";
+			
+			var comment_item_reply_meta = document.createElement("div");
+			comment_item_reply_meta.className = "comment_item_reply_meta";
+			var comment_item_reply_meta_name = document.createElement("span");
+			comment_item_reply_meta_name.className = "comment_item_reply_meta_name";
+			comment_item_reply_meta_name.innerHTML = commentReply.visitor_nickname + "&nbsp;";
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_name);
+			var comment_item_reply_meta_date = document.createElement("span");
+			comment_item_reply_meta_date.className = "comment_item_reply_meta_date";
+			comment_item_reply_meta_date.innerHTML = "发表于&nbsp;" + commentReply.comment_reply_date;
+			comment_item_reply_meta.appendChild(comment_item_reply_meta_date);
+			comment_item_reply_item.appendChild(comment_item_reply_meta);
+			
+			var comment_item_reply_detail = document.createElement("div");
+			comment_item_reply_detail.className = "comment_item_reply_detail";
+			comment_item_reply_detail.innerHTML = commentReply.comment_reply_content;
+			comment_item_reply_item.appendChild(comment_item_reply_detail);
+			
+			if (i == array.list.length - 1 && array.totalRecord == array.list.length){
+				setCSSStyle({paddingBottom: "5px", borderBottom: 0}, comment_item_reply_item);
+			}
+			
+			comment_item_content_reply.appendChild(comment_item_reply_item);
+		}
+		if(array.totalRecord > array.list.length){
+			var comment_item_reply_loadmore = document.createElement("div");
+			comment_item_reply_loadmore.className = "comment_item_reply_loadmore";
+			var a = document.createElement("a");
+			a.innerHTML = "共" + array.totalRecord + "条回复>>";
+			comment_item_reply_loadmore.appendChild(a);
+			comment_item_content_reply.appendChild(comment_item_reply_loadmore);
+		}
+		return comment_item_content_reply;
 	}
 	
 	function updateBlogLoginPageIndex(page){
@@ -1631,8 +1889,8 @@
 	.comment_meta_info_down{margin-top:6px;color:#ccc;font-size:16px;}	
 	.comment_management_item_meta button{font-family:"Microsoft YaHei";height:28px;width:72px;outline:0;border:0;background-color:#red;border-radius:5px;}
 	.comment_management_item_meta button:hover{cursor:pointer;}
-	#comment_visibility{position:absolute;bottom:0px;right:102px;background-color:#40a628;color:#FFF;border:1px #146700 solid;}
-	#comment_delete{position:absolute;bottom:0px;right:20px;background-color:red;color:#FFF;}
+	#comment_visibility{position:absolute;bottom:0px;right:102px;background-color:#40a628;color:#FFF;}
+	#comment_delete{position:absolute;bottom:0px;right:20px;background-color:#ca0005;color:#FFF;}
 	.comment_management_item_middle{height:102px;width:98%;border:1px #d1d1d1 solid;margin:auto;margin-top:15px;}
 	.comment_typeAvator{width:102px;height:102px;}
 	.comment_management_item_blogname{margin-left:132px;margin-top:-64px;font-size:18px;}
@@ -1680,7 +1938,7 @@
                     <div class="back_blog_left_buttn_container"><button data-tag="5" class="back_blog_left_buttn">个人档</button></div>
                     <div class="back_blog_left_buttn_container"><button id="buttn_temp2" data-tag="6" class="back_blog_left_buttn">留言板</button></div>
                     <div class="back_blog_left_buttn_container"><button data-tag="7" class="back_blog_left_buttn">通知公告</button></div>
-                    <div class="back_blog_left_buttn_container"><button data-tag="13" class="back_blog_left_buttn">博客评论</button></div>
+                    <div class="back_blog_left_buttn_container"><button id="buttn_temp14"data-tag="13" class="back_blog_left_buttn">博客评论</button></div>
                     <div class="back_blog_left_buttn_container"><button data-tag="14" class="back_blog_left_buttn">评论回复</button></div>
                 </div>
         </div>
@@ -1717,6 +1975,7 @@
                     <div class="back_center_class" data-tag="13">
             	 		<div id="comment_management">
             	 			<!-- 一条评论开始 -->
+            	 			<!--  
             	 				<div class="comment_management_item">
             	 					<div class="comment_management_item_meta">
             	 						<div class="comment_avator">
@@ -1783,201 +2042,13 @@
 										</div>
             	 					</div>
             	 				</div>
+            	 				-->
             	 			<!-- 一条评论结束 -->
             	 			
-            	 			
-            	 			<!-- 一条评论开始 -->
-            	 				<div class="comment_management_item">
-            	 					<div class="comment_management_item_meta">
-            	 						<div class="comment_avator">
-            	 							<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567"/>
-            	 						</div>
-            	 						<div class="comment_meta_info">
-            	 							<div class="comment_meta_info_upper">光的文明<span>回复</span></div>
-            	 							<div class="comment_meta_info_down">2019-10-15 15:26</div>
-            	 							
-            	 						</div>
-            	 						<button id="comment_visibility">可见</button>
-            	 						<button id="comment_delete">删除</button>
-            	 					</div>
-            	 					<div class="comment_management_item_middle">
-            	 						<div class="comment_typeAvator">
-            	 							<img src="/blog/Images/blogAvator.png"/>
-            	 						</div>
-            	 						<div class="comment_management_item_blogname">博客<span>《记录被黑的一波》</span></div>
-            	 					</div>
-            	 					<div class="comment_managment_item_bottom">
-            	 						<div class="comment_item">
-											<div class="comment_item_content">
-												<div class="comment_item_content_meta">
-													<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-													<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-												</div>
-												<div class="comment_item_content_detail">
-													大佬，我想闻言喜爱这篇文章到底讲了什么？
-												</div>
-												<div class="comment_item_content_reply">
-													<div class="comment_item_reply_item">
-														<div class="comment_item_reply_meta">
-															<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-															<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-														</div>
-														<div class="comment_item_reply_detail">
-															这个评论十分中肯
-														</div>
-													</div>
-													
-													<div class="comment_item_reply_item">
-														<div class="comment_item_reply_meta">
-															<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-															<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-														</div>
-														<div class="comment_item_reply_detail">
-															同一楼主的评价。
-														</div>
-													</div>
-													
-													<div class="comment_item_reply_item">
-														<div class="comment_item_reply_meta">
-															<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-															<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-														</div>
-														<div class="comment_item_reply_detail">
-															其实还可以再深入一下
-														</div>
-													</div>
-													
-													<div class="comment_item_reply_loadmore"><a>共145条回复>><a/></div>
-												</div>
-											</div>
-										</div>
-            	 					</div>
-            	 				</div>
-            	 			<!-- 一条评论结束 -->
-            	 			
-            	 			
-            	 			<!-- 一条评论开始 -->
-            	 				<div class="comment_management_item">
-            	 					<div class="comment_management_item_meta">
-            	 						<div class="comment_avator">
-            	 							<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567"/>
-            	 						</div>
-            	 						<div class="comment_meta_info">
-            	 							<div class="comment_meta_info_upper">光的文明<span>回复</span></div>
-            	 							<div class="comment_meta_info_down">2019-10-15 15:26</div>
-            	 							
-            	 						</div>
-            	 						<button id="comment_visibility">可见</button>
-            	 						<button id="comment_delete">删除</button>
-            	 					</div>
-            	 					<div class="comment_management_item_middle">
-            	 						<div class="comment_typeAvator">
-            	 							<img src="/blog/Images/blogAvator.png"/>
-            	 						</div>
-            	 						<div class="comment_management_item_blogname">博客<span>《记录被黑的一波》</span></div>
-            	 					</div>
-            	 					<div class="comment_managment_item_bottom">
-            	 						<div class="comment_item">
-											<div class="comment_item_content">
-												<div class="comment_item_content_meta">
-													<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-													<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-												</div>
-												<div class="comment_item_content_detail">
-													大佬，我想闻言喜爱这篇文章到底讲了什么？
-												</div>
-												<div class="comment_item_content_reply">
-													<div class="comment_item_reply_item">
-														<div class="comment_item_reply_meta">
-															<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-															<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-														</div>
-														<div class="comment_item_reply_detail">
-															这个评论十分中肯
-														</div>
-													</div>
-													
-													<div class="comment_item_reply_item">
-														<div class="comment_item_reply_meta">
-															<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-															<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-														</div>
-														<div class="comment_item_reply_detail">
-															同一楼主的评价。
-														</div>
-													</div>
-													
-													<div class="comment_item_reply_item">
-														<div class="comment_item_reply_meta">
-															<span class="comment_item_reply_meta_name">光的文明&nbsp;</span>
-															<span class="comment_item_reply_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-														</div>
-														<div class="comment_item_reply_detail">
-															其实还可以再深入一下
-														</div>
-													</div>
-													
-													<div class="comment_item_reply_loadmore"><a>共145条回复>><a/></div>
-												</div>
-											</div>
-										</div>
-            	 					</div>
-            	 				</div>
-            	 			<!-- 一条评论结束 -->
-            	 			
-            	 			
-            	 			<!-- 一条评论开始 -->
-            	 				<div class="comment_management_item">
-            	 					<div class="comment_management_item_meta">
-            	 						<div class="comment_avator">
-            	 							<img src="http://thirdqq.qlogo.cn/g?b=oidb&k=DIiceQAWHeEL26myEXQ7ia0w&s=140&t=1557441567"/>
-            	 						</div>
-            	 						<div class="comment_meta_info">
-            	 							<div class="comment_meta_info_upper">光的文明<span>回复</span></div>
-            	 							<div class="comment_meta_info_down">2019-10-15 15:26</div>
-            	 							
-            	 						</div>
-            	 						<button id="comment_visibility">可见</button>
-            	 						<button id="comment_delete">删除</button>
-            	 					</div>
-            	 					<div class="comment_management_item_middle">
-            	 						<div class="comment_typeAvator">
-            	 							<img src="/blog/Images/blogAvator.png"/>
-            	 						</div>
-            	 						<div class="comment_management_item_blogname">博客<span>《记录被黑的一波》</span></div>
-            	 					</div>
-            	 					<div class="comment_managment_item_bottom">
-            	 						<div class="comment_item">
-											<div class="comment_item_content">
-												<div class="comment_item_content_meta">
-													<span class="comment_item_content_meta_name">光的文明&nbsp;</span>
-													<span class="comment_item_content_meta_date">发表于&nbsp;2019-10-10 15:26</span>
-												</div>
-												<div class="comment_item_content_detail">
-													大佬，我想闻言喜爱这篇文章到底讲了什么？
-												</div>
-											</div>
-										</div>
-            	 					</div>
-            	 				</div>
-            	 			<!-- 一条评论结束 -->
             	 		</div>
             	 		
             	 		<div id="comment_pageIndex">
-                       		<a>首页</a>
-                       		<a>上一页</a>
-                       		<a>1</a>
-                       		<a>2</a>
-                       		<a>3</a>
-                       		<a>4</a>
-                       		<a>5</a>
-                       		<a>6</a>
-                       		<a>7</a>
-                       		<a>8</a>
-                       		<a>9</a>
-                       		<a>10</a>
-                       		<a>下一页</a>
-                       		<a>尾页</a>
+                       		
                        	</div>
             	 		
                     </div>

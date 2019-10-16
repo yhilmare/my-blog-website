@@ -231,13 +231,13 @@
 		passage_content.appendChild(passage_detail);
 		articleInfo.articleID = article.article_id;
 		sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:article.article_id}, function(request){
-			if (request.responseTest == "参数传递错误"){
+			if (request.responseText == "参数传递错误"){
 				alert("参数传递错误");
 			}else{
 				var obj = JSON.parse(request.responseText);
 				var total_comment_record = document.getElementById("total_comment_record");
 				total_comment_record.innerHTML = obj.totalRecord;
-				initArticleCommentList(obj.list)
+				initArticleCommentList(obj.list);
 				updateCommentPageIndex(obj, article.article_id);
 			}
 		});
@@ -318,7 +318,7 @@
 				array = info.split("=");
 				info = array[array.length - 1];
 				sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:info, articleID:ID}, function(request){
-					if (request.responseTest == "参数传递错误"){
+					if (request.responseText == "参数传递错误"){
 						alert("参数传递错误");
 					}else{
 						var obj = JSON.parse(request.responseText);
@@ -951,7 +951,7 @@
 							commentReplyInfo.commentID = "undefined";
 							commentReplyInfo.visitorNickname = "undefined";
 							sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:articleInfo.articleID}, function(request1){
-								if (request1.responseTest == "参数传递错误"){
+								if (request1.responseText == "参数传递错误"){
 									alert("参数传递错误");
 								}else{
 									var obj = JSON.parse(request1.responseText);
@@ -973,7 +973,7 @@
 							alert(request.responseText);
 						}else{
 							sendHttpPOST("/blog/SelectArticleCommentController", {pageIndex:"1", articleID:articleInfo.articleID}, function(request1){
-								if (request1.responseTest == "参数传递错误"){
+								if (request1.responseText == "参数传递错误"){
 									alert("参数传递错误");
 								}else{
 									var obj = JSON.parse(request1.responseText);
