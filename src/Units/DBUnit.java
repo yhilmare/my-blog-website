@@ -90,7 +90,7 @@ public class DBUnit {
 	}
 	@Test
 	public void test2(){
-		
+		System.out.println("hello,world");
 	}
 	
 	@Test
@@ -403,11 +403,11 @@ public class DBUnit {
 	@Test
 	public void test28() throws UnsupportedEncodingException {
 		Encoder encoder = Base64.getEncoder();
-		String str = "colynhn";
+		String str = "»À…˙∞°";
 		String s = encoder.encodeToString(str.getBytes("UTF-8"));
 		System.out.println(s);
-//		Decoder decoder = Base64.getDecoder();
-//		System.out.println(new String(decoder.decode(str), "UTF-8"));
+		Decoder decoder = Base64.getDecoder();
+		System.out.println(new String(decoder.decode("5p2o6Iiq8J+kkw=="), "UTF-8"));
 	}
 	
 	@Test
