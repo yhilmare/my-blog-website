@@ -23,6 +23,15 @@ public class QQUserReturnMsg {
 	private String yellow_vip_level;
 	private String level;
 	private String is_yellow_year_vip;
+	private Integer gender_type;
+	
+	
+	public Integer getGender_type() {
+		return gender_type;
+	}
+	public void setGender_type(Integer gender_type) {
+		this.gender_type = gender_type;
+	}
 	public Integer getRet() {
 		return ret;
 	}
