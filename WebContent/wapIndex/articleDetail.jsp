@@ -10,7 +10,15 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	</head>
+	<script src="/blog/js/jquery.js"></script>
 	<script type="text/javascript">
+	$(document).ready(function(){
+		var passage_date = document.getElementById("passage_date");
+		passage_date.innerHTML += "&nbsp;&nbsp;&nbsp;<a href='#passage_comment'>给我评论</a>";
+		initVisitorUser();
+		initArticleComment();
+		initCommentSubmitButton();
+    });
 	function sendHttpPOST(url, data, callBack){
 		var array = new Array();
 		var names = Object.getOwnPropertyNames(data);
@@ -64,11 +72,7 @@
 			window.open("/blog/message.html");
 		}, false);
 		document.getElementById("topbutton").addEventListener("click", function(){window.scrollTo(0, 0);}, false);
-		var passage_date = document.getElementById("passage_date");
-		passage_date.innerHTML += "&nbsp;&nbsp;&nbsp;<a href='#passage_comment'>给我评论</a>";
-		initVisitorUser();
-		initArticleComment();
-		initCommentSubmitButton();
+		
 	}
 	function initCommentSubmitButton(){
 		var commentSubmitbutton = document.getElementById("commentSubmitbutton");
